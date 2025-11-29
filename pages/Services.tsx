@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import { SERVICE_CATEGORIES } from '../data/servicesData';
 import FAQ from '../components/FAQ';
+import ProcessTimeline from '../components/ProcessTimeline';
 
 const Services: React.FC = () => {
 
@@ -75,6 +76,9 @@ const Services: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* Process Timeline */}
+      <ProcessTimeline />
 
       {/* FAQ Section */}
       <FAQ />
