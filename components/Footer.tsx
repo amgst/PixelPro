@@ -2,73 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, Twitter, Linkedin, Facebook } from 'lucide-react';
 
-const Footer: React.FC = () => {
-  return (
-    <footer className="bg-slate-50 border-t border-gray-200 pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          <div className="col-span-1 md:col-span-1">
-            <span className="text-2xl font-bold text-slate-900 tracking-tight">
-              Pixel<span className="text-blue-600">Pro</span>
-            </span>
-            <p className="mt-4 text-gray-500 text-sm leading-relaxed">
-              All your creative & digital services in one place. From web design to printing, we deliver premium quality for your business.
-            </p>
-          </div>
-          
-          <div>
-            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Services</h3>
-            <ul className="space-y-3">
-              <li><Link to="/services" className="text-gray-500 hover:text-blue-600 text-sm">Graphic Design & Print</Link></li>
-              <li><Link to="/services" className="text-gray-500 hover:text-blue-600 text-sm">Web / Digital Services</Link></li>
-              <li><Link to="/services" className="text-gray-500 hover:text-blue-600 text-sm">Video & Animation</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Company</h3>
-            <ul className="space-y-3">
-              <li><Link to="/about" className="text-gray-500 hover:text-blue-600 text-sm">About Us</Link></li>
-              <li><Link to="/portfolio" className="text-gray-500 hover:text-blue-600 text-sm">Portfolio</Link></li>
-              <li><Link to="/contact" className="text-gray-500 hover:text-blue-600 text-sm">Contact</Link></li>
-              <li><Link to="/contact" className="text-gray-500 hover:text-blue-600 text-sm">Careers</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Connect</h3>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">
-                <Instagram size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">
-                <Twitter size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">
-                <Linkedin size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">
-                <Facebook size={20} />
-              </a>
-            </div>
-            <div className="mt-6">
-                 <p className="text-sm text-gray-500">hello@pixelpro.com</p>
-                 <p className="text-sm text-gray-500">+1 (555) 123-4567</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-gray-400">© {new Date().getFullYear()} PixelPro Creative Studio. All rights reserved.</p>
-          <div className="flex flex-col md:flex-row items-center gap-6 mt-4 md:mt-0">
-             <div className="flex space-x-6">
-                <span className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Privacy Policy</span>
-                <span className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Terms of Service</span>
-             </div>
-          </div>
-        </div>
-      </div>
-    </footer>
+        </div >
+      </div >
+    </footer >
   );
 };
 
