@@ -22,21 +22,15 @@ const WebsitesForSale: React.FC = () => {
             features: ['Appointment Booking', 'Service List', 'Team Profiles'],
             previewLink: 'https://dental-clinic-website-seven.vercel.app/'
         },
+
         {
-            id: 3,
-            title: 'Local Shop',
-            category: 'E-Commerce',
-            image: 'https://picsum.photos/600/400?random=12',
-            description: 'Get your local store online fast. Simple product listing and inquiry system.',
-            features: ['Product Grid', 'Location Map', 'Business Hours']
-        },
-        {
-            id: 4,
-            title: 'Personal Blog',
-            category: 'Blog',
-            image: 'https://picsum.photos/600/400?random=13',
-            description: 'Share your thoughts with the world. Clean typography and easy reading experience.',
-            features: ['Article List', 'Author Bio', 'Newsletter Signup']
+            id: 5,
+            title: 'SweetTreats & Events Hub',
+            category: 'Food & Events',
+            image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+            description: 'A delightful website for bakeries and event planners. Showcase your treats and manage event bookings.',
+            features: ['Menu Showcase', 'Event Booking', 'Gallery'],
+            previewLink: 'https://sweet-treats-black.vercel.app/'
         }
     ];
 

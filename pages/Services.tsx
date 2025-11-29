@@ -17,7 +17,7 @@ const Services: React.FC = () => {
   };
 
   return (
-    <div className="pt-10 pb-24 bg-white min-h-screen">
+    <div className="pb-24 bg-white min-h-screen">
 
       {/* Header */}
       <div className="bg-slate-50 py-20 mb-16 border-b border-gray-100">
