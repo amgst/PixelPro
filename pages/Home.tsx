@@ -5,15 +5,19 @@ import { SERVICE_CATEGORIES } from '../data/servicesData';
 import GameFloatingButton from '../components/GameFloatingButton';
 import GameModal from '../components/GameModal';
 import Testimonials from '../components/Testimonials';
+import ServiceQuizModal from '../components/ServiceQuizModal';
 
 const Home: React.FC = () => {
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
 
   // Take first 4 categories for the preview
   const featuredCategories = SERVICE_CATEGORIES.slice(0, 4);
 
   return (
     <div className="flex flex-col min-h-screen">
+      <ServiceQuizModal isOpen={isQuizOpen} onClose={() => setIsQuizOpen(false)} />
+
       {/* Hero Section */}
       <section className="flex-1 flex flex-col justify-center items-center text-center px-4 py-32 bg-white relative overflow-hidden">
         {/* Background decoration */}
@@ -40,6 +44,15 @@ const Home: React.FC = () => {
                 Get a Quote
               </button>
             </Link>
+          </div>
+
+          <div className="pt-4">
+            <button
+              onClick={() => setIsQuizOpen(true)}
+              className="text-sm text-gray-500 hover:text-blue-600 underline decoration-dotted underline-offset-4 transition-colors"
+            >
+              Not sure what you need? Take our 30-second quiz
+            </button>
           </div>
         </div>
       </section>

@@ -12,6 +12,8 @@ import ShopifyLanding from './pages/ShopifyLanding';
 import WebDevLanding from './pages/WebDevLanding';
 import GraphicsLanding from './pages/GraphicsLanding';
 import ProjectInquiry from './pages/ProjectInquiry';
+import Pricing from './pages/Pricing';
+import WebsitesForSale from './pages/WebsitesForSale';
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -39,6 +41,8 @@ const AppContent: React.FC = () => {
             <Route path="/web-dev" element={<WebDevLanding />} />
             <Route path="/graphics" element={<GraphicsLanding />} />
             <Route path="/inquiry" element={<ProjectInquiry />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/websites-for-sale" element={<WebsitesForSale />} />
           </Routes>
         </PageWrapper>
       </main>
