@@ -8,7 +8,16 @@ const Navbar: React.FC = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'Services', path: '/services' },
+    {
+      name: 'Services',
+      path: '/services',
+      dropdown: [
+        { name: 'Shopify Solutions', path: '/shopify' },
+        { name: 'Custom Web Dev', path: '/web-dev' },
+        { name: 'Graphics & Branding', path: '/graphics' },
+        { name: 'All Services', path: '/services' }
+      ]
+    },
     { name: 'Portfolio', path: '/portfolio' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
@@ -25,25 +34,52 @@ const Navbar: React.FC = () => {
               Pixel<span className="text-blue-600">Pro</span>
             </Link>
           </div>
-          
+
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className={`text-sm font-medium transition-colors duration-200 ${
-                  isActive(link.path) 
-                    ? 'text-blue-600' 
-                    : 'text-gray-600 hover:text-slate-900'
-                }`}
-              >
-                {link.name}
-              </Link>
+              <div key={link.name} className="relative group">
+                {link.dropdown ? (
+                  <button
+                    className={`text-sm font-medium transition-colors duration-200 ${isActive(link.path)
+                        ? 'text-blue-600'
+                        : 'text-gray-600 hover:text-slate-900'
+                      }`}
+                  >
+                    {link.name}
+                  </button>
+                ) : (
+                  <Link
+                    to={link.path}
+                    className={`text-sm font-medium transition-colors duration-200 ${isActive(link.path)
+                        ? 'text-blue-600'
+                        : 'text-gray-600 hover:text-slate-900'
+                      }`}
+                  >
+                    {link.name}
+                  </Link>
+                )}
+
+                {link.dropdown && (
+                  <div className="absolute left-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="bg-white rounded-xl shadow-xl border border-gray-100 py-2">
+                      {link.dropdown.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={item.path}
+                          className="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
             <Link to="/contact">
-                <button className="bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-800 transition-all shadow-sm">
+              <button className="bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-800 transition-all shadow-sm">
                 Get Started
-                </button>
+              </button>
             </Link>
           </div>
 
@@ -63,18 +99,33 @@ const Navbar: React.FC = () => {
         <div className="md:hidden bg-white border-b border-gray-100">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                   isActive(link.path)
-                    ? 'text-blue-600 bg-blue-50'
-                    : 'text-gray-600 hover:text-slate-900 hover:bg-gray-50'
-                }`}
-              >
-                {link.name}
-              </Link>
+              <div key={link.name}>
+                <Link
+                  to={link.path}
+                  onClick={() => !link.dropdown && setIsOpen(false)}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive(link.path)
+                      ? 'text-blue-600 bg-blue-50'
+                      : 'text-gray-600 hover:text-slate-900 hover:bg-gray-50'
+                    }`}
+                >
+                  {link.name}
+                </Link>
+
+                {link.dropdown && (
+                  <div className="pl-4 mt-1 space-y-1">
+                    {link.dropdown.map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.path}
+                        onClick={() => setIsOpen(false)}
+                        className="block px-3 py-2 rounded-md text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
