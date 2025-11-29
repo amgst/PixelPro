@@ -52,8 +52,7 @@ const Footer: React.FC = () => {
               </a>
             </div>
             <div className="mt-6">
-              <p className="text-sm text-gray-500">hello@wbify.com</p>
-              <p className="text-sm text-gray-500">+1 (555) 123-4567</p>
+              <p className="text-sm text-gray-500">wbify.com@gmail.com</p>
             </div>
           </div>
         </div>

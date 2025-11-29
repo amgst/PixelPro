@@ -1,0 +1,30 @@
+[
+    {
+        "id": "1",
+        "title": "The Future of Web Design: Trends to Watch in 2025",
+        "slug": "future-web-design-trends-2025",
+        "excerpt": "Explore the cutting-edge trends shaping the digital landscape, from AI-driven layouts to immersive 3D experiences.",
+        "content": "## The Future is Now\n\nAs we move further into 2025, web design is evolving at a breakneck pace. The integration of Artificial Intelligence is no longer a novelty but a necessity. Designers are leveraging AI to create hyper-personalized user experiences that adapt in real-time.\n\n### Immersive 3D Experiences\n\nGone are the days of flat, static pages. The new standard is immersive, interactive 3D elements that engage users from the moment they land on the site. WebGL and Three.js are becoming staple tools in a designer's arsenal.\n\n### Sustainable Web Design\n\nWith a growing focus on environmental impact, sustainable web design is gaining traction. This involves optimizing code and assets to reduce energy consumption without sacrificing performance or aesthetics.",
+        "date": "2025-11-28",
+        "author": "PixelPro AI",
+        "tags": [
+            "Web Design",
+            "Trends",
+            "AI"
+        ]
+    },
+    {
+        "id": "2",
+        "title": "Mastering React 19: What You Need to Know",
+        "slug": "mastering-react-19",
+        "excerpt": "A deep dive into the new features of React 19 and how they can streamline your development workflow.",
+        "content": "## React 19 Has Arrived\n\nReact 19 brings a host of new features designed to make development smoother and more efficient. The introduction of the new compiler is a game-changer, automatically optimizing your code for better performance.\n\n### Server Components by Default\n\nOne of the biggest shifts is the move towards Server Components as the default. This allows for faster initial page loads and better SEO out of the box.\n\n### Enhanced Hooks\n\nNew hooks provide more granular control over state and side effects, reducing the boilerplate code needed for complex applications.",
+        "date": "2025-11-29",
+        "author": "PixelPro AI",
+        "tags": [
+            "React",
+            "Development",
+            "JavaScript"
+        ]
+    }
+]

@@ -20,34 +20,12 @@ const Contact: React.FC = () => {
 
               <div className="space-y-6">
                 <div className="flex items-start">
-                  <MapPin className="text-blue-600 mt-1 mr-4" />
-                  <div>
-                    <p className="font-medium text-slate-900">Our Studio</p>
-                    <p className="text-gray-500">123 Creative Avenue, Design District<br />Sydney, NSW 2000, Australia</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
                   <Mail className="text-blue-600 mt-1 mr-4" />
                   <div>
                     <p className="font-medium text-slate-900">Email Us</p>
-                    <p className="text-gray-500">hello@wbify.com</p>
+                    <p className="text-gray-500">wbify.com@gmail.com</p>
                   </div>
                 </div>
-
-                <div className="flex items-start">
-                  <Phone className="text-blue-600 mt-1 mr-4" />
-                  <div>
-                    <p className="font-medium text-slate-900">Call Us</p>
-                    <p className="text-gray-500">+61 (02) 1234 5678</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 pt-8 border-t border-gray-200">
-                <button className="w-full bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
-                  <MessageCircle size={20} /> Chat on WhatsApp
-                </button>
               </div>
             </div>
           </div>

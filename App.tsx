@@ -14,6 +14,8 @@ import GraphicsLanding from './pages/GraphicsLanding';
 import ProjectInquiry from './pages/ProjectInquiry';
 import Pricing from './pages/Pricing';
 import WebsitesForSale from './pages/WebsitesForSale';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -43,6 +45,8 @@ const AppContent: React.FC = () => {
             <Route path="/inquiry" element={<ProjectInquiry />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/websites-for-sale" element={<WebsitesForSale />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
           </Routes>
         </PageWrapper>
       </main>
