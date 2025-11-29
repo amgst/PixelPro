@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle, ArrowRight, ShoppingBag, BarChart, Globe, Settings, Shield, Smartphone } from 'lucide-react';
+import { CheckCircle, ArrowRight, ShoppingBag, BarChart, Globe, Settings, Shield, Smartphone, ExternalLink } from 'lucide-react';
 
 const ShopifyLanding: React.FC = () => {
     return (
@@ -85,6 +85,105 @@ const ShopifyLanding: React.FC = () => {
                                 </div>
                                 <h3 className="text-xl font-bold text-slate-900 mb-3">{service.title}</h3>
                                 <p className="text-gray-500 leading-relaxed">{service.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Portfolio Section */}
+            <section className="py-24 bg-slate-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Our Work</h2>
+                        <p className="text-gray-500 max-w-2xl mx-auto">Check out some of the high-converting Shopify stores we've built.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[
+                            {
+                                title: "Culturefly",
+                                category: "E-commerce, Subscription",
+                                img: "https://images.unsplash.com/photo-1607082349566-187342175e2f",
+                                link: "https://culturefly.com/"
+                            },
+                            {
+                                title: "Doomlings",
+                                category: "Gaming, E-commerce",
+                                img: "https://images.unsplash.com/photo-1558433916-90a36b44753f",
+                                link: "https://doomlings.com/"
+                            },
+                            {
+                                title: "Cubscription Box",
+                                category: "Subscription, Kids Products",
+                                img: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1",
+                                link: "https://cubscription.com/"
+                            },
+                            {
+                                title: "Rehals Divine",
+                                category: "Fashion, Lifestyle",
+                                img: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d",
+                                link: "https://rehalsdivine.com.au/"
+                            },
+                            {
+                                title: "Pusheenbox",
+                                category: "Subscription, Merchandise",
+                                img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe",
+                                link: "https://pusheenbox.com/"
+                            },
+                            {
+                                title: "JS Style Furniture",
+                                category: "Furniture, Home Decor",
+                                img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc",
+                                link: "https://jsstylefurniture.com.au/"
+                            },
+                            {
+                                title: "WB Handmade",
+                                category: "Theme Demo, Handcrafted",
+                                img: "https://images.unsplash.com/photo-1544967082-d9d25d867d66",
+                                link: null
+                            },
+                            {
+                                title: "Modern E-commerce",
+                                category: "Theme Demo, E-commerce",
+                                img: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d",
+                                link: null
+                            },
+                            {
+                                title: "Restaurant Chain",
+                                category: "Restaurant, Online Ordering",
+                                img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
+                                link: null
+                            }
+                        ].map((project, idx) => (
+                            <div key={idx} className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white">
+                                <div className="aspect-[4/3] overflow-hidden">
+                                    <img
+                                        src={project.img}
+                                        alt={project.title}
+                                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                </div>
+                                <div className="p-6">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div>
+                                            <span className="text-green-600 text-xs font-bold tracking-wider uppercase mb-1 block">
+                                                {project.category}
+                                            </span>
+                                            <h3 className="text-xl font-bold text-slate-900">{project.title}</h3>
+                                        </div>
+                                        {project.link && (
+                                            <a
+                                                href={project.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="p-2 bg-gray-100 rounded-full text-gray-600 hover:bg-green-500 hover:text-white transition-colors"
+                                            >
+                                                <ExternalLink size={18} />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>
