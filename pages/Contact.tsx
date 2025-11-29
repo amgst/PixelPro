@@ -5,25 +5,25 @@ const Contact: React.FC = () => {
   return (
     <div className="min-h-screen bg-white py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-slate-900 mb-4">Get In Touch</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Contact wbify</h1>
           <p className="text-gray-500">Have a project in mind? We'd love to hear from you.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          
+
           {/* Contact Info */}
           <div className="space-y-8">
             <div className="bg-slate-50 p-8 rounded-2xl border border-gray-100">
               <h3 className="text-xl font-bold text-slate-900 mb-6">Contact Information</h3>
-              
+
               <div className="space-y-6">
                 <div className="flex items-start">
                   <MapPin className="text-blue-600 mt-1 mr-4" />
                   <div>
                     <p className="font-medium text-slate-900">Our Studio</p>
-                    <p className="text-gray-500">123 Creative Avenue, Design District<br/>Sydney, NSW 2000, Australia</p>
+                    <p className="text-gray-500">123 Creative Avenue, Design District<br />Sydney, NSW 2000, Australia</p>
                   </div>
                 </div>
 
@@ -31,7 +31,7 @@ const Contact: React.FC = () => {
                   <Mail className="text-blue-600 mt-1 mr-4" />
                   <div>
                     <p className="font-medium text-slate-900">Email Us</p>
-                    <p className="text-gray-500">hello@pixelpro.com</p>
+                    <p className="text-gray-500">hello@wbify.com</p>
                   </div>
                 </div>
 

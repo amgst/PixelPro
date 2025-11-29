@@ -20,7 +20,7 @@ const GameModal: React.FC<GameModalProps> = ({ isOpen, onClose }) => {
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-900">
                     <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                        <Gamepad2 className="text-blue-500" /> PixelPro Arcade
+                        <Gamepad2 className="text-blue-500" /> wbify Arcade
                     </h2>
                     <button
                         onClick={onClose}
