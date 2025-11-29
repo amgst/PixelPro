@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle, ShoppingBag } from 'lucide-react';
 import { SERVICE_CATEGORIES } from '../data/servicesData';
 import GameFloatingButton from '../components/GameFloatingButton';
 import GameModal from '../components/GameModal';
+import Testimonials from '../components/Testimonials';
 
 const Home: React.FC = () => {
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
@@ -162,6 +163,9 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Testimonials */}
+      <Testimonials />
 
       {/* Game Floating Button & Modal */}
       <GameFloatingButton onClick={() => setIsGameModalOpen(true)} />

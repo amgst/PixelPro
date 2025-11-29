@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import { SERVICE_CATEGORIES } from '../data/servicesData';
+import FAQ from '../components/FAQ';
 
 const Services: React.FC = () => {
 
@@ -74,6 +75,9 @@ const Services: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* FAQ Section */}
+      <FAQ />
 
       {/* Bottom CTA */}
       <div className="max-w-4xl mx-auto mt-32 bg-slate-900 rounded-3xl p-12 text-center text-white shadow-2xl mx-4 lg:mx-auto">
