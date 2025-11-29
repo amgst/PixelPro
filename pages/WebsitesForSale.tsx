@@ -6,19 +6,21 @@ const WebsitesForSale: React.FC = () => {
     const templates = [
         {
             id: 1,
-            title: 'Modern Business',
-            category: 'Corporate',
-            image: 'https://picsum.photos/600/400?random=10',
-            description: 'A sleek, professional design perfect for agencies, consultants, and small businesses.',
-            features: ['Service Showcase', 'Team Section', 'Contact Form']
+            title: 'Premium Car Rental',
+            category: 'Automotive',
+            image: '/template_cars.png',
+            description: 'A high-end car rental website with fleet showcase and booking inquiry system.',
+            features: ['Fleet Gallery', 'Booking Form', 'Service Details'],
+            previewLink: 'https://cars-six-rouge.vercel.app/'
         },
         {
             id: 2,
-            title: 'Creative Portfolio',
-            category: 'Portfolio',
-            image: 'https://picsum.photos/600/400?random=11',
-            description: 'Showcase your work with style. Ideal for photographers, designers, and artists.',
-            features: ['Gallery Grid', 'Project Details', 'About Me']
+            title: 'Modern Dental Clinic',
+            category: 'Healthcare',
+            image: '/template_dental.png',
+            description: 'Clean and trustworthy design for dental clinics with appointment scheduling.',
+            features: ['Appointment Booking', 'Service List', 'Team Profiles'],
+            previewLink: 'https://dental-clinic-website-seven.vercel.app/'
         },
         {
             id: 3,
@@ -104,6 +106,57 @@ const WebsitesForSale: React.FC = () => {
                 </div>
             </section>
 
+            {/* Key Features */}
+            <section className="py-20 px-4 bg-slate-50">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-bold text-slate-900 mb-4">Why Choose Our Ready Sites?</h2>
+                        <p className="text-gray-500">Built with modern technology for speed, security, and growth.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[
+                            {
+                                title: 'Mobile Responsive',
+                                desc: 'Looks perfect on every device, from smartphones to large desktop screens.',
+                                icon: '📱'
+                            },
+                            {
+                                title: 'SEO Optimized',
+                                desc: 'Built with best practices to help you rank higher on Google search results.',
+                                icon: '🔍'
+                            },
+                            {
+                                title: 'Blazing Fast',
+                                desc: 'Hosted on Vercel\'s global edge network for instant page loads anywhere.',
+                                icon: '🚀'
+                            },
+                            {
+                                title: 'Contact Ready',
+                                desc: 'Includes working contact forms so you never miss a customer inquiry.',
+                                icon: '✉️'
+                            },
+                            {
+                                title: 'Analytics Included',
+                                desc: 'Pre-configured for Google Analytics so you can track your visitors.',
+                                icon: '📊'
+                            },
+                            {
+                                title: 'Easy to Update',
+                                desc: 'Clean code structure makes it simple to update text and images later.',
+                                icon: '✏️'
+                            }
+                        ].map((feature, idx) => (
+                            <div key={idx} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                                <div className="text-4xl mb-4">{feature.icon}</div>
+                                <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
+                                <p className="text-gray-600">{feature.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* Templates Grid */}
             <section id="templates" className="py-20 px-4 bg-white">
                 <div className="max-w-7xl mx-auto">
@@ -117,7 +170,7 @@ const WebsitesForSale: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
                         {templates.map((template) => (
                             <div key={template.id} className="group bg-slate-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300">
-                                <div className="relative h-64 overflow-hidden">
+                                <div className="relative h-80 overflow-hidden">
                                     <img
                                         src={template.image}
                                         alt={template.title}
@@ -145,11 +198,55 @@ const WebsitesForSale: React.FC = () => {
                                                 Buy Now <ShoppingCart size={18} />
                                             </button>
                                         </Link>
-                                        <button className="px-6 py-3 bg-white border border-gray-200 text-slate-900 rounded-xl font-bold hover:bg-gray-50 transition-colors">
-                                            Preview
-                                        </button>
+                                        {template.previewLink ? (
+                                            <a href={template.previewLink} target="_blank" rel="noopener noreferrer">
+                                                <button className="px-6 py-3 bg-white border border-gray-200 text-slate-900 rounded-xl font-bold hover:bg-gray-50 transition-colors">
+                                                    Preview
+                                                </button>
+                                            </a>
+                                        ) : (
+                                            <button className="px-6 py-3 bg-white border border-gray-200 text-slate-900 rounded-xl font-bold hover:bg-gray-50 transition-colors">
+                                                Preview
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="py-20 px-4 bg-slate-50 border-t border-gray-200">
+                <div className="max-w-3xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
+                        <p className="text-gray-500">Everything you need to know about your new website.</p>
+                    </div>
+
+                    <div className="space-y-6">
+                        {[
+                            {
+                                q: "Is there a monthly fee?",
+                                a: "No! We deploy your site on Vercel's Basic plan, which is completely free for personal and hobby projects. You only pay the one-time $100 setup fee."
+                            },
+                            {
+                                q: "Do I need to pay for hosting?",
+                                a: "Hosting is free on Vercel as long as you stay within their generous usage limits (which are plenty for most small business sites)."
+                            },
+                            {
+                                q: "Is SSL included?",
+                                a: "Yes, a secure SSL certificate (HTTPS) is automatically included for free, keeping your site and visitors safe."
+                            },
+                            {
+                                q: "What do I need to provide?",
+                                a: "We'll need you to create a free Vercel account and a free GitHub (or GitLab/Bitbucket) account so we can transfer ownership of the code and project to you."
+                            }
+                        ].map((faq, idx) => (
+                            <div key={idx} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                                <h3 className="text-lg font-bold text-slate-900 mb-2">{faq.q}</h3>
+                                <p className="text-gray-600">{faq.a}</p>
                             </div>
                         ))}
                     </div>
