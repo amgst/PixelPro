@@ -31,6 +31,15 @@ const WebsitesForSale: React.FC = () => {
             description: 'A delightful website for bakeries and event planners. Showcase your treats and manage event bookings.',
             features: ['Menu Showcase', 'Event Booking', 'Gallery'],
             previewLink: 'https://sweet-treats-black.vercel.app/'
+        },
+        {
+            id: 6,
+            title: 'ClearLedger Accounting',
+            category: 'Finance',
+            image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+            description: 'Professional accounting and advisory website. Perfect for CPA firms and financial consultants.',
+            features: ['Service Overview', 'Client Portal', 'Consultation Booking'],
+            previewLink: 'https://clear-leadger.vercel.app/'
         }
     ];
 

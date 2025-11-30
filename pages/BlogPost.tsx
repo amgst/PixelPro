@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Calendar, User, ArrowLeft, Tag, Share2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { Helmet } from 'react-helmet-async';
 import blogData from '../data/blog-posts.json';
 
 interface BlogPost {
@@ -13,6 +14,7 @@ interface BlogPost {
     date: string;
     author: string;
     tags: string[];
+    image?: string;
 }
 
 const BlogPost: React.FC = () => {
@@ -39,6 +41,11 @@ const BlogPost: React.FC = () => {
 
     return (
         <div className="bg-white min-h-screen pt-24 pb-16">
+            <Helmet>
+                <title>{post.title} | PixelPro Blog</title>
+                <meta name="description" content={post.excerpt} />
+            </Helmet>
+
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Link
                     to="/blog"
@@ -50,6 +57,16 @@ const BlogPost: React.FC = () => {
 
                 <article>
                     <header className="mb-10">
+                        {post.image && (
+                            <div className="mb-8 rounded-2xl overflow-hidden shadow-lg h-64 md:h-96 w-full">
+                                <img
+                                    src={post.image}
+                                    alt={post.title}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        )}
+
                         <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
                             <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
                                 <Calendar size={14} />
@@ -79,17 +96,7 @@ const BlogPost: React.FC = () => {
                     </header>
 
                     <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-gray-600 prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-xl">
-                        {/* Note: In a real app, you'd want to use a markdown parser here. 
-                 Since we don't have one installed yet, I'll display raw text for now, 
-                 but I'll add a TODO to install 'react-markdown' or similar. 
-                 Wait, I can just split by newlines for a basic display if I don't want to add deps yet.
-                 Actually, let's just render it as paragraphs for now to keep it simple without extra deps,
-                 or I can quickly install react-markdown. 
-                 Let's stick to simple rendering to avoid too many deps, or just use white-space-pre-wrap.
-             */}
-                        <div className="whitespace-pre-wrap font-sans">
-                            {post.content}
-                        </div>
+                        <ReactMarkdown>{post.content}</ReactMarkdown>
                     </div>
 
                     <div className="mt-12 pt-8 border-t border-gray-100 flex justify-between items-center">

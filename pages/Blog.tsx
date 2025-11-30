@@ -12,14 +12,13 @@ interface BlogPost {
     date: string;
     author: string;
     tags: string[];
+    image?: string;
 }
 
 const Blog: React.FC = () => {
     const [posts, setPosts] = useState<BlogPost[]>([]);
 
     useEffect(() => {
-        // In a real app, this might fetch from an API
-        // For now, we use the imported JSON data
         setPosts(blogData);
     }, []);
 
@@ -41,6 +40,16 @@ const Blog: React.FC = () => {
                             key={post.id}
                             className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col"
                         >
+                            {post.image && (
+                                <div className="h-48 overflow-hidden">
+                                    <img
+                                        src={post.image}
+                                        alt={post.title}
+                                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+                                    />
+                                </div>
+                            )}
+
                             <div className="p-8 flex-grow flex flex-col">
                                 <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
                                     <span className="flex items-center gap-1">

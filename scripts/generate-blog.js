@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import "dotenv/config";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -14,7 +15,7 @@ if (!apiKey) {
 }
 
 const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
 
 const DATA_FILE = path.join(__dirname, "../data/blog-posts.json");
 
@@ -23,13 +24,17 @@ async function generateBlogPost() {
         console.log("Generating blog post...");
 
         const prompt = `
-      Write a blog post about a trending topic in web design, development, or digital marketing.
+      Write a comprehensive, long-form blog post (at least 1500 words) about a trending topic in web design, development, or digital marketing.
       The output must be a valid JSON object with the following fields:
-      - title: A catchy title.
+      - title: A catchy, SEO-optimized title.
       - slug: A URL-friendly slug based on the title.
-      - excerpt: A short summary (1-2 sentences).
-      - content: The full blog post content in Markdown format. Use ## for headings.
-      - tags: An array of 3-5 relevant tags.
+      - excerpt: A compelling summary (2-3 sentences).
+      - content: The full blog post content in Markdown format. 
+        - Use ## and ### for clear heading hierarchy.
+        - Include bullet points, numbered lists, and blockquotes where appropriate.
+        - CRITICAL: Embed 3-5 relevant images directly in the markdown content using this format: ![Alt Text](https://source.unsplash.com/featured/?KEYWORD). Replace KEYWORD with a single specific word relevant to the section (e.g., "coding", "meeting", "sketchbook").
+      - tags: An array of 5-8 relevant tags.
+      - image_keyword: A single English keyword relevant to the main topic for the featured image.
       
       Do not include markdown code blocks (like \`\`\`json) in the response, just the raw JSON string.
     `;
@@ -47,6 +52,8 @@ async function generateBlogPost() {
         newPost.id = Date.now().toString();
         newPost.date = new Date().toISOString().split("T")[0];
         newPost.author = "PixelPro AI";
+        // Use Unsplash source for random image based on keyword
+        newPost.image = `https://source.unsplash.com/featured/?${newPost.image_keyword || 'technology'}`;
 
         // Read existing posts
         let posts = [];
