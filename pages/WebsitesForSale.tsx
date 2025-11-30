@@ -109,6 +109,130 @@ const WebsitesForSale: React.FC = () => {
                 </div>
             </section>
 
+            {/* How It Works Process Section */}
+            <section className="py-24 px-4 bg-white border-y border-gray-100">
+                <div className="max-w-4xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-bold text-slate-900 mb-4">How It Works</h2>
+                        <p className="text-gray-500">A simple, transparent process to get your website live.</p>
+                    </div>
+
+                    <div className="space-y-12 relative">
+                        {/* Vertical Line */}
+                        <div className="absolute left-8 top-8 bottom-8 w-0.5 bg-gray-100 hidden md:block"></div>
+
+                        {[
+                            {
+                                step: "01",
+                                title: "Purchase & Secure Your Template",
+                                icon: ShoppingCart,
+                                content: (
+                                    <ul className="space-y-2 text-gray-600">
+                                        <li className="flex items-start gap-2">
+                                            <CheckCircle size={18} className="text-blue-500 mt-1 flex-shrink-0" />
+                                            <span>Select your preferred design from our collection.</span>
+                                        </li>
+                                        <li className="flex items-start gap-2">
+                                            <CheckCircle size={18} className="text-blue-500 mt-1 flex-shrink-0" />
+                                            <span>Complete the secure checkout process ($100 one-time fee).</span>
+                                        </li>
+                                        <li className="flex items-start gap-2">
+                                            <CheckCircle size={18} className="text-blue-500 mt-1 flex-shrink-0" />
+                                            <span>Receive an instant confirmation email with next steps.</span>
+                                        </li>
+                                    </ul>
+                                )
+                            },
+                            {
+                                step: "02",
+                                title: "Domain & Hosting Credentials",
+                                icon: Layout,
+                                content: (
+                                    <div className="space-y-3 text-gray-600">
+                                        <p>We need a place to host your new site. Please provide:</p>
+                                        <ul className="space-y-2 pl-4 border-l-2 border-blue-100">
+                                            <li>• Your <strong>Domain Name</strong> (e.g., mybusiness.com)</li>
+                                            <li>• <strong>Hosting Credentials</strong> (if you already have hosting)</li>
+                                            <li>• Or we can help you set up a free Vercel account.</li>
+                                        </ul>
+                                    </div>
+                                )
+                            },
+                            {
+                                step: "03",
+                                title: "Assets, Content & Contact Details",
+                                icon: Zap,
+                                content: (
+                                    <div className="space-y-3 text-gray-600">
+                                        <p>Send us the materials to make the site yours:</p>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <div className="bg-slate-50 p-3 rounded-lg text-sm">
+                                                <span className="font-semibold block text-slate-900">Branding</span>
+                                                Your Logo, Brand Colors, Fonts
+                                            </div>
+                                            <div className="bg-slate-50 p-3 rounded-lg text-sm">
+                                                <span className="font-semibold block text-slate-900">Contact Info</span>
+                                                Email, Phone, Address, Social Links
+                                            </div>
+                                            <div className="bg-slate-50 p-3 rounded-lg text-sm col-span-1 sm:col-span-2">
+                                                <span className="font-semibold block text-slate-900">Site Content</span>
+                                                Text for About Us, Services, and any images you want to use.
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            },
+                            {
+                                step: "04",
+                                title: "Special Instructions & Launch",
+                                icon: CheckCircle,
+                                content: (
+                                    <div className="space-y-3 text-gray-600">
+                                        <p>Final touches before we go live:</p>
+                                        <ul className="space-y-2">
+                                            <li className="flex items-start gap-2">
+                                                <span className="bg-blue-100 text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5">!</span>
+                                                <span>Let us know any specific requirements or customizations.</span>
+                                            </li>
+                                            <li className="flex items-start gap-2">
+                                                <span className="bg-green-100 text-green-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5">✓</span>
+                                                <span>We review everything and launch your site within 48 hours.</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )
+                            }
+                        ].map((item, idx) => (
+                            <div key={idx} className="relative flex flex-col md:flex-row gap-8 md:gap-12">
+                                {/* Icon/Step Marker */}
+                                <div className="flex-shrink-0 flex md:flex-col items-center md:items-end gap-4 md:w-32">
+                                    <div className="w-16 h-16 rounded-2xl bg-white border-2 border-blue-50 shadow-sm flex items-center justify-center text-blue-600 relative z-10">
+                                        <item.icon size={28} />
+                                        <div className="absolute -top-3 -right-3 bg-slate-900 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                            {item.step}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Content Card */}
+                                <div className="flex-grow bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                                    <h3 className="text-xl font-bold text-slate-900 mb-4">{item.title}</h3>
+                                    {item.content}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-16 text-center">
+                        <Link to="/contact">
+                            <button className="px-8 py-4 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
+                                Start Your Project Now
+                            </button>
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
             {/* Key Features */}
             <section className="py-20 px-4 bg-slate-50">
                 <div className="max-w-7xl mx-auto">

@@ -19,40 +19,71 @@ const Home: React.FC = () => {
       <ServiceQuizModal isOpen={isQuizOpen} onClose={() => setIsQuizOpen(false)} />
 
       {/* Hero Section */}
-      <section className="flex-1 flex flex-col justify-center items-center text-center px-4 py-32 bg-white relative overflow-hidden">
+      <section className="relative overflow-hidden bg-white pt-32 pb-20 lg:pt-40 lg:pb-28">
         {/* Background decoration */}
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50 via-white to-white -z-10"></div>
 
-        <div className="max-w-4xl mx-auto space-y-8 animate-fade-in-up">
-          <span className="inline-block py-1 px-3 rounded-full bg-blue-50 text-blue-600 text-sm font-semibold tracking-wide">
-            wbify Creative Studio
-          </span>
-          <h1 className="text-5xl md:text-7xl font-bold text-slate-900 tracking-tight leading-tight">
-            Expert Shopify, Web & <br /><span className="text-blue-600">Graphics Services</span> in One Place.
-          </h1>
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            From high-converting Shopify stores to custom web applications and stunning brand visuals. We are your complete digital partner.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link to="/services">
-              <button className="w-full sm:w-auto px-8 py-4 bg-slate-900 text-white rounded-full font-medium hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-                Browse All Services <ArrowRight size={18} />
-              </button>
-            </Link>
-            <Link to="/contact">
-              <button className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 border border-gray-200 rounded-full font-medium hover:border-slate-300 hover:bg-gray-50 transition-all">
-                Get a Quote
-              </button>
-            </Link>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
 
-          <div className="pt-4">
-            <button
-              onClick={() => setIsQuizOpen(true)}
-              className="text-sm text-gray-500 hover:text-blue-600 underline decoration-dotted underline-offset-4 transition-colors"
-            >
-              Not sure what you need? Take our 30-second quiz
-            </button>
+            {/* Text Content */}
+            <div className="flex-1 text-center lg:text-left space-y-8 animate-fade-in-up">
+              <span className="inline-block py-1 px-3 rounded-full bg-blue-50 text-blue-600 text-sm font-semibold tracking-wide">
+                wbify Creative Studio
+              </span>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 tracking-tight leading-tight">
+                Expert Shopify, Web & <br /><span className="text-blue-600">Graphics Services</span>
+              </h1>
+              <p className="text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                From high-converting Shopify stores to custom web applications and stunning brand visuals. We are your complete digital partner.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                <Link to="/services">
+                  <button className="w-full sm:w-auto px-8 py-4 bg-slate-900 text-white rounded-full font-medium hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+                    Browse All Services <ArrowRight size={18} />
+                  </button>
+                </Link>
+                <Link to="/contact">
+                  <button className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 border border-gray-200 rounded-full font-medium hover:border-slate-300 hover:bg-gray-50 transition-all">
+                    Get a Quote
+                  </button>
+                </Link>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => setIsQuizOpen(true)}
+                  className="text-sm text-gray-500 hover:text-blue-600 underline decoration-dotted underline-offset-4 transition-colors"
+                >
+                  Not sure what you need? Take our 30-second quiz
+                </button>
+              </div>
+            </div>
+
+            {/* Hero Image */}
+            <div className="flex-1 w-full max-w-xl lg:max-w-none relative animate-fade-in-up delay-100">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
+                <img
+                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
+                  alt="Digital Agency Dashboard"
+                  className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent pointer-events-none"></div>
+              </div>
+
+              {/* Floating Badge */}
+              <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl border border-gray-50 hidden md:flex items-center gap-3 animate-bounce-slow">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                  <CheckCircle size={20} />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Projects Completed</p>
+                  <p className="text-lg font-bold text-slate-900">500+</p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
