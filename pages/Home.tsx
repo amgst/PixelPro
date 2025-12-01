@@ -200,8 +200,8 @@ const Home: React.FC = () => {
 
             <div className="relative">
               <div className="grid grid-cols-2 gap-4">
-                <img src="https://picsum.photos/400/500?random=1" alt="Office" className="rounded-2xl shadow-lg w-full h-64 object-cover transform translate-y-8" />
-                <img src="https://picsum.photos/400/500?random=2" alt="Team" className="rounded-2xl shadow-lg w-full h-64 object-cover" />
+                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" alt="Office Team" className="rounded-2xl shadow-lg w-full h-64 object-cover transform translate-y-8" />
+                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80" alt="Working on Laptop" className="rounded-2xl shadow-lg w-full h-64 object-cover" />
               </div>
             </div>
           </div>

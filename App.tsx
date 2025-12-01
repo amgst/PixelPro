@@ -16,6 +16,10 @@ import Pricing from './pages/Pricing';
 import WebsitesForSale from './pages/WebsitesForSale';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
+import Tools from './pages/Tools';
+import AdminLogin from './pages/admin/Login';
+import AdminDashboard from './pages/admin/Dashboard';
+import AdminTools from './pages/admin/Tools';
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -47,6 +51,13 @@ const AppContent: React.FC = () => {
             <Route path="/websites-for-sale" element={<WebsitesForSale />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/tools" element={<Tools />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/tools" element={<AdminTools />} />
           </Routes>
         </PageWrapper>
       </main>
