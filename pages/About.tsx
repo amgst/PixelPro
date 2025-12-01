@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const About: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white pt-20">
+    <div className="min-h-screen bg-white ">
 
       {/* Hero Section */}
       <div className="relative bg-slate-50 py-20 overflow-hidden">

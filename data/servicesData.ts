@@ -115,5 +115,40 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         deliveryTime: '7-14 Days'
       }
     ]
+  },
+  {
+    id: 'wordpress-services',
+    title: 'WordPress Solutions',
+    description: 'Professional WordPress websites, themes, and maintenance.',
+    icon: Globe,
+    services: [
+      {
+        id: 'wordpress-setup',
+        title: 'WordPress Setup & Design',
+        description: 'Complete WordPress installation and theme design.',
+        longDescription: 'We handle everything from hosting setup and WordPress installation to selecting and customizing the perfect theme for your business.',
+        features: ['Hosting Setup', 'Theme Installation', 'Essential Plugins', 'SEO Basics'],
+        pricing: { basic: '$299', standard: '$599', premium: '$999' },
+        deliveryTime: '5-7 Days'
+      },
+      {
+        id: 'wordpress-customization',
+        title: 'Theme Customization',
+        description: 'Customizing themes to fit your unique brand.',
+        longDescription: 'Advanced customization of WordPress themes using child themes, custom CSS, and PHP to achieve your desired look and functionality.',
+        features: ['Child Theme', 'Custom CSS', 'Plugin Integration', 'Speed Optimization'],
+        pricing: { basic: '$199', standard: '$399', premium: '$799' },
+        deliveryTime: '3-5 Days'
+      },
+      {
+        id: 'wordpress-maintenance',
+        title: 'Maintenance & Security',
+        description: 'Ongoing updates, backups, and security monitoring.',
+        longDescription: 'Keep your WordPress site secure and running smoothly with our monthly maintenance packages including updates, backups, and security scans.',
+        features: ['Weekly Updates', 'Daily Backups', 'Security Scans', 'Uptime Monitoring'],
+        pricing: { basic: '$49/mo', standard: '$99/mo', premium: '$199/mo' },
+        deliveryTime: 'Ongoing'
+      }
+    ]
   }
 ];

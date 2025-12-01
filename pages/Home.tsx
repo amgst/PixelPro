@@ -19,7 +19,7 @@ const Home: React.FC = () => {
       <ServiceQuizModal isOpen={isQuizOpen} onClose={() => setIsQuizOpen(false)} />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-white pt-32 pb-20 lg:pt-40 lg:pb-28">
+      <section className="relative overflow-hidden bg-white pt-16  lg:pt-20 lg:pb-10">
         {/* Background decoration */}
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50 via-white to-white -z-10"></div>
 
