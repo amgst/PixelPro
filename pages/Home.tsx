@@ -151,22 +151,11 @@ const Home: React.FC = () => {
               </div>
             </div>
             <div className="flex-1 w-full relative">
-              <div className="relative z-10 bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-2xl transform rotate-1 hover:rotate-0 transition-all duration-500">
-                <div className="flex items-center gap-2 mb-4 border-b border-slate-700 pb-4">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <div className="ml-2 h-4 w-32 bg-slate-700 rounded-full"></div>
-                </div>
-                <div className="space-y-4">
-                  <div className="h-40 bg-slate-700/50 rounded-lg animate-pulse"></div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="h-24 bg-slate-700/50 rounded-lg animate-pulse"></div>
-                    <div className="h-24 bg-slate-700/50 rounded-lg animate-pulse"></div>
-                    <div className="h-24 bg-slate-700/50 rounded-lg animate-pulse"></div>
-                  </div>
-                </div>
-              </div>
+              <img
+                src="/shopify.png"
+                alt="Shopify Dashboard"
+                className="relative z-10 rounded-2xl shadow-2xl border border-slate-700 transform rotate-1 hover:rotate-0 transition-all duration-500 w-full h-auto"
+              />
               <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500 rounded-full blur-3xl opacity-20"></div>
             </div>
           </div>
@@ -200,8 +189,8 @@ const Home: React.FC = () => {
 
             <div className="relative">
               <div className="grid grid-cols-2 gap-4">
-                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" alt="Office Team" className="rounded-2xl shadow-lg w-full h-64 object-cover transform translate-y-8" />
-                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80" alt="Working on Laptop" className="rounded-2xl shadow-lg w-full h-64 object-cover" />
+                <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=800&q=80" alt="Coding and Development" className="rounded-2xl shadow-lg w-full h-64 object-cover transform translate-y-8" />
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Team Collaboration" className="rounded-2xl shadow-lg w-full h-64 object-cover" />
               </div>
             </div>
           </div>
