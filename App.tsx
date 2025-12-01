@@ -20,6 +20,8 @@ import Tools from './pages/Tools';
 import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminTools from './pages/admin/Tools';
+import AdminPortfolio from './pages/admin/Portfolio';
+import AdminSettings from './pages/admin/Settings';
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -58,6 +60,8 @@ const AppContent: React.FC = () => {
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/tools" element={<AdminTools />} />
+            <Route path="/admin/portfolio" element={<AdminPortfolio />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
           </Routes>
         </PageWrapper>
       </main>
