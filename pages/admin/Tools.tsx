@@ -9,7 +9,7 @@ const AdminTools: React.FC = () => {
     const [currentTool, setCurrentTool] = useState<Partial<Tool>>({});
 
     useEffect(() => {
-        const storedTools = localStorage.getItem('wbify_tools');
+        const storedTools = localStorage.getItem('wbify_tools_v2');
         if (storedTools) {
             setTools(JSON.parse(storedTools));
         } else {
@@ -19,7 +19,7 @@ const AdminTools: React.FC = () => {
 
     const saveTools = (newTools: Tool[]) => {
         setTools(newTools);
-        localStorage.setItem('wbify_tools', JSON.stringify(newTools));
+        localStorage.setItem('wbify_tools_v2', JSON.stringify(newTools));
     };
 
     const handleDelete = (id: string) => {

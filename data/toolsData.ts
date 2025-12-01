@@ -10,29 +10,14 @@ export interface Tool {
 }
 
 export const TOOLS_SEED_DATA: Tool[] = [
+
     {
-        id: '1',
-        name: 'JSON Formatter',
-        description: 'Format and validate JSON data.',
-        url: 'https://jsonformatter.org/',
-        iconName: 'Code',
-        category: 'Development'
-    },
-    {
-        id: '2',
-        name: 'Color Picker',
-        description: 'Get hex codes and RGB values.',
-        url: 'https://htmlcolorcodes.com/',
-        iconName: 'Palette',
-        category: 'Design'
-    },
-    {
-        id: '3',
-        name: 'Lorem Ipsum Generator',
-        description: 'Generate placeholder text for your designs.',
-        url: 'https://loremipsum.io/',
+        id: '4',
+        name: 'Animotion',
+        description: 'Create stunning animations for your web projects.',
+        url: 'https://animotion.wbifytools.com/',
         iconName: 'Zap',
-        category: 'Productivity'
+        category: 'Design'
     }
 ];
 

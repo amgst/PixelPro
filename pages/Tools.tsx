@@ -8,12 +8,12 @@ const Tools: React.FC = () => {
 
     useEffect(() => {
         // Load tools from LocalStorage or use seed data
-        const storedTools = localStorage.getItem('wbify_tools');
+        const storedTools = localStorage.getItem('wbify_tools_v2');
         if (storedTools) {
             setTools(JSON.parse(storedTools));
         } else {
             setTools(TOOLS_SEED_DATA);
-            localStorage.setItem('wbify_tools', JSON.stringify(TOOLS_SEED_DATA));
+            localStorage.setItem('wbify_tools_v2', JSON.stringify(TOOLS_SEED_DATA));
         }
     }, []);
 
