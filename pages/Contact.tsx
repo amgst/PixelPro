@@ -13,9 +13,11 @@ const Contact: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted');
     setStatus('submitting');
 
     try {
+      console.log('Sending request to Web3Forms...');
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
@@ -32,6 +34,7 @@ const Contact: React.FC = () => {
       });
 
       const result = await response.json();
+      console.log('Web3Forms response:', result);
 
       if (result.success) {
         setStatus('success');
@@ -43,9 +46,11 @@ const Contact: React.FC = () => {
           message: ''
         });
       } else {
+        console.error('Web3Forms error:', result);
         setStatus('error');
       }
     } catch (error) {
+      console.error('Fetch error:', error);
       setStatus('error');
     }
   };
