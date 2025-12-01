@@ -1,4 +1,3 @@
-```javascript
 import React from 'react';
 import { Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
 
@@ -25,7 +24,7 @@ const Contact: React.FC = () => {
         },
         body: JSON.stringify({
           access_key: 'be457400-4579-4076-a279-03b80c86b219',
-          name: `${ formData.firstName } ${ formData.lastName } `,
+          name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
           service: formData.service,
           message: formData.message
@@ -91,46 +90,46 @@ const Contact: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" 
-                  placeholder="John" 
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                  placeholder="John"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" 
-                  placeholder="Doe" 
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                  placeholder="Doe"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" 
-                placeholder="john@example.com" 
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                placeholder="john@example.com"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Service Interested In</label>
-              <select 
+              <select
                 name="service"
                 value={formData.service}
                 onChange={handleChange}
@@ -146,19 +145,19 @@ const Contact: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-              <textarea 
+              <textarea
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
                 required
-                rows={5} 
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" 
+                rows={5}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                 placeholder="Tell us about your project..."
               ></textarea>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={status === 'submitting'}
               className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -185,4 +184,3 @@ const Contact: React.FC = () => {
 };
 
 export default Contact;
-```
