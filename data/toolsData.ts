@@ -18,6 +18,14 @@ export const TOOLS_SEED_DATA: Tool[] = [
         url: 'https://animotion.wbifytools.com/',
         iconName: 'Zap',
         category: 'Design'
+    },
+    {
+        id: '5',
+        name: 'Job Portal',
+        description: 'A comprehensive job portal for finding and posting jobs.',
+        url: 'https://job-portal-bzv4.vercel.app/',
+        iconName: 'Globe',
+        category: 'Productivity'
     }
 ];
 
