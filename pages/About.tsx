@@ -34,7 +34,7 @@ const About: React.FC = () => {
               <div className="text-sm text-gray-500 font-medium uppercase tracking-wide">Client Satisfaction</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-slate-900 mb-1">5+</div>
+              <div className="text-4xl font-bold text-slate-900 mb-1">15+</div>
               <div className="text-sm text-gray-500 font-medium uppercase tracking-wide">Years Experience</div>
             </div>
             <div>
@@ -53,7 +53,7 @@ const About: React.FC = () => {
               <h2 className="text-3xl font-bold text-slate-900 mb-6">From PixelPro to wbify</h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  Our journey began as PixelPro, a small local print and design shop. We loved helping our neighbors with their business cards and flyers, but we noticed a shift. The world was moving online, and our clients needed more than just paper—they needed a digital presence.
+                  The world was moving online, and our clients needed more than just paper—they needed a digital presence.
                 </p>
                 <p>
                   We evolved. We sharpened our skills in web development, mastered the Shopify ecosystem, and refined our digital branding expertise.

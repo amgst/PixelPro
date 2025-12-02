@@ -1,25 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Tag } from 'lucide-react';
-import blogData from '../data/blog-posts.json';
-
-interface BlogPost {
-    id: string;
-    title: string;
-    slug: string;
-    excerpt: string;
-    content: string;
-    date: string;
-    author: string;
-    tags: string[];
-    image?: string;
-}
+import { getBlogPosts, BlogPost } from '../lib/blog';
 
 const Blog: React.FC = () => {
     const [posts, setPosts] = useState<BlogPost[]>([]);
 
     useEffect(() => {
-        setPosts(blogData);
+        const fetchedPosts = getBlogPosts();
+        setPosts(fetchedPosts);
     }, []);
 
     return (

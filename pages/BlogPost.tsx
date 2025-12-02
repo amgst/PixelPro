@@ -3,31 +3,21 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Calendar, User, ArrowLeft, Tag, Share2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Helmet } from 'react-helmet-async';
-import blogData from '../data/blog-posts.json';
-
-interface BlogPost {
-    id: string;
-    title: string;
-    slug: string;
-    excerpt: string;
-    content: string;
-    date: string;
-    author: string;
-    tags: string[];
-    image?: string;
-}
+import { getBlogPostBySlug, BlogPost as BlogPostType } from '../lib/blog';
 
 const BlogPost: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const navigate = useNavigate();
-    const [post, setPost] = useState<BlogPost | null>(null);
+    const [post, setPost] = useState<BlogPostType | null>(null);
 
     useEffect(() => {
-        const foundPost = blogData.find((p) => p.slug === slug);
-        if (foundPost) {
-            setPost(foundPost);
-        } else {
-            navigate('/blog');
+        if (slug) {
+            const foundPost = getBlogPostBySlug(slug);
+            if (foundPost) {
+                setPost(foundPost);
+            } else {
+                navigate('/blog');
+            }
         }
     }, [slug, navigate]);
 
