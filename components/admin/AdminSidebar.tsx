@@ -17,6 +17,8 @@ const AdminSidebar: React.FC = () => {
         { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Tools', path: '/admin/tools', icon: FolderOpen },
         { name: 'Portfolio', path: '/admin/portfolio', icon: FolderOpen },
+        { name: 'Services', path: '/admin/services', icon: FolderOpen },
+        { name: 'Blog', path: '/admin/blog', icon: FolderOpen },
         { name: 'Settings', path: '/admin/settings', icon: Settings },
     ];
 
@@ -34,8 +36,8 @@ const AdminSidebar: React.FC = () => {
                         key={item.path}
                         to={item.path}
                         className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive(item.path)
-                                ? 'bg-blue-600 text-white'
-                                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                            ? 'bg-blue-600 text-white'
+                            : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                             }`}
                     >
                         <item.icon size={20} />

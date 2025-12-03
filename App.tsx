@@ -21,7 +21,10 @@ import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminTools from './pages/admin/Tools';
 import AdminPortfolio from './pages/admin/Portfolio';
+import AdminServices from './pages/admin/Services';
+import AdminBlog from './pages/admin/Blog';
 import AdminSettings from './pages/admin/Settings';
+import { HelmetProvider } from 'react-helmet-async';
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -61,6 +64,8 @@ const AppContent: React.FC = () => {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/tools" element={<AdminTools />} />
             <Route path="/admin/portfolio" element={<AdminPortfolio />} />
+            <Route path="/admin/services" element={<AdminServices />} />
+            <Route path="/admin/blog" element={<AdminBlog />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Routes>
         </PageWrapper>
@@ -72,10 +77,12 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <ScrollToTop />
-      <AppContent />
-    </Router>
+    <HelmetProvider>
+      <Router>
+        <ScrollToTop />
+        <AppContent />
+      </Router>
+    </HelmetProvider>
   );
 };
 

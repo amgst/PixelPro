@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { SERVICE_CATEGORIES } from '../data/servicesData';
 import { Check, Clock, Shield, X, ChevronLeft, ChevronRight, Loader, ArrowRight, LayoutGrid } from 'lucide-react';
 import { PORTFOLIO_CONFIG } from '../data/portfolioConfig';
+import { getServiceCategories, ServiceCategory, ServiceItem } from '../lib/servicesService';
+import { Helmet } from 'react-helmet-async';
 
 const ServiceDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  // Helper to find service across categories
-  const findService = () => {
-    for (const category of SERVICE_CATEGORIES) {
-      const service = category.services.find(s => s.id === id);
-      if (service) return { service, category };
-    }
-    return null;
-  };
-
-  const data = findService();
+  const [serviceData, setServiceData] = useState<{ service: ServiceItem, category: ServiceCategory } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Gallery State
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
@@ -28,12 +21,36 @@ const ServiceDetail: React.FC = () => {
     window.scrollTo(0, 0);
   }, [id]);
 
+  // Fetch Service Data
+  useEffect(() => {
+    const fetchService = async () => {
+      setIsLoading(true);
+      try {
+        const categories = await getServiceCategories();
+        let found = null;
+        for (const cat of categories) {
+          const s = cat.services.find(item => item.id === id);
+          if (s) {
+            found = { service: s, category: cat };
+            break;
+          }
+        }
+        setServiceData(found);
+      } catch (error) {
+        console.error("Error fetching service:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchService();
+  }, [id]);
+
   // Fetch gallery images if ID is present
   useEffect(() => {
     const fetchGallery = async () => {
       setGalleryImages([]);
 
-      const service = data?.service;
+      const service = serviceData?.service;
       if (!service?.galleryFolderId || !PORTFOLIO_CONFIG.apiKey) return;
 
       setLoadingImages(true);
@@ -62,14 +79,24 @@ const ServiceDetail: React.FC = () => {
       }
     };
 
-    fetchGallery();
-  }, [data]);
+    if (serviceData) {
+      fetchGallery();
+    }
+  }, [serviceData]);
 
-  if (!data) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <Loader className="animate-spin text-blue-600" size={40} />
+      </div>
+    );
+  }
+
+  if (!serviceData) {
     return <Navigate to="/services" replace />;
   }
 
-  const { service, category } = data;
+  const { service, category } = serviceData;
 
   // Lightbox handlers
   const openLightbox = (index: number) => setLightboxIndex(index);
@@ -89,6 +116,11 @@ const ServiceDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white pb-20">
+      <Helmet>
+        <title>{service.title} | wbify Creative Studio</title>
+        <meta name="description" content={service.description} />
+        <link rel="canonical" href={`https://www.wbify.com/service/${service.id}`} />
+      </Helmet>
 
       {/* Breadcrumb */}
       <div className="bg-slate-50 border-b border-gray-200">
@@ -108,7 +140,7 @@ const ServiceDetail: React.FC = () => {
           <div className="lg:col-span-2 space-y-12">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">{service.title}</h1>
-              <p className="text-xl text-gray-500 leading-relaxed">{service.longDescription}</p>
+              <p className="text-xl text-gray-500 leading-relaxed">{service.longDescription || service.description}</p>
             </div>
 
             <div>
@@ -174,7 +206,7 @@ const ServiceDetail: React.FC = () => {
               </ul>
             </div>
 
-            {/* Bottom Portfolio CTA - Added as requested */}
+            {/* Bottom Portfolio CTA */}
             {service.galleryFolderId && (
               <div className="mt-10 p-1">
                 <Link to={portfolioLink}>
@@ -193,13 +225,13 @@ const ServiceDetail: React.FC = () => {
             <div className="sticky top-24 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden">
               <div className="bg-slate-900 p-6 text-white text-center">
                 <h3 className="text-lg font-medium opacity-90">Standard Package</h3>
-                <div className="text-4xl font-bold mt-2">{service.pricing.standard}</div>
+                <div className="text-4xl font-bold mt-2">{service.pricing?.standard || 'Contact Us'}</div>
               </div>
 
               <div className="p-8 space-y-6">
                 <div className="flex justify-between items-center text-sm border-b border-gray-100 pb-4">
                   <span className="text-gray-500 flex items-center"><Clock size={16} className="mr-2" /> Delivery Time</span>
-                  <span className="font-semibold text-slate-900">{service.deliveryTime}</span>
+                  <span className="font-semibold text-slate-900">{service.deliveryTime || 'Flexible'}</span>
                 </div>
 
                 <div className="space-y-3">
@@ -214,7 +246,7 @@ const ServiceDetail: React.FC = () => {
 
                 <Link to="/contact" className="block">
                   <button className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors">
-                    Continue ({service.pricing.standard})
+                    Continue ({service.pricing?.standard || 'Get Quote'})
                   </button>
                 </Link>
 
@@ -224,20 +256,22 @@ const ServiceDetail: React.FC = () => {
               </div>
 
               {/* Pricing Tiers Table Preview (Mini) */}
-              <div className="bg-gray-50 p-4 border-t border-gray-100 grid grid-cols-3 gap-2 text-center text-xs">
-                <div>
-                  <div className="font-bold text-gray-900">Basic</div>
-                  <div className="text-gray-500">{service.pricing.basic}</div>
+              {service.pricing && (
+                <div className="bg-gray-50 p-4 border-t border-gray-100 grid grid-cols-3 gap-2 text-center text-xs">
+                  <div>
+                    <div className="font-bold text-gray-900">Basic</div>
+                    <div className="text-gray-500">{service.pricing.basic}</div>
+                  </div>
+                  <div className="border-x border-gray-200">
+                    <div className="font-bold text-blue-600">Standard</div>
+                    <div className="text-gray-500">{service.pricing.standard}</div>
+                  </div>
+                  <div>
+                    <div className="font-bold text-gray-900">Premium</div>
+                    <div className="text-gray-500">{service.pricing.premium}</div>
+                  </div>
                 </div>
-                <div className="border-x border-gray-200">
-                  <div className="font-bold text-blue-600">Standard</div>
-                  <div className="text-gray-500">{service.pricing.standard}</div>
-                </div>
-                <div>
-                  <div className="font-bold text-gray-900">Premium</div>
-                  <div className="text-gray-500">{service.pricing.premium}</div>
-                </div>
-              </div>
+              )}
 
             </div>
           </div>

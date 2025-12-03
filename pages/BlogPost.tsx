@@ -1,39 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Calendar, User, ArrowLeft, Tag, Share2 } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Tag, Share2, Loader } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Helmet } from 'react-helmet-async';
-import { getBlogPostBySlug, BlogPost as BlogPostType } from '../lib/blog';
+import { getBlogPostBySlug, BlogPost as BlogPostType } from '../lib/blogService';
 
 const BlogPost: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const navigate = useNavigate();
     const [post, setPost] = useState<BlogPostType | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (slug) {
-            const foundPost = getBlogPostBySlug(slug);
-            if (foundPost) {
-                setPost(foundPost);
-            } else {
-                navigate('/blog');
+        const fetchPost = async () => {
+            if (slug) {
+                try {
+                    const foundPost = await getBlogPostBySlug(slug);
+                    if (foundPost) {
+                        setPost(foundPost);
+                    } else {
+                        navigate('/blog');
+                    }
+                } catch (error) {
+                    console.error("Error fetching blog post:", error);
+                    navigate('/blog');
+                } finally {
+                    setIsLoading(false);
+                }
             }
-        }
+        };
+        fetchPost();
     }, [slug, navigate]);
 
-    if (!post) {
+    if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <Loader className="animate-spin text-blue-600" size={40} />
             </div>
         );
+    }
+
+    if (!post) {
+        return null;
     }
 
     return (
         <div className="bg-white min-h-screen pt-24 pb-16">
             <Helmet>
-                <title>{post.title} | PixelPro Blog</title>
+                <title>{post.title} | wbify Creative Studio</title>
                 <meta name="description" content={post.excerpt} />
+                <link rel="canonical" href={`https://www.wbify.com/blog/${post.slug}`} />
             </Helmet>
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
