@@ -1,31 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { Tool, TOOLS_SEED_DATA, getIconByName } from '../../data/toolsData';
+import { Tool, getIconByName } from '../../data/toolsData';
+import { getTools, addTool, updateTool, deleteTool } from '../../lib/toolsService';
 import { Plus, Trash2, Edit2, Save, X } from 'lucide-react';
 
 const AdminTools: React.FC = () => {
     const [tools, setTools] = useState<Tool[]>([]);
     const [isEditing, setIsEditing] = useState(false);
     const [currentTool, setCurrentTool] = useState<Partial<Tool>>({});
+    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        const storedTools = localStorage.getItem('wbify_tools_v2');
-        if (storedTools) {
-            setTools(JSON.parse(storedTools));
-        } else {
-            setTools(TOOLS_SEED_DATA);
+    const fetchTools = async () => {
+        setIsLoading(true);
+        try {
+            const fetchedTools = await getTools();
+            setTools(fetchedTools);
+        } catch (error) {
+            console.error("Error fetching tools:", error);
+            alert("Failed to fetch tools. Check console for details.");
+        } finally {
+            setIsLoading(false);
         }
-    }, []);
-
-    const saveTools = (newTools: Tool[]) => {
-        setTools(newTools);
-        localStorage.setItem('wbify_tools_v2', JSON.stringify(newTools));
     };
 
-    const handleDelete = (id: string) => {
+    useEffect(() => {
+        fetchTools();
+    }, []);
+
+    const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this tool?')) {
-            const newTools = tools.filter(t => t.id !== id);
-            saveTools(newTools);
+            try {
+                await deleteTool(id);
+                await fetchTools(); // Refresh list
+            } catch (error) {
+                console.error("Error deleting tool:", error);
+                alert("Failed to delete tool.");
+            }
         }
     };
 
@@ -36,7 +46,6 @@ const AdminTools: React.FC = () => {
 
     const handleAddNew = () => {
         setCurrentTool({
-            id: Date.now().toString(),
             name: '',
             description: '',
             url: '',
@@ -46,22 +55,25 @@ const AdminTools: React.FC = () => {
         setIsEditing(true);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!currentTool.name || !currentTool.url) return;
 
-        let newTools = [...tools];
-        const existingIndex = newTools.findIndex(t => t.id === currentTool.id);
-
-        if (existingIndex >= 0) {
-            newTools[existingIndex] = currentTool as Tool;
-        } else {
-            newTools.push(currentTool as Tool);
+        try {
+            if (currentTool.id) {
+                // Update existing
+                await updateTool(currentTool.id, currentTool);
+            } else {
+                // Add new
+                await addTool(currentTool as Tool);
+            }
+            await fetchTools(); // Refresh list
+            setIsEditing(false);
+            setCurrentTool({});
+        } catch (error) {
+            console.error("Error saving tool:", error);
+            alert("Failed to save tool.");
         }
-
-        saveTools(newTools);
-        setIsEditing(false);
-        setCurrentTool({});
     };
 
     return (

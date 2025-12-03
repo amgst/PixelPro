@@ -1,20 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Tool, TOOLS_SEED_DATA, getIconByName } from '../data/toolsData';
+import { Tool, getIconByName } from '../data/toolsData';
+import { getTools } from '../lib/toolsService';
 
 const Tools: React.FC = () => {
     const [tools, setTools] = useState<Tool[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Load tools from LocalStorage or use seed data
-        const storedTools = localStorage.getItem('wbify_tools_v2');
-        if (storedTools) {
-            setTools(JSON.parse(storedTools));
-        } else {
-            setTools(TOOLS_SEED_DATA);
-            localStorage.setItem('wbify_tools_v2', JSON.stringify(TOOLS_SEED_DATA));
-        }
+        const fetchTools = async () => {
+            try {
+                const fetchedTools = await getTools();
+                setTools(fetchedTools);
+            } catch (error) {
+                console.error("Error fetching tools:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchTools();
     }, []);
 
     return (
@@ -36,7 +42,11 @@ const Tools: React.FC = () => {
             {/* Tools Grid */}
             <div className="py-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {tools.length === 0 ? (
+                    {isLoading ? (
+                        <div className="text-center py-12">
+                            <p className="text-gray-500">Loading tools...</p>
+                        </div>
+                    ) : tools.length === 0 ? (
                         <div className="text-center py-12">
                             <p className="text-gray-500">No tools available at the moment.</p>
                         </div>

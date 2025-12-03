@@ -73,52 +73,64 @@ const Navbar: React.FC = () => {
                         >
                           {item.name}
                         </Link>
-              className = "text-gray-500 hover:text-slate-900 focus:outline-none"
-                        >
-                        { isOpen?<X size = { 24 } /> : <Menu size={24} />}
-                    </button>
+                      ))}
+                    </div>
                   </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-gray-500 hover:text-slate-900 focus:outline-none"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </div>
 
-          {/* Mobile Menu */}
-          {isOpen && (
-            <div className="md:hidden bg-white border-b border-gray-100">
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                {navLinks.map((link) => (
-                  <div key={link.name}>
-                    <Link
-                      to={link.path}
-                      onClick={() => !link.dropdown && setIsOpen(false)}
-                      className={`block px-3 py-2 rounded-md text-base font-medium ${isActive(link.path)
-                        ? 'text-blue-600 bg-blue-50'
-                        : 'text-gray-600 hover:text-slate-900 hover:bg-gray-50'
-                        }`}
-                    >
-                      {link.name}
-                    </Link>
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-white border-b border-gray-100">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            {navLinks.map((link) => (
+              <div key={link.name}>
+                <Link
+                  to={link.path}
+                  onClick={() => !link.dropdown && setIsOpen(false)}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive(link.path)
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-600 hover:text-slate-900 hover:bg-gray-50'
+                    }`}
+                >
+                  {link.name}
+                </Link>
 
-                    {link.dropdown && (
-                      <div className="pl-4 mt-1 space-y-1">
-                        {link.dropdown.map((item) => (
-                          <Link
-                            key={item.name}
-                            to={item.path}
-                            onClick={() => setIsOpen(false)}
-                            className="block px-3 py-2 rounded-md text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50"
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                {link.dropdown && (
+                  <div className="pl-4 mt-1 space-y-1">
+                    {link.dropdown.map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.path}
+                        onClick={() => setIsOpen(false)}
+                        className="block px-3 py-2 rounded-md text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            </div>
-          )}
-        </nav>
-        );
+            ))}
+          </div>
+        </div>
+      )}
+    </nav>
+  );
 };
 
-        export default Navbar;
+export default Navbar;
