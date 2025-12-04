@@ -1,6 +1,8 @@
 import React from 'react';
 import { Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
 
+import { Helmet } from 'react-helmet-async';
+
 const Contact: React.FC = () => {
   const [formData, setFormData] = React.useState({
     firstName: '',
@@ -64,6 +66,11 @@ const Contact: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white py-20">
+      <Helmet>
+        <title>Contact Us | wbify Creative Studio</title>
+        <meta name="description" content="Get in touch with wbify Creative Studio. We'd love to hear about your project and help you build your digital presence." />
+        <link rel="canonical" href="https://www.wbify.com/contact" />
+      </Helmet>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div className="text-center mb-16">

@@ -2,9 +2,16 @@ import React from 'react';
 import { Heart, Users, Zap, Target, Award, Rocket, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { Helmet } from 'react-helmet-async';
+
 const About: React.FC = () => {
   return (
     <div className="min-h-screen bg-white ">
+      <Helmet>
+        <title>About Us | wbify Creative Studio</title>
+        <meta name="description" content="Learn about our journey from PixelPro to wbify. We are a digital creative studio dedicated to transforming businesses through exceptional design and technology." />
+        <link rel="canonical" href="https://www.wbify.com/about" />
+      </Helmet>
 
       {/* Hero Section */}
       <div className="relative bg-slate-50 py-20 overflow-hidden">

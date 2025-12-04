@@ -7,6 +7,8 @@ import GameModal from '../components/GameModal';
 import Testimonials from '../components/Testimonials';
 import ServiceQuizModal from '../components/ServiceQuizModal';
 
+import { Helmet } from 'react-helmet-async';
+
 const Home: React.FC = () => {
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
@@ -16,6 +18,11 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <Helmet>
+        <title>wbify Creative Studio | Expert Shopify, Web & Graphics Services</title>
+        <meta name="description" content="We are your complete digital partner. From high-converting Shopify stores to custom web applications and stunning brand visuals." />
+        <link rel="canonical" href="https://www.wbify.com/" />
+      </Helmet>
       <ServiceQuizModal isOpen={isQuizOpen} onClose={() => setIsQuizOpen(false)} />
 
       {/* Hero Section */}

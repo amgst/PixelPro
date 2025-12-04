@@ -3,6 +3,7 @@ import { ArrowRight, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Tool, getIconByName } from '../data/toolsData';
 import { getTools } from '../lib/toolsService';
+import { Helmet } from 'react-helmet-async';
 
 const Tools: React.FC = () => {
     const [tools, setTools] = useState<Tool[]>([]);
@@ -25,6 +26,11 @@ const Tools: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-white">
+            <Helmet>
+                <title>Tools & Resources | wbify Creative Studio</title>
+                <meta name="description" content="A collection of handy tools and resources for developers and designers. Free to use." />
+                <link rel="canonical" href="https://www.wbify.com/tools" />
+            </Helmet>
             {/* Hero Section */}
             <div className="relative bg-slate-50 py-20 overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50 via-white to-white -z-10"></div>

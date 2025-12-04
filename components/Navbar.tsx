@@ -79,6 +79,12 @@ const Navbar: React.FC = () => {
                 )}
               </div>
             ))}
+
+            <Link to="/inquiry">
+              <button className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
+                Get Started
+              </button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -126,6 +132,15 @@ const Navbar: React.FC = () => {
                 )}
               </div>
             ))}
+            <div className="px-3 py-3">
+              <Link
+                to="/inquiry"
+                onClick={() => setIsOpen(false)}
+                className="block w-full text-center bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors"
+              >
+                Get Started
+              </Link>
+            </div>
           </div>
         </div>
       )}
