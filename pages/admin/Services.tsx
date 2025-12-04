@@ -8,6 +8,7 @@ import {
     ServiceItem
 } from '../../lib/servicesService';
 import { Plus, Edit2, Trash2, Save, X, ChevronDown, ChevronUp } from 'lucide-react';
+import AdminLayout from '../../components/admin/AdminLayout';
 
 const AdminServices: React.FC = () => {
     const [categories, setCategories] = useState<ServiceCategory[]>([]);
@@ -120,149 +121,151 @@ const AdminServices: React.FC = () => {
     };
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Manage Services</h1>
-                <button
-                    onClick={() => { setCurrentCategory({}); setIsEditing(true); }}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
-                >
-                    <Plus size={20} /> Add Category
-                </button>
-            </div>
+        <AdminLayout>
+            <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold">Manage Services</h1>
+                    <button
+                        onClick={() => { setCurrentCategory({}); setIsEditing(true); }}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
+                    >
+                        <Plus size={20} /> Add Category
+                    </button>
+                </div>
 
-            {isLoading ? (
-                <div>Loading...</div>
-            ) : (
-                <div className="space-y-6">
-                    {categories.map(category => (
-                        <div key={category.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h2 className="text-xl font-bold flex items-center gap-2">
-                                        {category.title}
-                                        <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">{category.iconName}</span>
-                                    </h2>
-                                    <p className="text-gray-600">{category.description}</p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => { setCurrentCategory(category); setIsEditing(true); }}
-                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded"
-                                    >
-                                        <Edit2 size={18} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteCategory(category.id)}
-                                        className="p-2 text-red-600 hover:bg-red-50 rounded"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                    <button
-                                        onClick={() => setExpandedCategory(expandedCategory === category.id ? null : category.id)}
-                                        className="p-2 text-gray-600 hover:bg-gray-50 rounded"
-                                    >
-                                        {expandedCategory === category.id ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                                    </button>
-                                </div>
-                            </div>
-
-                            {expandedCategory === category.id && (
-                                <div className="mt-4 border-t pt-4">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h3 className="font-semibold">Services</h3>
+                {isLoading ? (
+                    <div>Loading...</div>
+                ) : (
+                    <div className="space-y-6">
+                        {categories.map(category => (
+                            <div key={category.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h2 className="text-xl font-bold flex items-center gap-2">
+                                            {category.title}
+                                            <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">{category.iconName}</span>
+                                        </h2>
+                                        <p className="text-gray-600">{category.description}</p>
+                                    </div>
+                                    <div className="flex gap-2">
                                         <button
-                                            onClick={() => handleAddService(category.id)}
-                                            className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                                            onClick={() => { setCurrentCategory(category); setIsEditing(true); }}
+                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded"
                                         >
-                                            <Plus size={14} /> Add Service
+                                            <Edit2 size={18} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteCategory(category.id)}
+                                            className="p-2 text-red-600 hover:bg-red-50 rounded"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                        <button
+                                            onClick={() => setExpandedCategory(expandedCategory === category.id ? null : category.id)}
+                                            className="p-2 text-gray-600 hover:bg-gray-50 rounded"
+                                        >
+                                            {expandedCategory === category.id ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                                         </button>
                                     </div>
-
-                                    <div className="space-y-4">
-                                        {category.services.map(service => (
-                                            <div key={service.id} className="bg-gray-50 p-4 rounded border border-gray-200">
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                                                    <input
-                                                        type="text"
-                                                        value={service.title}
-                                                        onChange={(e) => handleUpdateService(category.id, service.id, 'title', e.target.value)}
-                                                        className="border p-2 rounded"
-                                                        placeholder="Service Title"
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        value={service.description}
-                                                        onChange={(e) => handleUpdateService(category.id, service.id, 'description', e.target.value)}
-                                                        className="border p-2 rounded"
-                                                        placeholder="Short Description"
-                                                    />
-                                                </div>
-                                                <div className="flex justify-end">
-                                                    <button
-                                                        onClick={() => handleDeleteService(category.id, service.id)}
-                                                        className="text-red-500 text-sm hover:underline"
-                                                    >
-                                                        Remove Service
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                        {category.services.length === 0 && <p className="text-gray-400 text-sm italic">No services yet.</p>}
-                                    </div>
                                 </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
 
-            {isEditing && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-full max-w-md">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold">{currentCategory.id ? 'Edit Category' : 'Add Category'}</h2>
-                            <button onClick={() => setIsEditing(false)}><X size={24} /></button>
-                        </div>
-                        <form onSubmit={handleSaveCategory} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Title</label>
-                                <input
-                                    type="text"
-                                    value={currentCategory.title || ''}
-                                    onChange={e => setCurrentCategory({ ...currentCategory, title: e.target.value })}
-                                    className="w-full border p-2 rounded"
-                                    required
-                                />
+                                {expandedCategory === category.id && (
+                                    <div className="mt-4 border-t pt-4">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h3 className="font-semibold">Services</h3>
+                                            <button
+                                                onClick={() => handleAddService(category.id)}
+                                                className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                                            >
+                                                <Plus size={14} /> Add Service
+                                            </button>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            {category.services.map(service => (
+                                                <div key={service.id} className="bg-gray-50 p-4 rounded border border-gray-200">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                                        <input
+                                                            type="text"
+                                                            value={service.title}
+                                                            onChange={(e) => handleUpdateService(category.id, service.id, 'title', e.target.value)}
+                                                            className="border p-2 rounded"
+                                                            placeholder="Service Title"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={service.description}
+                                                            onChange={(e) => handleUpdateService(category.id, service.id, 'description', e.target.value)}
+                                                            className="border p-2 rounded"
+                                                            placeholder="Short Description"
+                                                        />
+                                                    </div>
+                                                    <div className="flex justify-end">
+                                                        <button
+                                                            onClick={() => handleDeleteService(category.id, service.id)}
+                                                            className="text-red-500 text-sm hover:underline"
+                                                        >
+                                                            Remove Service
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {category.services.length === 0 && <p className="text-gray-400 text-sm italic">No services yet.</p>}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Description</label>
-                                <textarea
-                                    value={currentCategory.description || ''}
-                                    onChange={e => setCurrentCategory({ ...currentCategory, description: e.target.value })}
-                                    className="w-full border p-2 rounded"
-                                    rows={3}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Icon Name (Lucide React)</label>
-                                <input
-                                    type="text"
-                                    value={currentCategory.iconName || ''}
-                                    onChange={e => setCurrentCategory({ ...currentCategory, iconName: e.target.value })}
-                                    className="w-full border p-2 rounded"
-                                    placeholder="e.g. ShoppingBag, Code, Palette"
-                                    required
-                                />
-                            </div>
-                            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-                                Save Category
-                            </button>
-                        </form>
+                        ))}
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+
+                {isEditing && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg w-full max-w-md">
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-bold">{currentCategory.id ? 'Edit Category' : 'Add Category'}</h2>
+                                <button onClick={() => setIsEditing(false)}><X size={24} /></button>
+                            </div>
+                            <form onSubmit={handleSaveCategory} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Title</label>
+                                    <input
+                                        type="text"
+                                        value={currentCategory.title || ''}
+                                        onChange={e => setCurrentCategory({ ...currentCategory, title: e.target.value })}
+                                        className="w-full border p-2 rounded"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Description</label>
+                                    <textarea
+                                        value={currentCategory.description || ''}
+                                        onChange={e => setCurrentCategory({ ...currentCategory, description: e.target.value })}
+                                        className="w-full border p-2 rounded"
+                                        rows={3}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Icon Name (Lucide React)</label>
+                                    <input
+                                        type="text"
+                                        value={currentCategory.iconName || ''}
+                                        onChange={e => setCurrentCategory({ ...currentCategory, iconName: e.target.value })}
+                                        className="w-full border p-2 rounded"
+                                        placeholder="e.g. ShoppingBag, Code, Palette"
+                                        required
+                                    />
+                                </div>
+                                <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                                    Save Category
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </AdminLayout>
     );
 };
 
