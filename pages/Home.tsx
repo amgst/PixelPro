@@ -19,7 +19,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Helmet>
-        <title>wbify Creative Studio | Expert Shopify, Web & Graphics Services</title>
+        <title>wbify Creative Studio | Expert Shopify & Web Services</title>
         <meta name="description" content="We are your complete digital partner. From high-converting Shopify stores to custom web applications and stunning brand visuals." />
         <link rel="canonical" href="https://www.wbify.com/" />
       </Helmet>
@@ -39,7 +39,7 @@ const Home: React.FC = () => {
                 wbify Creative Studio
               </span>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 tracking-tight leading-tight">
-                Expert Shopify, Web & <br /><span className="text-blue-600">Graphics Services</span>
+                Expert Shopify & <br /><span className="text-blue-600">Web Services</span>
               </h1>
               <p className="text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
                 From high-converting Shopify stores to custom web applications and stunning brand visuals. We are your complete digital partner.
