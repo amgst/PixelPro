@@ -24,6 +24,7 @@ import AdminPortfolio from './pages/admin/Portfolio';
 import AdminServices from './pages/admin/Services';
 import AdminBlog from './pages/admin/Blog';
 import AdminSettings from './pages/admin/Settings';
+import NotFound from './pages/NotFound';
 import { HelmetProvider } from 'react-helmet-async';
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -67,6 +68,9 @@ const AppContent: React.FC = () => {
             <Route path="/admin/services" element={<AdminServices />} />
             <Route path="/admin/blog" element={<AdminBlog />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
+
+            {/* 404 Route */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </PageWrapper>
       </main>
