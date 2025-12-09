@@ -6,7 +6,8 @@ import {
     deleteBlogPost,
     BlogPost
 } from '../../lib/blogService';
-import { Plus, Edit2, Trash2, X, Eye, EyeOff } from 'lucide-react';
+import { BLOG_POSTS_SEED_DATA } from '../../data/blogPostsSeed';
+import { Plus, Edit2, Trash2, X, Eye, EyeOff, Download } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 
 const AdminBlog: React.FC = () => {
@@ -14,6 +15,7 @@ const AdminBlog: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [currentPost, setCurrentPost] = useState<Partial<BlogPost>>({});
+    const [isImporting, setIsImporting] = useState(false);
 
     useEffect(() => {
         fetchPosts();
@@ -81,17 +83,91 @@ const AdminBlog: React.FC = () => {
             .replace(/(^-|-$)+/g, '');
     };
 
+    const handleImportPosts = async () => {
+        if (!window.confirm('This will import 3 service-related blog posts. Continue?')) {
+            return;
+        }
+
+        setIsImporting(true);
+        try {
+            const existingPosts = await getBlogPosts(false); // Get all posts including drafts
+            const existingSlugs = new Set(existingPosts.map(p => p.slug.toLowerCase()));
+
+            let imported = 0;
+            let skipped = 0;
+
+            for (const post of BLOG_POSTS_SEED_DATA) {
+                // Check if post already exists by slug
+                if (existingSlugs.has(post.slug.toLowerCase())) {
+                    skipped++;
+                    continue;
+                }
+
+                await addBlogPost(post);
+                imported++;
+            }
+
+            await fetchPosts(); // Refresh list
+            alert(`Import complete! ${imported} posts imported, ${skipped} skipped (already exist).`);
+        } catch (error) {
+            console.error("Error importing blog posts:", error);
+            alert("Failed to import blog posts. Check console for details.");
+        } finally {
+            setIsImporting(false);
+        }
+    };
+
+    const handlePublishAll = async () => {
+        const draftPosts = posts.filter(p => !p.published);
+        if (draftPosts.length === 0) {
+            alert('No draft posts to publish.');
+            return;
+        }
+
+        if (!window.confirm(`Publish ${draftPosts.length} draft post(s)?`)) {
+            return;
+        }
+
+        try {
+            for (const post of draftPosts) {
+                await updateBlogPost(post.id, { published: true });
+            }
+            await fetchPosts();
+            alert(`Successfully published ${draftPosts.length} post(s)!`);
+        } catch (error) {
+            console.error("Error publishing posts:", error);
+            alert("Failed to publish posts.");
+        }
+    };
+
     return (
         <AdminLayout>
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold">Manage Blog Posts</h1>
-                    <button
-                        onClick={() => { setCurrentPost({ published: false, author: 'Admin', date: new Date().toISOString().split('T')[0] }); setIsEditing(true); }}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
-                    >
-                        <Plus size={20} /> New Post
-                    </button>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={handleImportPosts}
+                            disabled={isImporting}
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Download size={20} /> {isImporting ? 'Importing...' : 'Import Service Posts'}
+                        </button>
+                        {posts.some(p => !p.published) && (
+                            <button
+                                onClick={handlePublishAll}
+                                className="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-purple-700"
+                            >
+                                <Eye size={20} /> Publish All Drafts
+                            </button>
+                        )}
+                        <button
+                            onClick={() => { setCurrentPost({ published: false, author: 'Admin', date: new Date().toISOString().split('T')[0] }); setIsEditing(true); }}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
+                        >
+                            <Plus size={20} /> New Post
+                        </button>
+                    </div>
                 </div>
 
                 {isLoading ? (
@@ -123,18 +199,39 @@ const AdminBlog: React.FC = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button
-                                                onClick={() => { setCurrentPost(post); setIsEditing(true); }}
-                                                className="text-blue-600 hover:text-blue-900 mr-4"
-                                            >
-                                                <Edit2 size={18} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(post.id)}
-                                                className="text-red-600 hover:text-red-900"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            await updateBlogPost(post.id, { published: !post.published });
+                                                            await fetchPosts();
+                                                        } catch (error) {
+                                                            console.error("Error toggling publish status:", error);
+                                                            alert("Failed to update publish status.");
+                                                        }
+                                                    }}
+                                                    className={`p-2 rounded-lg transition-colors ${
+                                                        post.published
+                                                            ? 'text-green-600 hover:bg-green-50'
+                                                            : 'text-yellow-600 hover:bg-yellow-50'
+                                                    }`}
+                                                    title={post.published ? 'Unpublish' : 'Publish'}
+                                                >
+                                                    {post.published ? <Eye size={18} /> : <EyeOff size={18} />}
+                                                </button>
+                                                <button
+                                                    onClick={() => { setCurrentPost(post); setIsEditing(true); }}
+                                                    className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors"
+                                                >
+                                                    <Edit2 size={18} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(post.id)}
+                                                    className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

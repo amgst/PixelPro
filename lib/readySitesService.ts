@@ -27,3 +27,4 @@ export const deleteReadySite = async (id: string) => {
     await deleteDoc(readySiteRef);
 };
 
+

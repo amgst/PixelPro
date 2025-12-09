@@ -88,3 +88,4 @@ VITE_IMGBB_API_KEY=abc123def456ghi789jkl012mno345pqr678
 3. **Redeploy on Vercel** - After adding env var, you must redeploy
 4. **Check Vercel logs** - Go to your deployment → Logs to see if there are errors
 
+

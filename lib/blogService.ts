@@ -31,14 +31,30 @@ export interface BlogPost {
 
 export const getBlogPosts = async (publishedOnly = true): Promise<BlogPost[]> => {
     const colRef = collection(db, BLOG_COLLECTION);
-    let q = query(colRef, orderBy('date', 'desc'));
-
+    let q;
+    
     if (publishedOnly) {
+        // Use where and orderBy - Firestore may require a composite index
+        // If index doesn't exist, it will show an error in console with link to create it
         q = query(colRef, where('published', '==', true), orderBy('date', 'desc'));
+    } else {
+        q = query(colRef, orderBy('date', 'desc'));
     }
 
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+    try {
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+    } catch (error: any) {
+        // If composite index error, try without orderBy first, then sort in memory
+        if (error.code === 'failed-precondition' && publishedOnly) {
+            console.warn('Firestore composite index may be needed. Fetching all and filtering in memory...');
+            const allPosts = await getDocs(query(colRef));
+            const posts = allPosts.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+            const published = posts.filter(post => post.published === true);
+            return published.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        }
+        throw error;
+    }
 };
 
 export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
