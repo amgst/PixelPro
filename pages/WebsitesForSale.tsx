@@ -1,47 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, Layout, ShoppingCart, Zap, ArrowRight } from 'lucide-react';
+import { ReadySite } from '../data/readySitesData';
+import { getReadySites } from '../lib/readySitesService';
 
 const WebsitesForSale: React.FC = () => {
-    const templates = [
-        {
-            id: 1,
-            title: 'Premium Car Rental',
-            category: 'Automotive',
-            image: '/template_cars.png',
-            description: 'A high-end car rental website with fleet showcase and booking inquiry system.',
-            features: ['Fleet Gallery', 'Booking Form', 'Service Details'],
-            previewLink: 'https://cars-six-rouge.vercel.app/'
-        },
-        {
-            id: 2,
-            title: 'Modern Dental Clinic',
-            category: 'Healthcare',
-            image: '/template_dental.png',
-            description: 'Clean and trustworthy design for dental clinics with appointment scheduling.',
-            features: ['Appointment Booking', 'Service List', 'Team Profiles'],
-            previewLink: 'https://dental-clinic-website-seven.vercel.app/'
-        },
+    const [templates, setTemplates] = useState<ReadySite[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-        {
-            id: 5,
-            title: 'SweetTreats & Events Hub',
-            category: 'Food & Events',
-            image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-            description: 'A delightful website for bakeries and event planners. Showcase your treats and manage event bookings.',
-            features: ['Menu Showcase', 'Event Booking', 'Gallery'],
-            previewLink: 'https://sweet-treats-black.vercel.app/'
-        },
-        {
-            id: 6,
-            title: 'ClearLedger Accounting',
-            category: 'Finance',
-            image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-            description: 'Professional accounting and advisory website. Perfect for CPA firms and financial consultants.',
-            features: ['Service Overview', 'Client Portal', 'Consultation Booking'],
-            previewLink: 'https://clear-leadger.vercel.app/'
-        }
-    ];
+    useEffect(() => {
+        const fetchTemplates = async () => {
+            try {
+                const fetchedTemplates = await getReadySites();
+                setTemplates(fetchedTemplates);
+            } catch (error) {
+                console.error("Error fetching ready sites:", error);
+                // Fallback to empty array on error
+                setTemplates([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchTemplates();
+    }, []);
 
     return (
         <div className="flex flex-col min-h-screen bg-slate-50">
@@ -294,53 +276,74 @@ const WebsitesForSale: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-                        {templates.map((template) => (
-                            <div key={template.id} className="group bg-slate-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300">
-                                <div className="relative h-80 overflow-hidden">
-                                    <img
-                                        src={template.image}
-                                        alt={template.title}
-                                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                                    />
-                                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-slate-900 uppercase tracking-wide">
-                                        {template.category}
+                    {isLoading ? (
+                        <div className="flex items-center justify-center py-20">
+                            <div className="text-center">
+                                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                                <p className="text-gray-500">Loading templates...</p>
+                            </div>
+                        </div>
+                    ) : templates.length === 0 ? (
+                        <div className="text-center py-20">
+                            <p className="text-gray-500 text-lg mb-4">No templates available at the moment.</p>
+                            <Link to="/contact">
+                                <button className="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors">
+                                    Contact Us
+                                </button>
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                            {templates.map((template) => (
+                                <div key={template.id} className="group bg-slate-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300">
+                                    <div className="relative h-80 overflow-hidden">
+                                        <img
+                                            src={template.image}
+                                            alt={template.title}
+                                            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).src = '/template_cars.png';
+                                            }}
+                                        />
+                                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-slate-900 uppercase tracking-wide">
+                                            {template.category}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="p-8">
-                                    <h3 className="text-2xl font-bold text-slate-900 mb-3">{template.title}</h3>
-                                    <p className="text-gray-500 mb-6">{template.description}</p>
+                                    <div className="p-8">
+                                        <h3 className="text-2xl font-bold text-slate-900 mb-3">{template.title}</h3>
+                                        <p className="text-gray-500 mb-6">{template.description}</p>
 
-                                    <div className="flex flex-wrap gap-2 mb-8">
-                                        {template.features.map((feature, i) => (
-                                            <span key={i} className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600">
-                                                {feature}
-                                            </span>
-                                        ))}
-                                    </div>
+                                        <div className="flex flex-wrap gap-2 mb-8">
+                                            {template.features && template.features.map((feature, i) => (
+                                                <span key={i} className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600">
+                                                    {feature}
+                                                </span>
+                                            ))}
+                                        </div>
 
-                                    <div className="flex items-center gap-4">
-                                        <Link to="/contact" className="flex-1">
-                                            <button className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
-                                                Buy Now <ShoppingCart size={18} />
-                                            </button>
-                                        </Link>
-                                        {template.previewLink ? (
-                                            <a href={template.previewLink} target="_blank" rel="noopener noreferrer">
+                                        <div className="flex items-center gap-4">
+                                            <Link to="/contact" className="flex-1">
+                                                <button className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+                                                    Buy Now <ShoppingCart size={18} />
+                                                </button>
+                                            </Link>
+                                            {template.previewLink ? (
+                                                <a href={template.previewLink} target="_blank" rel="noopener noreferrer">
+                                                    <button className="px-6 py-3 bg-white border border-gray-200 text-slate-900 rounded-xl font-bold hover:bg-gray-50 transition-colors">
+                                                        Preview
+                                                    </button>
+                                                </a>
+                                            ) : (
                                                 <button className="px-6 py-3 bg-white border border-gray-200 text-slate-900 rounded-xl font-bold hover:bg-gray-50 transition-colors">
                                                     Preview
                                                 </button>
-                                            </a>
-                                        ) : (
-                                            <button className="px-6 py-3 bg-white border border-gray-200 text-slate-900 rounded-xl font-bold hover:bg-gray-50 transition-colors">
-                                                Preview
-                                            </button>
-                                        )}
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </section>
 

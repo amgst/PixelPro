@@ -23,6 +23,7 @@ import AdminTools from './pages/admin/Tools';
 import AdminPortfolio from './pages/admin/Portfolio';
 import AdminServices from './pages/admin/Services';
 import AdminBlog from './pages/admin/Blog';
+import AdminReadySites from './pages/admin/ReadySites';
 import AdminSettings from './pages/admin/Settings';
 import NotFound from './pages/NotFound';
 import { HelmetProvider } from 'react-helmet-async';
@@ -67,6 +68,7 @@ const AppContent: React.FC = () => {
             <Route path="/admin/portfolio" element={<AdminPortfolio />} />
             <Route path="/admin/services" element={<AdminServices />} />
             <Route path="/admin/blog" element={<AdminBlog />} />
+            <Route path="/admin/ready-sites" element={<AdminReadySites />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
 
             {/* 404 Route */}
