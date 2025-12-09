@@ -1,40 +1,77 @@
-import { storage } from './firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
 /**
- * Uploads an image file to Firebase Storage and returns the download URL
+ * Uploads an image file using ImgBB API (no CORS issues!)
  * @param file - The image file to upload
- * @param folder - The folder path in storage (e.g., 'ready-sites')
+ * @param folder - The folder path in storage (e.g., 'ready-sites') - kept for compatibility
  * @returns Promise<string> - The download URL of the uploaded image
  */
 export const uploadImage = async (file: File, folder: string = 'ready-sites'): Promise<string> => {
     try {
-        // Create a unique filename with timestamp
-        const timestamp = Date.now();
-        // Sanitize filename - remove special characters
-        const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-        const fileName = `${folder}/${timestamp}_${sanitizedFileName}`;
+        // ImgBB API key - Get a free one from https://api.imgbb.com/
+        // For now, using a placeholder. You'll need to add your own API key.
+        const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY || 'YOUR_IMGBB_API_KEY_HERE';
         
-        // Create a reference to the file location
-        const storageRef = ref(storage, fileName);
-        
-        // Upload the file
-        await uploadBytes(storageRef, file);
-        
-        // Get the download URL
-        const downloadURL = await getDownloadURL(storageRef);
-        
-        return downloadURL;
+        if (IMGBB_API_KEY === 'YOUR_IMGBB_API_KEY_HERE') {
+            throw new Error('Please set VITE_IMGBB_API_KEY in your .env file. Get a free API key from https://api.imgbb.com/');
+        }
+
+        // Validate file size (ImgBB allows up to 32MB, but we'll limit to 10MB for better UX)
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (file.size > maxSize) {
+            throw new Error('Image size must be less than 10MB.');
+        }
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            throw new Error('Please select an image file.');
+        }
+
+        // Convert file to base64
+        const base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const result = reader.result as string;
+                // Remove data:image/...;base64, prefix
+                const base64Data = result.split(',')[1];
+                resolve(base64Data);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+        // Upload to ImgBB
+        const formData = new FormData();
+        formData.append('key', IMGBB_API_KEY);
+        formData.append('image', base64);
+
+        const response = await fetch('https://api.imgbb.com/1/upload', {
+            method: 'POST',
+            body: formData,
+            // No CORS issues - ImgBB allows cross-origin requests
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error?.message || `Upload failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.success || !data.data?.url) {
+            throw new Error('Upload failed: Invalid response from ImgBB');
+        }
+
+        // Return the image URL
+        return data.data.url;
     } catch (error: any) {
         console.error('Error uploading image:', error);
         
-        // Provide more specific error messages
-        if (error.code === 'storage/unauthorized') {
-            throw new Error('Permission denied. Please check Firebase Storage rules.');
-        } else if (error.code === 'storage/canceled') {
-            throw new Error('Upload was canceled.');
-        } else if (error.code === 'storage/unknown') {
-            throw new Error('Unknown error occurred. This might be a CORS issue. Please configure CORS in Firebase Storage.');
+        // Provide user-friendly error messages
+        if (error.message.includes('API key')) {
+            throw new Error('Image upload is not configured. Please contact the administrator.');
+        } else if (error.message.includes('size')) {
+            throw error; // Already user-friendly
+        } else if (error.message.includes('image file')) {
+            throw error; // Already user-friendly
         }
         
         throw new Error(`Failed to upload image: ${error.message || 'Unknown error'}`);
