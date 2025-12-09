@@ -7,7 +7,8 @@ import {
     ServiceCategory,
     ServiceItem
 } from '../../lib/servicesService';
-import { Plus, Edit2, Trash2, Save, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { SERVICE_CATEGORIES } from '../../data/servicesData';
+import { Plus, Edit2, Trash2, Save, X, ChevronDown, ChevronUp, Download } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 
 const AdminServices: React.FC = () => {
@@ -16,6 +17,7 @@ const AdminServices: React.FC = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [currentCategory, setCurrentCategory] = useState<Partial<ServiceCategory>>({});
     const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+    const [isImporting, setIsImporting] = useState(false);
 
     useEffect(() => {
         fetchCategories();
@@ -120,17 +122,79 @@ const AdminServices: React.FC = () => {
         handleUpdateCategory({ ...category, services: updatedServices });
     };
 
+    const handleImportServices = async () => {
+        if (!window.confirm('This will import all services from the data file. Continue?')) {
+            return;
+        }
+
+        setIsImporting(true);
+        try {
+            const existingCategories = await getServiceCategories();
+            const existingTitles = new Set(existingCategories.map(c => c.title.toLowerCase()));
+
+            // Map icon components to their string names
+            const iconNameMap: { [key: string]: string } = {
+                'Shopify Solutions': 'ShoppingBag',
+                'Custom Web Development': 'Code',
+                'Graphics & Branding': 'Palette',
+                'WordPress Solutions': 'Globe'
+            };
+
+            let imported = 0;
+            let skipped = 0;
+
+            for (const category of SERVICE_CATEGORIES) {
+                // Check if category already exists by title
+                if (existingTitles.has(category.title.toLowerCase())) {
+                    skipped++;
+                    continue;
+                }
+
+                // Get icon name from map or use default
+                const iconName = iconNameMap[category.title] || 'Code';
+
+                // Remove the icon property and add iconName instead
+                const { icon, ...categoryData } = category;
+                const categoryToAdd = {
+                    ...categoryData,
+                    iconName: iconName,
+                    services: category.services || []
+                };
+
+                await addServiceCategory(categoryToAdd as Omit<ServiceCategory, 'id'>);
+                imported++;
+            }
+
+            await fetchCategories(); // Refresh list
+            alert(`Import complete! ${imported} categories imported, ${skipped} skipped (already exist).`);
+        } catch (error) {
+            console.error("Error importing services:", error);
+            alert("Failed to import services. Check console for details.");
+        } finally {
+            setIsImporting(false);
+        }
+    };
+
     return (
         <AdminLayout>
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold">Manage Services</h1>
-                    <button
-                        onClick={() => { setCurrentCategory({}); setIsEditing(true); }}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
-                    >
-                        <Plus size={20} /> Add Category
-                    </button>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={handleImportServices}
+                            disabled={isImporting}
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Download size={20} /> {isImporting ? 'Importing...' : 'Import All Services'}
+                        </button>
+                        <button
+                            onClick={() => { setCurrentCategory({}); setIsEditing(true); }}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
+                        >
+                            <Plus size={20} /> Add Category
+                        </button>
+                    </div>
                 </div>
 
                 {isLoading ? (
