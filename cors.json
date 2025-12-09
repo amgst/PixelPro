@@ -1,9 +1,25 @@
 [
   {
-    "origin": ["*"],
-    "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+    "origin": [
+      "https://www.wbify.com",
+      "https://wbify.com",
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "http://127.0.0.1:3000"
+    ],
+    "method": ["GET", "HEAD", "PUT", "POST", "DELETE", "OPTIONS"],
     "maxAgeSeconds": 3600,
-    "responseHeader": ["Content-Type", "Authorization"]
+    "responseHeader": [
+      "Content-Type",
+      "Authorization",
+      "Content-Length",
+      "x-goog-upload-command",
+      "x-goog-upload-file-name",
+      "x-goog-upload-offset",
+      "x-goog-upload-protocol",
+      "x-goog-upload-status"
+    ]
   }
 ]
 

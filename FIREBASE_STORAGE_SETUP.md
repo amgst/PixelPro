@@ -14,15 +14,31 @@ You're getting CORS errors when trying to upload images to Firebase Storage. Thi
 5. Click on the **Configuration** tab
 6. Scroll down to **CORS configuration**
 7. Click **Edit CORS configuration**
-8. Paste the following JSON:
+8. Paste the following JSON (from `cors.json` in your project):
 
 ```json
 [
   {
-    "origin": ["*"],
-    "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+    "origin": [
+      "https://www.wbify.com",
+      "https://wbify.com",
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "http://127.0.0.1:3000"
+    ],
+    "method": ["GET", "HEAD", "PUT", "POST", "DELETE", "OPTIONS"],
     "maxAgeSeconds": 3600,
-    "responseHeader": ["Content-Type", "Authorization"]
+    "responseHeader": [
+      "Content-Type",
+      "Authorization",
+      "Content-Length",
+      "x-goog-upload-command",
+      "x-goog-upload-file-name",
+      "x-goog-upload-offset",
+      "x-goog-upload-protocol",
+      "x-goog-upload-status"
+    ]
   }
 ]
 ```
