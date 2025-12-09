@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { ReadySite, READY_SITES_SEED_DATA } from '../../data/readySitesData';
 import { getReadySites, addReadySite, updateReadySite, deleteReadySite } from '../../lib/readySitesService';
-import { Plus, Trash2, Edit2, Save, X, Download } from 'lucide-react';
+import { uploadImage } from '../../lib/imageUploadService';
+import { Plus, Trash2, Edit2, Save, X, Download, Upload, Image as ImageIcon } from 'lucide-react';
 
 const AdminReadySites: React.FC = () => {
     const [readySites, setReadySites] = useState<ReadySite[]>([]);
@@ -10,6 +11,9 @@ const AdminReadySites: React.FC = () => {
     const [currentSite, setCurrentSite] = useState<Partial<ReadySite>>({});
     const [isLoading, setIsLoading] = useState(true);
     const [isImporting, setIsImporting] = useState(false);
+    const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     const fetchReadySites = async () => {
         setIsLoading(true);
@@ -42,6 +46,8 @@ const AdminReadySites: React.FC = () => {
 
     const handleEdit = (site: ReadySite) => {
         setCurrentSite(site);
+        setImagePreview(site.image || null);
+        setSelectedImageFile(null);
         setIsEditing(true);
     };
 
@@ -55,7 +61,50 @@ const AdminReadySites: React.FC = () => {
             previewLink: '',
             order: readySites.length + 1
         });
+        setImagePreview(null);
+        setSelectedImageFile(null);
         setIsEditing(true);
+    };
+
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file.');
+                return;
+            }
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size should be less than 5MB.');
+                return;
+            }
+            setSelectedImageFile(file);
+            // Create preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleImageUpload = async () => {
+        if (!selectedImageFile) return;
+
+        setIsUploading(true);
+        try {
+            const imageUrl = await uploadImage(selectedImageFile, 'ready-sites');
+            setCurrentSite({ ...currentSite, image: imageUrl });
+            setImagePreview(imageUrl);
+            setSelectedImageFile(null);
+            alert('Image uploaded successfully!');
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Failed to upload image. Please try again.');
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -167,7 +216,14 @@ const AdminReadySites: React.FC = () => {
                             <h3 className="text-lg font-bold text-slate-900">
                                 {readySites.find(s => s.id === currentSite.id) ? 'Edit Ready Site' : 'Add New Ready Site'}
                             </h3>
-                            <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-slate-900">
+                            <button 
+                                onClick={() => {
+                                    setIsEditing(false);
+                                    setImagePreview(null);
+                                    setSelectedImageFile(null);
+                                }} 
+                                className="text-gray-400 hover:text-slate-900"
+                            >
                                 <X size={20} />
                             </button>
                         </div>
@@ -205,15 +261,72 @@ const AdminReadySites: React.FC = () => {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                                <input
-                                    type="url"
-                                    required
-                                    value={currentSite.image || ''}
-                                    onChange={e => setCurrentSite({ ...currentSite, image: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    placeholder="https://example.com/image.png or /template_cars.png"
-                                />
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Image (optional)</label>
+                                
+                                {/* Image Preview */}
+                                {imagePreview && (
+                                    <div className="mb-3">
+                                        <img
+                                            src={imagePreview}
+                                            alt="Preview"
+                                            className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Upload Section */}
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-3">
+                                        <label className="flex-1 cursor-pointer">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageSelect}
+                                                className="hidden"
+                                                id="image-upload"
+                                            />
+                                            <div className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                                                <ImageIcon size={20} className="text-gray-400" />
+                                                <span className="text-sm text-gray-600">
+                                                    {selectedImageFile ? selectedImageFile.name : 'Choose Image to Upload'}
+                                                </span>
+                                            </div>
+                                        </label>
+                                        {selectedImageFile && (
+                                            <button
+                                                type="button"
+                                                onClick={handleImageUpload}
+                                                disabled={isUploading}
+                                                className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                <Upload size={18} />
+                                                {isUploading ? 'Uploading...' : 'Upload'}
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Or use URL */}
+                                    <div className="relative">
+                                        <div className="absolute inset-0 flex items-center">
+                                            <div className="w-full border-t border-gray-300"></div>
+                                        </div>
+                                        <div className="relative flex justify-center text-sm">
+                                            <span className="px-2 bg-white text-gray-500">OR</span>
+                                        </div>
+                                    </div>
+
+                                    {/* URL Input */}
+                                    <input
+                                        type="text"
+                                        value={currentSite.image || ''}
+                                        onChange={e => {
+                                            setCurrentSite({ ...currentSite, image: e.target.value });
+                                            setImagePreview(e.target.value || null);
+                                        }}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="Enter image URL (https://example.com/image.png or /template_cars.png)"
+                                    />
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -238,7 +351,7 @@ const AdminReadySites: React.FC = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Preview Link (optional)</label>
                                 <input
-                                    type="url"
+                                    type="text"
                                     value={currentSite.previewLink || ''}
                                     onChange={e => setCurrentSite({ ...currentSite, previewLink: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"

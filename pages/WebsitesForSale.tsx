@@ -296,15 +296,25 @@ const WebsitesForSale: React.FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
                             {templates.map((template) => (
                                 <div key={template.id} className="group bg-slate-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300">
-                                    <div className="relative h-80 overflow-hidden">
-                                        <img
-                                            src={template.image}
-                                            alt={template.title}
-                                            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).src = '/template_cars.png';
-                                            }}
-                                        />
+                                    <div className="relative h-80 overflow-hidden bg-gray-200">
+                                        {template.image ? (
+                                            <img
+                                                src={template.image}
+                                                alt={template.title}
+                                                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).style.display = 'none';
+                                                    const parent = (e.target as HTMLImageElement).parentElement;
+                                                    if (parent) {
+                                                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400"><span>No Image</span></div>';
+                                                    }
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                <span>No Image Available</span>
+                                            </div>
+                                        )}
                                         <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-slate-900 uppercase tracking-wide">
                                             {template.category}
                                         </div>
