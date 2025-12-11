@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Calendar, User, ArrowLeft, Tag, Share2, Loader } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/SEO';
 import { getBlogPostBySlug, BlogPost as BlogPostType } from '../lib/blogService';
 
 const BlogPost: React.FC = () => {
@@ -45,13 +45,42 @@ const BlogPost: React.FC = () => {
         return null;
     }
 
+    const articleStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt,
+        image: post.image || 'https://www.wbify.com/og-image.jpg',
+        datePublished: post.date,
+        dateModified: post.date,
+        author: {
+            '@type': 'Organization',
+            name: post.author
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'wbify Creative Studio',
+            logo: {
+                '@type': 'ImageObject',
+                url: 'https://www.wbify.com/logo.png'
+            }
+        },
+        keywords: post.tags.join(', ')
+    };
+
     return (
         <div className="bg-white min-h-screen pt-24 pb-16">
-            <Helmet>
-                <title>{post.title} | wbify Creative Studio</title>
-                <meta name="description" content={post.excerpt} />
-                <link rel="canonical" href={`https://www.wbify.com/blog/${post.slug}`} />
-            </Helmet>
+            <SEO
+                title={post.title}
+                description={post.excerpt}
+                canonical={`/blog/${post.slug}`}
+                image={post.image}
+                type="article"
+                publishedTime={post.date}
+                author={post.author}
+                tags={post.tags}
+                structuredData={articleStructuredData}
+            />
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Link

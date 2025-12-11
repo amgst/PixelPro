@@ -2,16 +2,29 @@ import React from 'react';
 import { Heart, Users, Zap, Target, Award, Rocket, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/SEO';
 
 const About: React.FC = () => {
+  const aboutStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    mainEntity: {
+      '@type': 'Organization',
+      name: 'wbify Creative Studio',
+      description: 'A digital creative studio dedicated to transforming businesses through exceptional design and technology',
+      foundingDate: '2020',
+      url: 'https://www.wbify.com'
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white ">
-      <Helmet>
-        <title>About Us | wbify Creative Studio</title>
-        <meta name="description" content="Learn about our journey from PixelPro to wbify. We are a digital creative studio dedicated to transforming businesses through exceptional design and technology." />
-        <link rel="canonical" href="https://www.wbify.com/about" />
-      </Helmet>
+      <SEO
+        title="About Us"
+        description="Learn about our journey from PixelPro to wbify. We are a digital creative studio dedicated to transforming businesses through exceptional design and technology."
+        canonical="/about"
+        structuredData={aboutStructuredData}
+      />
 
       {/* Hero Section */}
       <div className="relative bg-slate-50 py-20 overflow-hidden">

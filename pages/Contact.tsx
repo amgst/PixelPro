@@ -1,7 +1,7 @@
 import React from 'react';
 import { Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
 
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/SEO';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = React.useState({
@@ -64,13 +64,26 @@ const Contact: React.FC = () => {
     }));
   };
 
+  const contactStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'Contact wbify Creative Studio',
+    description: 'Get in touch with wbify Creative Studio for web development, design, and digital marketing services',
+    mainEntity: {
+      '@type': 'Organization',
+      name: 'wbify Creative Studio',
+      email: 'wbify.com@gmail.com'
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white py-20">
-      <Helmet>
-        <title>Contact Us | wbify Creative Studio</title>
-        <meta name="description" content="Get in touch with wbify Creative Studio. We'd love to hear about your project and help you build your digital presence." />
-        <link rel="canonical" href="https://www.wbify.com/contact" />
-      </Helmet>
+      <SEO
+        title="Contact Us"
+        description="Get in touch with wbify Creative Studio. We'd love to hear about your project and help you build your digital presence. Professional web development, Shopify setup, and branding services."
+        canonical="/contact"
+        structuredData={contactStructuredData}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div className="text-center mb-16">

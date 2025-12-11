@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { CheckCircle, Layout, ShoppingCart, Zap, ArrowRight } from 'lucide-react';
 import { ReadySite } from '../data/readySitesData';
 import { getReadySites } from '../lib/readySitesService';
+import SEO from '../components/SEO';
 
 const WebsitesForSale: React.FC = () => {
     const [templates, setTemplates] = useState<ReadySite[]>([]);
@@ -25,8 +26,32 @@ const WebsitesForSale: React.FC = () => {
         fetchTemplates();
     }, []);
 
+    const productStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Ready-Made Websites for Sale',
+        description: 'Professional, fully responsive websites ready to launch in 48 hours for just $100',
+        itemListElement: templates.map((template, index) => ({
+            '@type': 'Product',
+            position: index + 1,
+            name: template.title,
+            description: template.description,
+            offers: {
+                '@type': 'Offer',
+                price: '100',
+                priceCurrency: 'USD'
+            }
+        }))
+    };
+
     return (
         <div className="flex flex-col min-h-screen bg-slate-50">
+            <SEO
+                title="Ready-Made Websites for Sale - $100"
+                description="Launch your professional website in 48 hours for just $100. Choose from our collection of ready-made, fully responsive website templates. No hidden fees, just a flat $100."
+                canonical="/websites-for-sale"
+                structuredData={productStructuredData}
+            />
             {/* Hero Section */}
             <section className="bg-slate-900 text-white py-24 px-4 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-600/10 rounded-l-full blur-3xl"></div>

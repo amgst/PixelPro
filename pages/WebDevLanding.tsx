@@ -1,10 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Code, CheckCircle, ArrowRight, Layout, Smartphone, Zap, Globe } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const WebDevLanding: React.FC = () => {
+    const serviceStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        serviceType: 'Custom Web Development',
+        provider: {
+            '@type': 'Organization',
+            name: 'wbify Creative Studio'
+        },
+        areaServed: 'Worldwide',
+        description: 'Custom web development services using modern technologies like React and Next.js'
+    };
+
     return (
         <div className="flex flex-col min-h-screen">
+            <SEO
+                title="Custom Web Development Services"
+                description="Build fast, scalable websites with React and Next.js. Modern web development services for businesses looking to create exceptional digital experiences."
+                canonical="/web-dev"
+                structuredData={serviceStructuredData}
+            />
             {/* Hero Section */}
             <section className="relative py-24 bg-slate-900 text-white overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-900/40 via-slate-900 to-slate-900"></div>

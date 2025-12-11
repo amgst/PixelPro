@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Tag, Loader } from 'lucide-react';
 import { getBlogPosts, BlogPost } from '../lib/blogService';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/SEO';
 
 const Blog: React.FC = () => {
     const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -22,13 +22,26 @@ const Blog: React.FC = () => {
         fetchPosts();
     }, []);
 
+    const blogStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'Blog',
+        name: 'wbify Creative Studio Blog',
+        description: 'Insights, trends, and tips from the world of web design and development',
+        url: 'https://www.wbify.com/blog',
+        publisher: {
+            '@type': 'Organization',
+            name: 'wbify Creative Studio'
+        }
+    };
+
     return (
         <div className="bg-white min-h-screen pt-24 pb-16">
-            <Helmet>
-                <title>Blog | wbify Creative Studio</title>
-                <meta name="description" content="Insights, trends, and tips from the world of web design and development." />
-                <link rel="canonical" href="https://www.wbify.com/blog" />
-            </Helmet>
+            <SEO
+                title="Blog"
+                description="Insights, trends, and tips from the world of web design and development. Learn about Shopify, React, Next.js, branding, and more."
+                canonical="/blog"
+                structuredData={blogStructuredData}
+            />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">

@@ -16,7 +16,7 @@ import {
 import { getServiceCategories, ServiceCategory } from '../lib/servicesService';
 import FAQ from '../components/FAQ';
 import ProcessTimeline from '../components/ProcessTimeline';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/SEO';
 
 const Services: React.FC = () => {
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
@@ -52,13 +52,26 @@ const Services: React.FC = () => {
     return icons[name] || Code;
   };
 
+  const servicesStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    serviceType: 'Web Development and Design Services',
+    provider: {
+      '@type': 'Organization',
+      name: 'wbify Creative Studio'
+    },
+    areaServed: 'Worldwide',
+    description: 'Professional web development, design, and digital marketing services'
+  };
+
   return (
     <div className="pb-24 bg-white min-h-screen">
-      <Helmet>
-        <title>Our Services | wbify Creative Studio</title>
-        <meta name="description" content="Professional web development, design, and digital marketing services to help your business grow." />
-        <link rel="canonical" href="https://www.wbify.com/services" />
-      </Helmet>
+      <SEO
+        title="Our Services"
+        description="Professional web development, design, and digital marketing services to help your business grow. Shopify setup, custom web development, branding, and more."
+        canonical="/services"
+        structuredData={servicesStructuredData}
+      />
 
       {/* Header */}
       <div className="bg-slate-50 py-20 mb-16 border-b border-gray-100">

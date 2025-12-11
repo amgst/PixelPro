@@ -1,17 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Palette, CheckCircle, ArrowRight, Sparkles, Layers, PenTool } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/SEO';
 
 const GraphicsLanding: React.FC = () => {
+    const serviceStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        serviceType: 'Graphics Design and Branding',
+        provider: {
+            '@type': 'Organization',
+            name: 'wbify Creative Studio'
+        },
+        areaServed: 'Worldwide',
+        description: 'Professional graphics design and branding services including logos, brand identities, and social media graphics'
+    };
+
     return (
         <div className="flex flex-col min-h-screen">
-            <Helmet>
-                <title>Graphics & Branding Services | wbify Creative Studio</title>
-                <meta name="description" content="Professional graphics design and branding services. From stunning logos to complete brand identities and social media graphics. Make your brand unforgettable." />
-                <link rel="canonical" href="https://www.wbify.com/graphics" />
-                <meta name="robots" content="index, follow" />
-            </Helmet>
+            <SEO
+                title="Graphics & Branding Services"
+                description="Professional graphics design and branding services. From stunning logos to complete brand identities and social media graphics. Make your brand unforgettable."
+                canonical="/graphics"
+                structuredData={serviceStructuredData}
+            />
             {/* Hero Section */}
             <section className="relative py-24 bg-gradient-to-br from-purple-900 via-pink-900 to-orange-900 text-white overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-pink-500/30 via-transparent to-transparent"></div>

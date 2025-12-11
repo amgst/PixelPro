@@ -57,16 +57,9 @@ const Testimonials: React.FC = () => {
                                 "{testimonial.content}"
                             </p>
 
-                            <div className="flex items-center gap-4">
-                                <img
-                                    src={testimonial.image}
-                                    alt={testimonial.name}
-                                    className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-50"
-                                />
-                                <div>
-                                    <div className="font-bold text-slate-900">{testimonial.name}</div>
-                                    <div className="text-sm text-gray-500">{testimonial.role}, {testimonial.company}</div>
-                                </div>
+                            <div>
+                                <div className="font-bold text-slate-900">{testimonial.name}</div>
+                                <div className="text-sm text-gray-500">{testimonial.role}, {testimonial.company}</div>
                             </div>
                         </div>
                     ))}

@@ -7,7 +7,7 @@ import GameModal from '../components/GameModal';
 import Testimonials from '../components/Testimonials';
 import ServiceQuizModal from '../components/ServiceQuizModal';
 
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/SEO';
 
 const Home: React.FC = () => {
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
@@ -16,13 +16,27 @@ const Home: React.FC = () => {
   // Take first 4 categories for the preview
   const featuredCategories = SERVICE_CATEGORIES.slice(0, 4);
 
+  const websiteStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'wbify Creative Studio',
+    url: 'https://www.wbify.com',
+    description: 'Professional web development, design, and digital marketing services',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://www.wbify.com/search?q={search_term_string}',
+      'query-input': 'required name=search_term_string'
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Helmet>
-        <title>wbify Creative Studio | Expert Shopify & Web Services</title>
-        <meta name="description" content="We are your complete digital partner. From high-converting Shopify stores to custom web applications and stunning brand visuals." />
-        <link rel="canonical" href="https://www.wbify.com/" />
-      </Helmet>
+      <SEO
+        title="wbify Creative Studio | Expert Shopify & Web Services"
+        description="We are your complete digital partner. From high-converting Shopify stores to custom web applications and stunning brand visuals. Professional web development, Shopify setup, and branding services."
+        canonical="/"
+        structuredData={websiteStructuredData}
+      />
       <ServiceQuizModal isOpen={isQuizOpen} onClose={() => setIsQuizOpen(false)} />
 
       {/* Hero Section */}

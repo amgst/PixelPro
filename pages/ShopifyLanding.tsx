@@ -1,10 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, ArrowRight, ShoppingBag, BarChart, Globe, Settings, Shield, Smartphone, ExternalLink } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const ShopifyLanding: React.FC = () => {
+    const serviceStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        serviceType: 'Shopify Store Development',
+        provider: {
+            '@type': 'Organization',
+            name: 'wbify Creative Studio'
+        },
+        areaServed: 'Worldwide',
+        description: 'Professional Shopify store setup, design, and optimization services'
+    };
+
     return (
         <div className="flex flex-col min-h-screen">
+            <SEO
+                title="Shopify Store Development Services"
+                description="Build a high-converting Shopify store with our expert services. From dropshipping to custom brand stores, we design, build, and scale Shopify businesses that drive sales."
+                canonical="/shopify"
+                structuredData={serviceStructuredData}
+            />
             {/* Hero Section */}
             <section className="relative bg-slate-900 text-white py-32 overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://picsum.photos/1920/1080?random=10')] bg-cover bg-center opacity-20"></div>
