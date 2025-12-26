@@ -19,8 +19,8 @@ const WebDevLanding: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <SEO
-                title="Custom Web Development Services"
-                description="Build fast, scalable websites with React and Next.js. Modern web development services for businesses looking to create exceptional digital experiences."
+                title="Custom Web Development | Fast React & Next.js Websites"
+                description="Need more than a template? We build blazing fast, scalable, and secure custom websites using modern tech like React and Next.js. Performance guaranteed."
                 canonical="/web-dev"
                 structuredData={serviceStructuredData}
             />
@@ -35,7 +35,7 @@ const WebDevLanding: React.FC = () => {
                                 <span>Custom Web Development</span>
                             </div>
                             <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-                                Build a Website That <br /><span className="text-blue-500">Works as Hard as You Do.</span>
+                                Custom Websites <br /><span className="text-blue-500">That Drive Results.</span>
                             </h1>
                             <p className="text-xl text-gray-300 max-w-xl leading-relaxed">
                                 We design and develop custom websites that are fast, secure, and built to convert. From simple landing pages to complex web applications.

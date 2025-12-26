@@ -96,7 +96,7 @@ const ProjectInquiry: React.FC = () => {
                 </Link>
 
                 <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-                    <h1 className="text-4xl font-bold text-slate-900 mb-4">Start Your Project</h1>
+                    <h1 className="text-4xl font-bold text-slate-900 mb-4">Start Your Project Journey</h1>
                     <p className="text-gray-600 mb-8">
                         Tell us about your project and we'll provide a custom quote within 24 hours.
                     </p>

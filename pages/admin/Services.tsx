@@ -5,7 +5,8 @@ import {
     updateServiceCategory,
     deleteServiceCategory,
     ServiceCategory,
-    ServiceItem
+    ServiceItem,
+    ServicePricing
 } from '../../lib/servicesService';
 import { SERVICE_CATEGORIES } from '../../data/servicesData';
 import { Plus, Edit2, Trash2, Save, X, ChevronDown, ChevronUp, Download } from 'lucide-react';
@@ -108,6 +109,37 @@ const AdminServices: React.FC = () => {
 
         const updatedServices = category.services.map(s =>
             s.id === serviceId ? { ...s, [field]: value } : s
+        );
+
+        handleUpdateCategory({ ...category, services: updatedServices });
+    };
+
+    const handleUpdateServicePricing = (categoryId: string, serviceId: string, tier: keyof ServicePricing, value: string) => {
+        const category = categories.find(c => c.id === categoryId);
+        if (!category) return;
+
+        const updatedServices = category.services.map(s => {
+            if (s.id === serviceId) {
+                const currentPricing = s.pricing || { basic: '$0', standard: '$0', premium: '$0' };
+                return {
+                    ...s,
+                    pricing: { ...currentPricing, [tier]: value }
+                };
+            }
+            return s;
+        });
+
+        handleUpdateCategory({ ...category, services: updatedServices });
+    };
+
+    const handleUpdateServiceFeatures = (categoryId: string, serviceId: string, featuresText: string) => {
+        const category = categories.find(c => c.id === categoryId);
+        if (!category) return;
+
+        const featuresList = featuresText.split('\n');
+
+        const updatedServices = category.services.map(s =>
+            s.id === serviceId ? { ...s, features: featuresList } : s
         );
 
         handleUpdateCategory({ ...category, services: updatedServices });
@@ -262,6 +294,57 @@ const AdminServices: React.FC = () => {
                                                             onChange={(e) => handleUpdateService(category.id, service.id, 'description', e.target.value)}
                                                             className="border p-2 rounded"
                                                             placeholder="Short Description"
+                                                        />
+                                                    </div>
+
+                                                    {/* Extended Fields */}
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                                        <div>
+                                                            <label className="block text-xs font-semibold text-gray-500 mb-1">Pricing</label>
+                                                            <div className="grid grid-cols-3 gap-2">
+                                                                <input
+                                                                    type="text"
+                                                                    value={service.pricing?.basic || ''}
+                                                                    onChange={(e) => handleUpdateServicePricing(category.id, service.id, 'basic', e.target.value)}
+                                                                    className="border p-2 rounded w-full text-sm"
+                                                                    placeholder="Basic $"
+                                                                />
+                                                                <input
+                                                                    type="text"
+                                                                    value={service.pricing?.standard || ''}
+                                                                    onChange={(e) => handleUpdateServicePricing(category.id, service.id, 'standard', e.target.value)}
+                                                                    className="border p-2 rounded w-full text-sm"
+                                                                    placeholder="Std $"
+                                                                />
+                                                                <input
+                                                                    type="text"
+                                                                    value={service.pricing?.premium || ''}
+                                                                    onChange={(e) => handleUpdateServicePricing(category.id, service.id, 'premium', e.target.value)}
+                                                                    className="border p-2 rounded w-full text-sm"
+                                                                    placeholder="Prem $"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-semibold text-gray-500 mb-1">Details</label>
+                                                            <input
+                                                                type="text"
+                                                                value={service.deliveryTime || ''}
+                                                                onChange={(e) => handleUpdateService(category.id, service.id, 'deliveryTime', e.target.value)}
+                                                                className="border p-2 rounded w-full text-sm mb-2"
+                                                                placeholder="Delivery Time (e.g. 3-5 Days)"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mb-2">
+                                                        <label className="block text-xs font-semibold text-gray-500 mb-1">Features (One per line)</label>
+                                                        <textarea
+                                                            value={service.features?.join('\n') || ''}
+                                                            onChange={(e) => handleUpdateServiceFeatures(category.id, service.id, e.target.value)}
+                                                            className="border p-2 rounded w-full text-sm font-mono"
+                                                            rows={4}
+                                                            placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
                                                         />
                                                     </div>
                                                     <div className="flex justify-end">

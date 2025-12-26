@@ -20,8 +20,8 @@ const About: React.FC = () => {
   return (
     <div className="min-h-screen bg-white ">
       <SEO
-        title="About Us"
-        description="Learn about our journey from PixelPro to wbify. We are a digital creative studio dedicated to transforming businesses through exceptional design and technology."
+        title="About wbify | Your Partners in Digital Transformation"
+        description="We are a creative studio dedicated to your success. Learn about our journey from PixelPro to wbify, our core values, and our commitment to excellence."
         canonical="/about"
         structuredData={aboutStructuredData}
       />
@@ -32,7 +32,7 @@ const About: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
-              We are <span className="text-blue-600">wbify</span>
+              We Are <span className="text-blue-600">wbify Creative Studio</span>
             </h1>
             <p className="text-xl text-gray-500 leading-relaxed">
               A digital creative studio dedicated to transforming businesses through exceptional design, cutting-edge technology, and strategic thinking.

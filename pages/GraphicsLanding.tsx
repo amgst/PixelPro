@@ -19,8 +19,8 @@ const GraphicsLanding: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <SEO
-                title="Graphics & Branding Services"
-                description="Professional graphics design and branding services. From stunning logos to complete brand identities and social media graphics. Make your brand unforgettable."
+                title="Premium Branding & Graphic Design Services | Logos & UI/UX"
+                description="Make your brand unforgettable. Get professional logo design, complete brand identity packages, and stunning UI/UX that captures attention and builds trust."
                 canonical="/graphics"
                 structuredData={serviceStructuredData}
             />
@@ -35,7 +35,7 @@ const GraphicsLanding: React.FC = () => {
                                 <span>Graphics & Branding</span>
                             </div>
                             <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-                                Make Your Brand <br /><span className="text-pink-400">Unforgettable.</span>
+                                Elevate Your <br /><span className="text-pink-400">Brand Identity.</span>
                             </h1>
                             <p className="text-xl text-gray-200 max-w-xl leading-relaxed">
                                 From stunning logos to complete brand identities and social media graphics. We create visuals that capture attention and build trust.

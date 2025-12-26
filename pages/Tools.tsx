@@ -35,8 +35,8 @@ const Tools: React.FC = () => {
     return (
         <div className="min-h-screen bg-white">
             <SEO
-                title="Tools & Resources"
-                description="A collection of handy tools and resources for developers and designers. Free to use tools for web development, design, and productivity."
+                title="Free Web Design & Development Tools | wbify Resources"
+                description="A curated list of essential free tools for developers and designers. Boost your productivity with our hand-picked digital resources, calculators, and utilities."
                 canonical="/tools"
                 structuredData={toolsStructuredData}
             />
@@ -47,7 +47,7 @@ const Tools: React.FC = () => {
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-50 text-blue-600 text-sm font-semibold tracking-wide mb-4">
                         Useful Resources
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Our Tools</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Essential Tools for Creators</h1>
                     <p className="text-xl text-gray-500 max-w-2xl mx-auto">
                         A collection of handy tools to help you with your digital projects.
                     </p>

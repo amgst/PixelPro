@@ -79,15 +79,15 @@ const Contact: React.FC = () => {
   return (
     <div className="min-h-screen bg-white py-20">
       <SEO
-        title="Contact Us"
-        description="Get in touch with wbify Creative Studio. We'd love to hear about your project and help you build your digital presence. Professional web development, Shopify setup, and branding services."
+        title="Contact wbify | Start Your Creative Project Today"
+        description="Ready to upgrade your digital presence? Get in touch with our team for a free consultation. We're here to answer your questions and kickstart your project."
         canonical="/contact"
         structuredData={contactStructuredData}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Contact wbify</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Let's Discuss Your Project</h1>
           <p className="text-gray-500">Have a project in mind? We'd love to hear from you.</p>
         </div>
 

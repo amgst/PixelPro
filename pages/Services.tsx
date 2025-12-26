@@ -67,8 +67,8 @@ const Services: React.FC = () => {
   return (
     <div className="pb-24 bg-white min-h-screen">
       <SEO
-        title="Our Services"
-        description="Professional web development, design, and digital marketing services to help your business grow. Shopify setup, custom web development, branding, and more."
+        title="Comprehensive Digital Services | Web Design, Dev & Branding"
+        description="Explore our full range of digital services. From expert Shopify setups and custom app development to professional logo design, we build brands that sell."
         canonical="/services"
         structuredData={servicesStructuredData}
       />
@@ -76,7 +76,7 @@ const Services: React.FC = () => {
       {/* Header */}
       <div className="bg-slate-50 py-20 mb-16 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Our Services</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Our Core Digital Services</h1>
           <p className="text-xl text-gray-500 max-w-2xl mx-auto">
             Everything you need to build your brand and grow your business.
           </p>

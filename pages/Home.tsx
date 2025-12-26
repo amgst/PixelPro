@@ -32,8 +32,8 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <SEO
-        title="wbify Creative Studio | Expert Shopify & Web Services"
-        description="We are your complete digital partner. From high-converting Shopify stores to custom web applications and stunning brand visuals. Professional web development, Shopify setup, and branding services."
+        title="wbify - Expert Shopify Development & Custom Web Solutions"
+        description="Elevate your business with wbify. We specialize in high-converting Shopify stores, fast custom websites, and premium brand identity design. Start growing today."
         canonical="/"
         structuredData={websiteStructuredData}
       />
@@ -53,7 +53,7 @@ const Home: React.FC = () => {
                 wbify Creative Studio
               </span>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 tracking-tight leading-tight">
-                Expert Shopify & <br /><span className="text-blue-600">Web Services</span>
+                Expert Shopify & <br /><span className="text-blue-600">Custom Web Services</span>
               </h1>
               <p className="text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
                 From high-converting Shopify stores to custom web applications and stunning brand visuals. We are your complete digital partner.

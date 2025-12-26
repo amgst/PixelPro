@@ -37,8 +37,8 @@ const Blog: React.FC = () => {
     return (
         <div className="bg-white min-h-screen pt-24 pb-16">
             <SEO
-                title="Blog"
-                description="Insights, trends, and tips from the world of web design and development. Learn about Shopify, React, Next.js, branding, and more."
+                title="Web Design & Dev Blog | Shopify Tips, Trends & Insights"
+                description="Stay ahead with expert insights on E-commerce trends, Shopify tutorials, and web development best practices. Read our latest articles to grow your business."
                 canonical="/blog"
                 structuredData={blogStructuredData}
             />
@@ -46,7 +46,7 @@ const Blog: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">
-                        Our <span className="text-blue-600">Blog</span>
+                        Insights for <span className="text-blue-600">Digital Growth</span>
                     </h1>
                     <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                         Insights, trends, and tips from the world of web design and development.

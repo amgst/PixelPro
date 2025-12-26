@@ -19,8 +19,8 @@ const ShopifyLanding: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <SEO
-                title="Shopify Store Development Services"
-                description="Build a high-converting Shopify store with our expert services. From dropshipping to custom brand stores, we design, build, and scale Shopify businesses that drive sales."
+                title="Shopify Experts | Store Setup, Dropshipping & Development"
+                description="Launch a sales-focused Shopify store. We offer custom themes, automated dropshipping setups, and conversion optimization to maximize your revenue."
                 canonical="/shopify"
                 structuredData={serviceStructuredData}
             />

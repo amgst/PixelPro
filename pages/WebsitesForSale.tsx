@@ -47,8 +47,8 @@ const WebsitesForSale: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen bg-slate-50">
             <SEO
-                title="Ready-Made Websites for Sale - $100"
-                description="Launch your professional website in 48 hours for just $100. Choose from our collection of ready-made, fully responsive website templates. No hidden fees, just a flat $100."
+                title="Buy Ready-Made Websites | Launch in 48 Hours for $100"
+                description="Get a professional, fully responsive website launched in just 48 hours for a flat $100. Perfect for startups. Includes mobile-ready design and fast hosting."
                 canonical="/websites-for-sale"
                 structuredData={productStructuredData}
             />
@@ -60,7 +60,7 @@ const WebsitesForSale: React.FC = () => {
                         Limited Time Offer
                     </span>
                     <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                        Launch Your Website for <span className="text-blue-400">$100</span>
+                        Launch Your Website for <span className="text-blue-400">Just $100</span>
                     </h1>
                     <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
                         Get a professional, fully responsive website launched in 48 hours. No hidden fees, just a flat $100.
