@@ -28,6 +28,8 @@ const Contact: React.FC = () => {
         },
         body: JSON.stringify({
           access_key: 'be457400-4579-4076-a279-03b80c86b219',
+          subject: `New Request for ${formData.service}`,
+          botcheck: false,
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
           service: formData.service,

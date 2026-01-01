@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { ReadySite, READY_SITES_SEED_DATA } from '../../data/readySitesData';
+import { ReadySite } from '../../data/readySitesData';
 import { getReadySites, addReadySite, updateReadySite, deleteReadySite } from '../../lib/readySitesService';
 import { uploadImage } from '../../lib/imageUploadService';
-import { Plus, Trash2, Edit2, Save, X, Download, Upload, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Upload, Image as ImageIcon } from 'lucide-react';
 
 const AdminReadySites: React.FC = () => {
     const [readySites, setReadySites] = useState<ReadySite[]>([]);
     const [isEditing, setIsEditing] = useState(false);
     const [currentSite, setCurrentSite] = useState<Partial<ReadySite>>({});
     const [isLoading, setIsLoading] = useState(true);
-    const [isImporting, setIsImporting] = useState(false);
+
     const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -113,7 +113,7 @@ const AdminReadySites: React.FC = () => {
 
         try {
             // Ensure features is an array
-            const features = typeof currentSite.features === 'string' 
+            const features = typeof currentSite.features === 'string'
                 ? currentSite.features.split(',').map(f => f.trim()).filter(f => f)
                 : currentSite.features || [];
 
@@ -139,41 +139,7 @@ const AdminReadySites: React.FC = () => {
         }
     };
 
-    const handleImportTemplates = async () => {
-        if (!window.confirm('This will import the existing templates from the website. Continue?')) {
-            return;
-        }
 
-        setIsImporting(true);
-        try {
-            const existingSites = await getReadySites();
-            const existingTitles = new Set(existingSites.map(s => s.title.toLowerCase()));
-
-            let imported = 0;
-            let skipped = 0;
-
-            for (const template of READY_SITES_SEED_DATA) {
-                // Check if template already exists by title
-                if (existingTitles.has(template.title.toLowerCase())) {
-                    skipped++;
-                    continue;
-                }
-
-                // Remove the id from seed data since Firebase will generate it
-                const { id, ...templateData } = template;
-                await addReadySite(templateData);
-                imported++;
-            }
-
-            await fetchReadySites(); // Refresh list
-            alert(`Import complete! ${imported} templates imported, ${skipped} skipped (already exist).`);
-        } catch (error) {
-            console.error("Error importing templates:", error);
-            alert("Failed to import templates. Check console for details.");
-        } finally {
-            setIsImporting(false);
-        }
-    };
 
     if (isLoading) {
         return (
@@ -193,13 +159,7 @@ const AdminReadySites: React.FC = () => {
                     <p className="text-gray-500">Add or edit ready-made website templates displayed on the public page.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button
-                        onClick={handleImportTemplates}
-                        disabled={isImporting}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <Download size={18} /> {isImporting ? 'Importing...' : 'Import Existing Templates'}
-                    </button>
+
                     <button
                         onClick={handleAddNew}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
@@ -216,12 +176,12 @@ const AdminReadySites: React.FC = () => {
                             <h3 className="text-lg font-bold text-slate-900">
                                 {readySites.find(s => s.id === currentSite.id) ? 'Edit Ready Site' : 'Add New Ready Site'}
                             </h3>
-                            <button 
+                            <button
                                 onClick={() => {
                                     setIsEditing(false);
                                     setImagePreview(null);
                                     setSelectedImageFile(null);
-                                }} 
+                                }}
                                 className="text-gray-400 hover:text-slate-900"
                             >
                                 <X size={20} />
@@ -262,7 +222,7 @@ const AdminReadySites: React.FC = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Image (optional)</label>
-                                
+
                                 {/* Image Preview */}
                                 {imagePreview && (
                                     <div className="mb-3">
