@@ -28,8 +28,9 @@ const Contact: React.FC = () => {
         },
         body: JSON.stringify({
           access_key: 'be457400-4579-4076-a279-03b80c86b219',
-          subject: `New Request for ${formData.service}`,
-          botcheck: false,
+          subject: `New Request: ${formData.service}`,
+          from_name: `${formData.firstName} ${formData.lastName}`,
+          botcheck: "",
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
           service: formData.service,
@@ -50,7 +51,7 @@ const Contact: React.FC = () => {
           message: ''
         });
       } else {
-        console.error('Web3Forms error:', result);
+        console.error('Web3Forms error:', JSON.stringify(result, null, 2));
         setStatus('error');
       }
     } catch (error) {
