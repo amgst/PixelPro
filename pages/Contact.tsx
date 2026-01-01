@@ -19,7 +19,10 @@ const Contact: React.FC = () => {
     setStatus('submitting');
 
     try {
-      console.log('Sending request to Web3Forms...');
+      console.log('Sending request to Web3Forms...', {
+        hasKey: !!import.meta.env.VITE_WEB3FORMS_ACCESS_KEY
+      });
+
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
@@ -28,9 +31,7 @@ const Contact: React.FC = () => {
         },
         body: JSON.stringify({
           access_key: import.meta.env.VITE_WEB3FORMS_ACCESS_KEY,
-          subject: `New Request: ${formData.service}`,
-          from_name: `${formData.firstName} ${formData.lastName}`,
-          botcheck: "",
+          subject: `New Request from ${formData.firstName}`,
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
           service: formData.service,
