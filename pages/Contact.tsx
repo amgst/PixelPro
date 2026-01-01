@@ -35,7 +35,14 @@ const Contact: React.FC = () => {
             from_email: formData.email,
             to_name: 'wbify Creative Studio',
             service: formData.service,
-            message: formData.message,
+            message: `
+Name: ${formData.firstName} ${formData.lastName}
+Email: ${formData.email}
+Service: ${formData.service}
+
+Message:
+${formData.message}
+            `,
             reply_to: formData.email,
           }
         })

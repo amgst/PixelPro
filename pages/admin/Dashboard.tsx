@@ -34,29 +34,29 @@ const AdminDashboard: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <StatCard
                     title="Total Revenue"
-                    value="$12,450"
-                    change="+12.5%"
+                    value="$0"
+                    change="0%"
                     icon={DollarSign}
                     color="bg-green-500"
                 />
                 <StatCard
                     title="Active Projects"
-                    value="8"
-                    change="+2"
+                    value="0"
+                    change="0"
                     icon={ShoppingBag}
                     color="bg-blue-500"
                 />
                 <StatCard
                     title="New Inquiries"
-                    value="24"
-                    change="+18.2%"
+                    value="0"
+                    change="0%"
                     icon={Users}
                     color="bg-purple-500"
                 />
                 <StatCard
                     title="Avg. Project Value"
-                    value="$1,850"
-                    change="+4.3%"
+                    value="$0"
+                    change="0%"
                     icon={TrendingUp}
                     color="bg-orange-500"
                 />
@@ -66,39 +66,14 @@ const AdminDashboard: React.FC = () => {
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                     <h3 className="text-lg font-bold text-slate-900 mb-4">Recent Inquiries</h3>
                     <div className="space-y-4">
-                        {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors border border-gray-100">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-500">
-                                        JD
-                                    </div>
-                                    <div>
-                                        <p className="font-medium text-slate-900">John Doe</p>
-                                        <p className="text-sm text-gray-500">Shopify Store Setup</p>
-                                    </div>
-                                </div>
-                                <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">
-                                    New
-                                </span>
-                            </div>
-                        ))}
+                        <p className="text-gray-500 text-sm">No recent inquiries.</p>
                     </div>
                 </div>
 
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                     <h3 className="text-lg font-bold text-slate-900 mb-4">Active Projects</h3>
                     <div className="space-y-4">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="p-4 border border-gray-100 rounded-lg">
-                                <div className="flex justify-between items-center mb-2">
-                                    <h4 className="font-medium text-slate-900">E-Commerce Redesign</h4>
-                                    <span className="text-xs text-gray-500">Due in 3 days</span>
-                                </div>
-                                <div className="w-full bg-gray-100 rounded-full h-2">
-                                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '70%' }}></div>
-                                </div>
-                            </div>
-                        ))}
+                        <p className="text-gray-500 text-sm">No active projects.</p>
                     </div>
                 </div>
             </div>
