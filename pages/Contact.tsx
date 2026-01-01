@@ -19,30 +19,30 @@ const Contact: React.FC = () => {
     setStatus('submitting');
 
     try {
-      console.log('Sending request to Web3Forms...', {
-        hasKey: !!import.meta.env.VITE_WEB3FORMS_ACCESS_KEY
-      });
+      console.log('Sending request to EmailJS...');
 
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
         },
         body: JSON.stringify({
-          access_key: import.meta.env.VITE_WEB3FORMS_ACCESS_KEY,
-          subject: `New Request from ${formData.firstName}`,
-          name: `${formData.firstName} ${formData.lastName}`,
-          email: formData.email,
-          service: formData.service,
-          message: formData.message
+          service_id: 'service_vxy8w6g',
+          template_id: 'template_rnk7xs1',
+          user_id: 'AqDnqVv2hY1HK6N2B',
+          template_params: {
+            from_name: `${formData.firstName} ${formData.lastName}`,
+            from_email: formData.email,
+            to_name: 'wbify Creative Studio',
+            service: formData.service,
+            message: formData.message,
+            reply_to: formData.email,
+          }
         })
       });
 
-      const result = await response.json();
-      console.log('Web3Forms response:', result);
-
-      if (result.success) {
+      if (response.ok) {
+        console.log('EmailJS response: OK');
         setStatus('success');
         setFormData({
           firstName: '',
@@ -52,7 +52,8 @@ const Contact: React.FC = () => {
           message: ''
         });
       } else {
-        console.error('Web3Forms error:', JSON.stringify(result, null, 2));
+        const errorText = await response.text();
+        console.error('EmailJS error:', errorText);
         setStatus('error');
       }
     } catch (error) {
