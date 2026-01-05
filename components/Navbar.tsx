@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
     },
     { name: 'Blog', path: '/blog', dropdown: false },
     { name: 'Tools', path: '/tools', dropdown: false },
-    { name: 'Ready Sites ($100)', path: '/websites-for-sale', dropdown: false },
+    { name: 'Ready Sites ($200)', path: '/websites-for-sale', dropdown: false },
     { name: 'About', path: '/about', dropdown: false },
     { name: 'Contact', path: '/contact', dropdown: false },
   ];

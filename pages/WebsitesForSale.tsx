@@ -30,7 +30,7 @@ const WebsitesForSale: React.FC = () => {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
         name: 'Ready-Made Websites for Sale',
-        description: 'Professional, fully responsive websites ready to launch in 48 hours for just $100',
+        description: 'Professional, fully responsive websites ready to launch in 48 hours for just $200',
         itemListElement: templates.map((template, index) => ({
             '@type': 'Product',
             position: index + 1,
@@ -38,7 +38,7 @@ const WebsitesForSale: React.FC = () => {
             description: template.description,
             offers: {
                 '@type': 'Offer',
-                price: '100',
+                price: '200',
                 priceCurrency: 'USD'
             }
         }))
@@ -47,8 +47,8 @@ const WebsitesForSale: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen bg-slate-50">
             <SEO
-                title="Buy Ready-Made Websites | Launch in 48 Hours for $100"
-                description="Get a professional, fully responsive website launched in just 48 hours for a flat $100. Perfect for startups. Includes mobile-ready design and fast hosting."
+                title="Buy Ready-Made Websites | Launch in 48 Hours for $200"
+                description="Get a professional, fully responsive website launched in just 48 hours for a flat $200. Perfect for startups. Includes mobile-ready design and fast hosting."
                 canonical="/websites-for-sale"
                 structuredData={productStructuredData}
             />
@@ -60,10 +60,10 @@ const WebsitesForSale: React.FC = () => {
                         Limited Time Offer
                     </span>
                     <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                        Launch Your Website for <span className="text-blue-400">Just $100</span>
+                        Launch Your Website for <span className="text-blue-400">Just $200</span>
                     </h1>
                     <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
-                        Get a professional, fully responsive website launched in 48 hours. No hidden fees, just a flat $100.
+                        Get a professional, fully responsive website launched in 48 hours. No hidden fees, just a flat $200.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <a href="#templates" className="px-8 py-4 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-500 transition-all shadow-lg hover:shadow-blue-500/25">
@@ -82,7 +82,7 @@ const WebsitesForSale: React.FC = () => {
             <section className="py-20 px-4">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-slate-900 mb-4">What's Included for $100?</h2>
+                        <h2 className="text-3xl font-bold text-slate-900 mb-4">What's Included for $200?</h2>
                         <p className="text-gray-500">We don't just give you a template; we set it up for you.</p>
                     </div>
 
@@ -141,7 +141,7 @@ const WebsitesForSale: React.FC = () => {
                                         </li>
                                         <li className="flex items-start gap-2">
                                             <CheckCircle size={18} className="text-blue-500 mt-1 flex-shrink-0" />
-                                            <span>Complete the secure checkout process ($100 one-time fee).</span>
+                                            <span>Complete the secure checkout process ($200 one-time fee).</span>
                                         </li>
                                         <li className="flex items-start gap-2">
                                             <CheckCircle size={18} className="text-blue-500 mt-1 flex-shrink-0" />
@@ -394,7 +394,7 @@ const WebsitesForSale: React.FC = () => {
                         {[
                             {
                                 q: "Is there a monthly fee?",
-                                a: "No! We deploy your site on Vercel's Basic plan, which is completely free for personal and hobby projects. You only pay the one-time $100 setup fee."
+                                a: "No! We deploy your site on Vercel's Basic plan, which is completely free for personal and hobby projects. You only pay the one-time $200 setup fee."
                             },
                             {
                                 q: "Do I need to pay for hosting?",
