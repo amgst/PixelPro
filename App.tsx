@@ -83,12 +83,10 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <HelmetProvider>
-      <Router>
-        <ScrollToTop />
-        <AppContent />
-      </Router>
-    </HelmetProvider>
+    <Router>
+      <ScrollToTop />
+      <AppContent />
+    </Router>
   );
 };
 
