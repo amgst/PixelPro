@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, Loader2 } from 'lucide-react';
+import { submitInquiry } from '../lib/inquiryService';
 
 interface FormData {
     name: string;
@@ -38,15 +39,25 @@ const ProjectInquiry: React.FC = () => {
     });
 
     const [submitted, setSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         setFormData(prev => ({ ...prev, serviceType }));
     }, [serviceType]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Form submitted:', formData);
-        setSubmitted(true);
+        setIsSubmitting(true);
+        try {
+            await submitInquiry(formData);
+            console.log('Form submitted:', formData);
+            setSubmitted(true);
+        } catch (error) {
+            console.error('Error submitting inquiry:', error);
+            alert('Something went wrong. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -362,9 +373,19 @@ const ProjectInquiry: React.FC = () => {
 
                         <button
                             type="submit"
-                            className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                            disabled={isSubmitting}
+                            className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            Submit Project Inquiry <Send size={20} />
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="animate-spin" size={20} />
+                                    Sending...
+                                </>
+                            ) : (
+                                <>
+                                    Submit Project Inquiry <Send size={20} />
+                                </>
+                            )}
                         </button>
                     </form>
                 </div>

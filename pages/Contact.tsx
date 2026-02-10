@@ -19,6 +19,10 @@ const Contact: React.FC = () => {
     setStatus('submitting');
 
     try {
+      // Save to Firestore
+      await submitContactMessage(formData);
+      console.log('Saved to Firestore');
+
       console.log('Sending request to EmailJS...');
 
       const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {

@@ -25,8 +25,10 @@ import AdminServices from './pages/admin/Services';
 import AdminBlog from './pages/admin/Blog';
 import AdminReadySites from './pages/admin/ReadySites';
 import AdminSettings from './pages/admin/Settings';
+import AdminInquiries from './pages/admin/Inquiries';
 import NotFound from './pages/NotFound';
 import { HelmetProvider } from 'react-helmet-async';
+import { NotificationProvider } from './components/admin/NotificationProvider';
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -69,6 +71,7 @@ const AppContent: React.FC = () => {
             <Route path="/admin/services" element={<AdminServices />} />
             <Route path="/admin/blog" element={<AdminBlog />} />
             <Route path="/admin/ready-sites" element={<AdminReadySites />} />
+            <Route path="/admin/inquiries" element={<AdminInquiries />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
 
             {/* 404 Route */}

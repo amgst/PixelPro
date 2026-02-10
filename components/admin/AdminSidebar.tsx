@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderOpen, Settings, LogOut, Globe, Store } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, Settings, LogOut, Globe, Store, Inbox } from 'lucide-react';
 
 const AdminSidebar: React.FC = () => {
     const location = useLocation();
@@ -15,6 +15,7 @@ const AdminSidebar: React.FC = () => {
 
     const menuItems = [
         { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+        { name: 'Inquiries', path: '/admin/inquiries', icon: Inbox },
         { name: 'Tools', path: '/admin/tools', icon: FolderOpen },
         { name: 'Portfolio', path: '/admin/portfolio', icon: FolderOpen },
         { name: 'Services', path: '/admin/services', icon: FolderOpen },
