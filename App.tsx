@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -63,16 +63,22 @@ const AppContent: React.FC = () => {
             <Route path="/tools" element={<Tools />} />
 
             {/* Admin Routes */}
-            <Route path="/admin" element={<NotificationProvider><AdminLogin /></NotificationProvider>} />
-            <Route path="/admin/login" element={<NotificationProvider><AdminLogin /></NotificationProvider>} />
-            <Route path="/admin/dashboard" element={<NotificationProvider><AdminDashboard /></NotificationProvider>} />
-            <Route path="/admin/tools" element={<NotificationProvider><AdminTools /></NotificationProvider>} />
-            <Route path="/admin/portfolio" element={<NotificationProvider><AdminPortfolio /></NotificationProvider>} />
-            <Route path="/admin/services" element={<NotificationProvider><AdminServices /></NotificationProvider>} />
-            <Route path="/admin/blog" element={<NotificationProvider><AdminBlog /></NotificationProvider>} />
-            <Route path="/admin/ready-sites" element={<NotificationProvider><AdminReadySites /></NotificationProvider>} />
-            <Route path="/admin/inquiries" element={<NotificationProvider><AdminInquiries /></NotificationProvider>} />
-            <Route path="/admin/settings" element={<NotificationProvider><AdminSettings /></NotificationProvider>} />
+            <Route path="/admin" element={
+              <NotificationProvider>
+                <Outlet />
+              </NotificationProvider>
+            }>
+              <Route index element={<AdminLogin />} />
+              <Route path="login" element={<AdminLogin />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="tools" element={<AdminTools />} />
+              <Route path="portfolio" element={<AdminPortfolio />} />
+              <Route path="services" element={<AdminServices />} />
+              <Route path="blog" element={<AdminBlog />} />
+              <Route path="ready-sites" element={<AdminReadySites />} />
+              <Route path="inquiries" element={<AdminInquiries />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
 
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />

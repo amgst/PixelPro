@@ -3,7 +3,6 @@ import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/f
 import { db } from '../../lib/firebase';
 import { INQUIRIES_COLLECTION } from '../../lib/inquiryService';
 import { CONTACT_MESSAGES_COLLECTION } from '../../lib/contactService';
-import { Bell } from 'lucide-react';
 
 export const NotificationContext = React.createContext<{
     permission: NotificationPermission;
@@ -19,30 +18,47 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     useEffect(() => {
         if ('Notification' in window) {
             setPermission(Notification.permission);
+            console.log('Notification permission:', Notification.permission);
         }
     }, []);
 
     const requestPermission = async () => {
         if (!('Notification' in window)) {
             console.log('This browser does not support desktop notification');
+            alert('This browser does not support desktop notification');
             return;
         }
-        const p = await Notification.requestPermission();
-        setPermission(p);
+        try {
+            const p = await Notification.requestPermission();
+            setPermission(p);
+            console.log('Permission requested:', p);
+            if (p === 'granted') {
+                new Notification('Notifications Enabled', {
+                    body: 'You will now receive alerts for new inquiries.',
+                    icon: '/shopify.png'
+                });
+            }
+        } catch (error) {
+            console.error('Error requesting permission:', error);
+        }
     };
 
     const showNotification = (title: string, body: string, url?: string) => {
         if (permission === 'granted') {
-            const notification = new Notification(title, {
-                body,
-                icon: '/shopify.png', // Using existing icon
-            });
-            notification.onclick = () => {
-                window.focus();
-                if (url) {
-                    window.location.href = url;
-                }
-            };
+            try {
+                const notification = new Notification(title, {
+                    body,
+                    icon: '/shopify.png',
+                });
+                notification.onclick = () => {
+                    window.focus();
+                    if (url) {
+                        window.location.href = url;
+                    }
+                };
+            } catch (e) {
+                console.error('Notification creation failed', e);
+            }
         }
     };
 
@@ -50,21 +66,18 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     useEffect(() => {
         if (permission !== 'granted') return;
 
-        // We only want to listen for *new* additions, not initial load
-        // A simple way is to listen for changes after the component mounts
-        // However, onSnapshot sends initial state. We need to filter that.
-        // Or we can query by 'createdAt' > now.
-        
         const now = new Date();
         const q = query(
             collection(db, INQUIRIES_COLLECTION),
             where('createdAt', '>', now)
         );
 
+        console.log('Setting up inquiry listener');
         const unsubscribe = onSnapshot(q, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === 'added') {
                     const data = change.doc.data();
+                    console.log('New inquiry received:', data);
                     showNotification(
                         'New Project Inquiry!',
                         `From: ${data.name} (${data.serviceType})`,
@@ -87,10 +100,12 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
             where('createdAt', '>', now)
         );
 
+        console.log('Setting up contact listener');
         const unsubscribe = onSnapshot(q, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === 'added') {
                     const data = change.doc.data();
+                    console.log('New contact message received:', data);
                     showNotification(
                         'New Contact Message!',
                         `From: ${data.firstName} ${data.lastName}`,
@@ -106,33 +121,6 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return (
         <NotificationContext.Provider value={{ permission, requestPermission }}>
             {children}
-            {permission === 'default' && (
-                <div className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-xl border border-blue-100 z-50 animate-bounce-in max-w-sm">
-                    <div className="flex items-start gap-3">
-                        <div className="bg-blue-100 p-2 rounded-full text-blue-600">
-                            <Bell size={20} />
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-slate-900 mb-1">Enable Notifications?</h4>
-                            <p className="text-sm text-slate-600 mb-3">Get instant alerts when you receive new inquiries or messages.</p>
-                            <div className="flex gap-2">
-                                <button 
-                                    onClick={requestPermission}
-                                    className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
-                                >
-                                    Enable
-                                </button>
-                                <button 
-                                    onClick={() => setPermission('denied')}
-                                    className="px-3 py-1.5 bg-slate-100 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-200"
-                                >
-                                    Later
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </NotificationContext.Provider>
     );
 };

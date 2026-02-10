@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderOpen, Settings, LogOut, Globe, Store, Inbox, X } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, Settings, LogOut, Globe, Store, Inbox, X, Bell } from 'lucide-react';
+import { NotificationContext } from './NotificationProvider';
 
 interface AdminSidebarProps {
     isOpen?: boolean;
@@ -10,6 +11,7 @@ interface AdminSidebarProps {
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onClose }) => {
     const location = useLocation();
     const navigate = useNavigate();
+    const { permission, requestPermission } = useContext(NotificationContext);
 
     const isActive = (path: string) => location.pathname === path;
 
@@ -77,6 +79,15 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onClose }) 
                 </nav>
 
                 <div className="p-4 border-t border-slate-800 space-y-2">
+                    {permission === 'default' && (
+                        <button
+                            onClick={requestPermission}
+                            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-yellow-400 hover:bg-slate-800 hover:text-yellow-300 transition-colors"
+                        >
+                            <Bell size={20} />
+                            <span className="font-medium">Enable Alerts</span>
+                        </button>
+                    )}
                     <Link
                         to="/"
                         className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
