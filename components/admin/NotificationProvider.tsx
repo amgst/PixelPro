@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/firestore';
-import { db } from './firebase';
-import { INQUIRIES_COLLECTION } from './inquiryService';
-import { CONTACT_MESSAGES_COLLECTION } from './contactService';
+import { db } from '../../lib/firebase';
+import { INQUIRIES_COLLECTION } from '../../lib/inquiryService';
+import { CONTACT_MESSAGES_COLLECTION } from '../../lib/contactService';
 import { Bell } from 'lucide-react';
 
 export const NotificationContext = React.createContext<{
