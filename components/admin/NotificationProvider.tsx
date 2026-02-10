@@ -43,9 +43,23 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
     };
 
-    const showNotification = (title: string, body: string, url?: string) => {
+    const showNotification = async (title: string, body: string, url?: string) => {
         if (permission === 'granted') {
             try {
+                // Try Service Worker first (better for mobile/PWA)
+                if ('serviceWorker' in navigator) {
+                    const registration = await navigator.serviceWorker.ready;
+                    if (registration) {
+                        registration.showNotification(title, {
+                            body,
+                            icon: '/shopify.png',
+                            data: { url }
+                        });
+                        return;
+                    }
+                }
+
+                // Fallback to standard Notification API
                 const notification = new Notification(title, {
                     body,
                     icon: '/shopify.png',

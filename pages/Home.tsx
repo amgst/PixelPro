@@ -2,15 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, ShoppingBag } from 'lucide-react';
 import { SERVICE_CATEGORIES } from '../data/servicesData';
-import GameFloatingButton from '../components/GameFloatingButton';
-import GameModal from '../components/GameModal';
 import Testimonials from '../components/Testimonials';
 import ServiceQuizModal from '../components/ServiceQuizModal';
 
 import SEO from '../components/SEO';
 
 const Home: React.FC = () => {
-  const [isGameModalOpen, setIsGameModalOpen] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
 
   // Take first 4 categories for the preview
@@ -220,10 +217,6 @@ const Home: React.FC = () => {
 
       {/* Testimonials */}
       <Testimonials />
-
-      {/* Game Floating Button & Modal */}
-      <GameFloatingButton onClick={() => setIsGameModalOpen(true)} />
-      <GameModal isOpen={isGameModalOpen} onClose={() => setIsGameModalOpen(false)} />
 
       {/* CTA Section */}
       <section className="py-24 bg-white">
