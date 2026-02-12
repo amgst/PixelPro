@@ -46,7 +46,7 @@ const AdminPortfolio: React.FC = () => {
     const handleAddNew = () => {
         setCurrentItem({
             title: '',
-            category: 'Graphic Design & Print',
+            category: 'Shopify',
             imageUrl: '',
             description: '',
             link: ''
