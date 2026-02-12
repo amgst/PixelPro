@@ -22,6 +22,7 @@ const staticRoutes = [
     { url: '/web-dev', changefreq: 'weekly', priority: 0.8 },
     { url: '/graphics', changefreq: 'weekly', priority: 0.8 },
     { url: '/pricing', changefreq: 'monthly', priority: 0.8 },
+    { url: '/portfolio', changefreq: 'weekly', priority: 0.8 },
     { url: '/blog', changefreq: 'weekly', priority: 0.8 },
     { url: '/tools', changefreq: 'monthly', priority: 0.7 },
     { url: '/websites-for-sale', changefreq: 'weekly', priority: 0.8 },
