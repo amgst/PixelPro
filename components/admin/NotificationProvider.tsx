@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { collection, query, orderBy, limit, onSnapshot, where, doc, setDoc } from 'firebase/firestore';
-import { db, messaging } from '../../lib/firebase';
-import { getToken, onMessage } from 'firebase/messaging';
+import { db } from '../../lib/firebase';
 import { INQUIRIES_COLLECTION } from '../../lib/inquiryService';
 import { CONTACT_MESSAGES_COLLECTION } from '../../lib/contactService';
 
@@ -19,67 +18,22 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     useEffect(() => {
         if ('Notification' in window) {
             setPermission(Notification.permission);
-            console.log('Notification permission:', Notification.permission);
-        }
-    }, []);
-
-    // Handle foreground FCM messages
-    useEffect(() => {
-        if (messaging) {
-            onMessage(messaging, (payload) => {
-                console.log('FCM Message received in foreground:', payload);
-                showNotification(
-                    payload.notification?.title || 'New Message',
-                    payload.notification?.body || '',
-                    payload.data?.url
-                );
-            });
         }
     }, []);
 
     const requestPermission = async () => {
         if (!('Notification' in window)) {
-            console.log('This browser does not support desktop notification');
             alert('This browser does not support desktop notification');
             return;
         }
         try {
             const p = await Notification.requestPermission();
             setPermission(p);
-            console.log('Permission requested:', p);
             if (p === 'granted') {
                 new Notification('Notifications Enabled', {
-                    body: 'You will now receive alerts for new inquiries.',
+                    body: 'You will now receive local browser alerts for new inquiries while this tab is open.',
                     icon: '/shopify.png'
                 });
-
-                // Get FCM Token
-                if (messaging) {
-                    try {
-                        // Request FCM Token
-                        // VAPID key is optional if using default config, but recommended
-                        // You can get this from Firebase Console -> Project Settings -> Cloud Messaging -> Web Push certificates
-                        const currentToken = await getToken(messaging, {
-                            // vapidKey: 'YOUR_PUBLIC_VAPID_KEY_HERE' 
-                        });
-                        
-                        if (currentToken) {
-                            console.log('FCM Token:', currentToken);
-                            // Save token to Firestore
-                            await setDoc(doc(db, 'admin_fcm_tokens', currentToken), {
-                                token: currentToken,
-                                userAgent: navigator.userAgent,
-                                createdAt: new Date(),
-                                lastSeen: new Date()
-                            });
-                            console.log('FCM Token saved to Firestore');
-                        } else {
-                            console.log('No registration token available. Request permission to generate one.');
-                        }
-                    } catch (err) {
-                        console.error('An error occurred while retrieving FCM token.', err);
-                    }
-                }
             }
         } catch (error) {
             console.error('Error requesting permission:', error);
@@ -88,91 +42,69 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     const showNotification = async (title: string, body: string, url?: string) => {
         if (permission === 'granted') {
-            try {
-                // Try Service Worker first (better for mobile/PWA)
-                if ('serviceWorker' in navigator) {
-                    const registration = await navigator.serviceWorker.ready;
-                    if (registration) {
-                        registration.showNotification(title, {
-                            body,
-                            icon: '/shopify.png',
-                            data: { url }
-                        });
-                        return;
-                    }
-                }
+            const notification = new Notification(title, {
+                body,
+                icon: '/shopify.png'
+            });
 
-                // Fallback to standard Notification API
-                const notification = new Notification(title, {
-                    body,
-                    icon: '/shopify.png',
-                });
+            if (url) {
                 notification.onclick = () => {
-                    window.focus();
-                    if (url) {
-                        window.location.href = url;
-                    }
+                    window.open(url, '_blank');
+                    notification.close();
                 };
-            } catch (e) {
-                console.error('Notification creation failed', e);
             }
         }
     };
 
-    // Listen for new Inquiries
+    // Keep the Firestore listeners for local notifications while the tab is open
     useEffect(() => {
         if (permission !== 'granted') return;
 
-        const now = new Date();
-        const q = query(
-            collection(db, INQUIRIES_COLLECTION),
-            where('createdAt', '>', now)
-        );
-
-        console.log('Setting up inquiry listener');
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+        // Listener for new inquiries
+        const inquiriesRef = collection(db, INQUIRIES_COLLECTION);
+        const inquiriesQuery = query(inquiriesRef, orderBy('createdAt', 'desc'), limit(1));
+        
+        const unsubscribeInquiries = onSnapshot(inquiriesQuery, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === 'added') {
                     const data = change.doc.data();
-                    console.log('New inquiry received:', data);
-                    showNotification(
-                        'New Project Inquiry!',
-                        `From: ${data.name} (${data.serviceType})`,
-                        '/admin/inquiries'
-                    );
+                    // Only show if it's new (within last 30 seconds to avoid old records on load)
+                    const isNew = data.createdAt && (Date.now() - data.createdAt.toMillis() < 30000);
+                    if (isNew) {
+                        showNotification(
+                            'New Project Inquiry!',
+                            `From: ${data.name} (${data.serviceType})`,
+                            '/admin/inquiries'
+                        );
+                    }
                 }
             });
         });
 
-        return () => unsubscribe();
-    }, [permission]);
+        // Listener for new contact messages
+        const contactRef = collection(db, CONTACT_MESSAGES_COLLECTION);
+        const contactQuery = query(contactRef, orderBy('createdAt', 'desc'), limit(1));
 
-    // Listen for new Contact Messages
-    useEffect(() => {
-        if (permission !== 'granted') return;
-
-        const now = new Date();
-        const q = query(
-            collection(db, CONTACT_MESSAGES_COLLECTION),
-            where('createdAt', '>', now)
-        );
-
-        console.log('Setting up contact listener');
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+        const unsubscribeContact = onSnapshot(contactQuery, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === 'added') {
                     const data = change.doc.data();
-                    console.log('New contact message received:', data);
-                    showNotification(
-                        'New Contact Message!',
-                        `From: ${data.firstName} ${data.lastName}`,
-                        '/admin/dashboard'
-                    );
+                    const isNew = data.createdAt && (Date.now() - data.createdAt.toMillis() < 30000);
+                    if (isNew) {
+                        showNotification(
+                            'New Contact Message!',
+                            `From: ${data.firstName} ${data.lastName}`,
+                            '/admin/dashboard'
+                        );
+                    }
                 }
             });
         });
 
-        return () => unsubscribe();
+        return () => {
+            unsubscribeInquiries();
+            unsubscribeContact();
+        };
     }, [permission]);
 
     return (

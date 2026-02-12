@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@types/nodemailer": "^7.0.9",
     "dotenv": "^17.2.3",
     "firebase": "^12.6.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.555.0",
+    "nodemailer": "^8.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-helmet-async": "^2.0.5",

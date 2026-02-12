@@ -24,52 +24,32 @@ const Contact: React.FC = () => {
       await submitContactMessage(formData);
       console.log('Saved to Firestore');
 
-      console.log('Sending request to EmailJS...');
-
-      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          service_id: 'service_vxy8w6g',
-          template_id: 'template_rnk7xs1',
-          user_id: 'AqDnqVv2hY1HK6N2B',
-          template_params: {
-            from_name: `${formData.firstName} ${formData.lastName}`,
-            from_email: formData.email,
-            to_name: 'wbify Creative Studio',
-            service: formData.service,
-            message: `
-Name: ${formData.firstName} ${formData.lastName}
-Email: ${formData.email}
-Service: ${formData.service}
-
-Message:
-${formData.message}
-            `,
-            reply_to: formData.email,
-          }
-        })
-      });
-
-      if (response.ok) {
-        console.log('EmailJS response: OK');
-        setStatus('success');
-        setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          service: 'Graphic Design',
-          message: ''
+      // Send email via Vercel API
+      try {
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'contact',
+            data: formData
+          })
         });
-      } else {
-        const errorText = await response.text();
-        console.error('EmailJS error:', errorText);
-        setStatus('error');
+      } catch (emailError) {
+        console.error('Error sending email:', emailError);
       }
+
+      setStatus('success');
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        service: 'Graphic Design',
+        message: ''
+      });
     } catch (error) {
-      console.error('Fetch error:', error);
+      console.error('Error submitting message:', error);
       setStatus('error');
     }
   };

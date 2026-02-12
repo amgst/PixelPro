@@ -1,59 +1,34 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const nodemailer = require("nodemailer");
 
 admin.initializeApp();
 
-async function sendNotificationToAdmins(title, body, url) {
-    const tokensSnapshot = await admin.firestore().collection("admin_fcm_tokens").get();
-    const tokens = tokensSnapshot.docs.map(doc => doc.data().token);
+// Configure the email transport using Gmail SMTP
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: parseInt(process.env.EMAIL_PORT || '587'),
+    secure: process.env.EMAIL_SECURE === 'true',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
 
-    if (tokens.length === 0) {
-        console.log("No admin tokens found.");
-        return;
-    }
-
-    // Prepare message for Multicast (sending to multiple tokens)
-    const message = {
-        notification: {
-            title: title,
-            body: body,
-        },
-        data: {
-            url: url
-        },
-        tokens: tokens,
-        webpush: {
-            fcmOptions: {
-                link: url
-            },
-            notification: {
-                icon: '/shopify.png',
-                requireInteraction: true
-            }
-        }
+async function sendEmail(to, subject, text, html) {
+    const mailOptions = {
+        from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_USER}>`,
+        to: to,
+        subject: subject,
+        text: text,
+        html: html,
     };
 
     try {
-        const response = await admin.messaging().sendEachForMulticast(message);
-        console.log(response.successCount + ' messages were sent successfully');
-        
-        // Cleanup invalid tokens
-        if (response.failureCount > 0) {
-            const failedTokens = [];
-            response.responses.forEach((resp, idx) => {
-                if (!resp.success) {
-                    const error = resp.error;
-                    if (error.code === 'messaging/invalid-registration-token' ||
-                        error.code === 'messaging/registration-token-not-registered') {
-                        failedTokens.push(tokensSnapshot.docs[idx].ref.delete());
-                    }
-                }
-            });
-            await Promise.all(failedTokens);
-            console.log('Removed ' + failedTokens.length + ' invalid tokens');
-        }
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully to:', to);
     } catch (error) {
-        console.log('Error sending message:', error);
+        console.error('Error sending email:', error);
     }
 }
 
@@ -61,20 +36,50 @@ exports.onInquiryCreated = functions.firestore
     .document("inquiries/{docId}")
     .onCreate(async (snap, context) => {
         const data = snap.data();
-        await sendNotificationToAdmins(
-            "New Project Inquiry!",
-            `From: ${data.name} (${data.serviceType})`,
-            "https://www.wbify.com/admin/inquiries"
-        );
+        
+        // Send Email Notification
+        const adminEmail = process.env.ADMIN_EMAIL;
+        if (adminEmail) {
+            const subject = `New Project Inquiry: ${data.serviceType} from ${data.name}`;
+            const text = `
+New Project Inquiry Received!
+
+Name: ${data.name}
+Email: ${data.email}
+Phone: ${data.phone}
+Service: ${data.serviceType}
+Timeline: ${data.timeline}
+
+Additional Info:
+${data.additionalInfo}
+
+View details: https://www.wbify.com/admin/inquiries
+            `;
+            await sendEmail(adminEmail, subject, text);
+        }
     });
 
 exports.onContactCreated = functions.firestore
     .document("contact_messages/{docId}")
     .onCreate(async (snap, context) => {
         const data = snap.data();
-        await sendNotificationToAdmins(
-            "New Contact Message!",
-            `From: ${data.firstName} ${data.lastName}`,
-            "https://www.wbify.com/admin/dashboard"
-        );
+
+        // Send Email Notification
+        const adminEmail = process.env.ADMIN_EMAIL;
+        if (adminEmail) {
+            const subject = `New Contact Message from ${data.firstName} ${data.lastName}`;
+            const text = `
+New Contact Message Received!
+
+Name: ${data.firstName} ${data.lastName}
+Email: ${data.email}
+Service: ${data.service}
+
+Message:
+${data.message}
+
+View details: https://www.wbify.com/admin/dashboard
+            `;
+            await sendEmail(adminEmail, subject, text);
+        }
     });

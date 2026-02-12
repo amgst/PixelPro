@@ -49,8 +49,26 @@ const ProjectInquiry: React.FC = () => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
+            // Save to Firestore
             await submitInquiry(formData);
-            console.log('Form submitted:', formData);
+            console.log('Form submitted to Firestore');
+
+            // Send email via Vercel API
+            try {
+                await fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: 'inquiry',
+                        data: formData
+                    })
+                });
+            } catch (emailError) {
+                console.error('Error sending email:', emailError);
+            }
+
             setSubmitted(true);
         } catch (error) {
             console.error('Error submitting inquiry:', error);
