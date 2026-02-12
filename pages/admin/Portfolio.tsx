@@ -123,12 +123,14 @@ const AdminPortfolio: React.FC = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                                 <select
-                                    value={currentItem.category || 'Graphic Design & Print'}
+                                    value={currentItem.category || 'Shopify'}
                                     onChange={e => setCurrentItem({ ...currentItem, category: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                 >
+                                    <option value="Shopify">Shopify</option>
+                                    <option value="React">React</option>
+                                    <option value="WordPress">WordPress</option>
                                     <option value="Graphic Design & Print">Graphic Design & Print</option>
-                                    <option value="Web / Digital">Web / Digital</option>
                                     <option value="Video & Animation">Video & Animation</option>
                                 </select>
                             </div>

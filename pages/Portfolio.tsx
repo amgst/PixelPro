@@ -29,7 +29,7 @@ const Portfolio: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const categories = ['All', 'Graphic Design & Print', 'Web / Digital', 'Video & Animation'];
+  const categories = ['All', 'Shopify', 'React', 'WordPress', 'Graphic Design & Print', 'Video & Animation'];
 
   // Fetch Data
   useEffect(() => {
