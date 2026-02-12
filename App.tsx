@@ -13,6 +13,7 @@ import WebDevLanding from './pages/WebDevLanding';
 import GraphicsLanding from './pages/GraphicsLanding';
 import ProjectInquiry from './pages/ProjectInquiry';
 import Pricing from './pages/Pricing';
+import Portfolio from './pages/Portfolio';
 import WebsitesForSale from './pages/WebsitesForSale';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
@@ -60,6 +61,7 @@ const AppContent: React.FC = () => {
             <Route path="/graphics" element={<GraphicsLanding />} />
             <Route path="/inquiry" element={<ProjectInquiry />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/websites-for-sale" element={<WebsitesForSale />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
