@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
+import { collection, query, orderBy, limit, onSnapshot, where, doc, setDoc } from 'firebase/firestore';
+import { db, messaging } from '../../lib/firebase';
+import { getToken, onMessage } from 'firebase/messaging';
 import { INQUIRIES_COLLECTION } from '../../lib/inquiryService';
 import { CONTACT_MESSAGES_COLLECTION } from '../../lib/contactService';
 
@@ -22,6 +23,20 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
     }, []);
 
+    // Handle foreground FCM messages
+    useEffect(() => {
+        if (messaging) {
+            onMessage(messaging, (payload) => {
+                console.log('FCM Message received in foreground:', payload);
+                showNotification(
+                    payload.notification?.title || 'New Message',
+                    payload.notification?.body || '',
+                    payload.data?.url
+                );
+            });
+        }
+    }, []);
+
     const requestPermission = async () => {
         if (!('Notification' in window)) {
             console.log('This browser does not support desktop notification');
@@ -37,6 +52,34 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                     body: 'You will now receive alerts for new inquiries.',
                     icon: '/shopify.png'
                 });
+
+                // Get FCM Token
+                if (messaging) {
+                    try {
+                        // Request FCM Token
+                        // VAPID key is optional if using default config, but recommended
+                        // You can get this from Firebase Console -> Project Settings -> Cloud Messaging -> Web Push certificates
+                        const currentToken = await getToken(messaging, {
+                            // vapidKey: 'YOUR_PUBLIC_VAPID_KEY_HERE' 
+                        });
+                        
+                        if (currentToken) {
+                            console.log('FCM Token:', currentToken);
+                            // Save token to Firestore
+                            await setDoc(doc(db, 'admin_fcm_tokens', currentToken), {
+                                token: currentToken,
+                                userAgent: navigator.userAgent,
+                                createdAt: new Date(),
+                                lastSeen: new Date()
+                            });
+                            console.log('FCM Token saved to Firestore');
+                        } else {
+                            console.log('No registration token available. Request permission to generate one.');
+                        }
+                    } catch (err) {
+                        console.error('An error occurred while retrieving FCM token.', err);
+                    }
+                }
             }
         } catch (error) {
             console.error('Error requesting permission:', error);

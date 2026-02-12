@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
+import { submitContactMessage } from '../lib/contactService';
 
 import SEO from '../components/SEO';
 

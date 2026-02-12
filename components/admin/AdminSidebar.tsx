@@ -22,7 +22,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onClose }) 
 
     const menuItems = [
         { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-        { name: 'Inquiries', path: '/admin/inquiries', icon: Inbox },
+        { name: 'Messages', path: '/admin/messages', icon: Inbox },
         { name: 'Tools', path: '/admin/tools', icon: FolderOpen },
         { name: 'Portfolio', path: '/admin/portfolio', icon: FolderOpen },
         { name: 'Services', path: '/admin/services', icon: FolderOpen },

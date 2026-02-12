@@ -25,10 +25,13 @@ import AdminServices from './pages/admin/Services';
 import AdminBlog from './pages/admin/Blog';
 import AdminReadySites from './pages/admin/ReadySites';
 import AdminSettings from './pages/admin/Settings';
-import AdminInquiries from './pages/admin/Inquiries';
+import AdminMessages from './pages/admin/Messages';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
 import NotFound from './pages/NotFound';
 import { HelmetProvider } from 'react-helmet-async';
 import { NotificationProvider } from './components/admin/NotificationProvider';
+import { SettingsProvider } from './components/SettingsProvider';
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -61,6 +64,8 @@ const AppContent: React.FC = () => {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/tools" element={<Tools />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={
@@ -76,7 +81,7 @@ const AppContent: React.FC = () => {
               <Route path="services" element={<AdminServices />} />
               <Route path="blog" element={<AdminBlog />} />
               <Route path="ready-sites" element={<AdminReadySites />} />
-              <Route path="inquiries" element={<AdminInquiries />} />
+              <Route path="messages" element={<AdminMessages />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
 
@@ -92,10 +97,12 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <ScrollToTop />
-      <AppContent />
-    </Router>
+    <SettingsProvider>
+      <Router>
+        <ScrollToTop />
+        <AppContent />
+      </Router>
+    </SettingsProvider>
   );
 };
 

@@ -2,6 +2,8 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getMessaging, isSupported } from "firebase/messaging";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -20,4 +22,12 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { app, db, storage };
+// Initialize Messaging (only in supported environments)
+let messaging: any = null;
+isSupported().then(supported => {
+    if (supported) {
+        messaging = getMessaging(app);
+    }
+}).catch(console.error);
+
+export { app, db, storage, messaging };

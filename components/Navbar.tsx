@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useSettings } from './SettingsProvider';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { settings } = useSettings();
 
   const navLinks = [
     { name: 'Home', path: '/', dropdown: false },
@@ -32,8 +34,12 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="text-2xl font-bold text-slate-900 tracking-tight">
-              wb<span className="text-blue-600">ify</span>
+            <Link to="/" className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              {settings.logoUrl ? (
+                <img src={settings.logoUrl} alt={settings.siteName} className="h-8 w-auto object-contain" />
+              ) : (
+                <>wb<span className="text-blue-600">ify</span></>
+              )}
             </Link>
           </div>
 

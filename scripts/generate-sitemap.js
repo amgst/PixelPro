@@ -28,6 +28,8 @@ const staticRoutes = [
     { url: '/about', changefreq: 'monthly', priority: 0.7 },
     { url: '/contact', changefreq: 'monthly', priority: 0.7 },
     { url: '/inquiry', changefreq: 'monthly', priority: 0.6 },
+    { url: '/privacy-policy', changefreq: 'monthly', priority: 0.5 },
+    { url: '/terms-and-conditions', changefreq: 'monthly', priority: 0.5 },
 ];
 
 async function generateSitemap() {
