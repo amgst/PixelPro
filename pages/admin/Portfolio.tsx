@@ -84,9 +84,9 @@ const AdminPortfolio: React.FC = () => {
                 }
             }
 
-            // 2. Fetch & Upload Screenshot
-            const screenshotUrl = `https://api.microlink.io?url=${encodeURIComponent(currentItem.link)}&screenshot=true&meta=false&embed=screenshot.url`;
-            const fileName = generateUniqueFileName('screenshot.png');
+            // 2. Fetch & Upload Screenshot (optimized for size)
+            const screenshotUrl = `https://api.microlink.io?url=${encodeURIComponent(currentItem.link)}&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=1000&screenshot.type=jpeg&screenshot.quality=80`;
+            const fileName = generateUniqueFileName('screenshot.jpg');
             const uploadPath = `portfolios/${fileName}`;
             const downloadURL = await uploadFromUrl(screenshotUrl, uploadPath);
             
@@ -107,7 +107,7 @@ const AdminPortfolio: React.FC = () => {
 
         setIsUploading(true);
         try {
-            const fileName = generateUniqueFileName('imported-image.png');
+            const fileName = generateUniqueFileName('imported-image.jpg');
             const uploadPath = `portfolios/${fileName}`;
             const downloadURL = await uploadFromUrl(currentItem.imageUrl, uploadPath);
             setCurrentItem(prev => ({ ...prev, imageUrl: downloadURL }));
@@ -131,7 +131,12 @@ const AdminPortfolio: React.FC = () => {
         setIsUploading(true);
         setUploadProgress(0);
         try {
-            const fileName = generateUniqueFileName(file.name);
+            // Generate a filename, forcing .jpg if it's an image since we optimize to JPEG
+            const baseName = file.name.split('.')[0];
+            const fileName = file.type.startsWith('image/') 
+                ? generateUniqueFileName(`${baseName}.jpg`)
+                : generateUniqueFileName(file.name);
+                
             const uploadPath = `portfolios/${fileName}`;
             const downloadURL = await uploadFileWithProgress(file, uploadPath, (progress) => {
                 setUploadProgress(progress);
