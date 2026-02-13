@@ -92,10 +92,27 @@ const AdminPortfolio: React.FC = () => {
             category: 'Shopify',
             imageUrl: '',
             description: '',
-            link: ''
+            link: '',
+            technologies: [],
+            isFeatured: false,
+            order: 0
         });
         setIsEditing(true);
     };
+
+    const toggleTechnology = (tech: string) => {
+        const currentTechs = currentItem.technologies || [];
+        if (currentTechs.includes(tech)) {
+            setCurrentItem({ ...currentItem, technologies: currentTechs.filter(t => t !== tech) });
+        } else {
+            setCurrentItem({ ...currentItem, technologies: [...currentTechs, tech] });
+        }
+    };
+
+    const techOptions = [
+        'React', 'Next.js', 'Tailwind CSS', 'Shopify', 'Liquid', 'WordPress', 
+        'PHP', 'Node.js', 'Firebase', 'TypeScript', 'SEO', 'UI/UX'
+    ];
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -241,15 +258,63 @@ const AdminPortfolio: React.FC = () => {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                                 <select
                                     value={currentItem.category || 'Shopify'}
-                                    onChange={e => setCurrentItem({ ...currentItem, category: e.target.value })}
+                                    onChange={e => setCurrentItem({ ...currentItem, category: e.target.value as any })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                 >
                                     <option value="Shopify">Shopify</option>
                                     <option value="React">React</option>
                                     <option value="WordPress">WordPress</option>
-                                    <option value="Graphic Design & Print">Graphic Design & Print</option>
-                                    <option value="Video & Animation">Video & Animation</option>
+                                    <option value="Other">Other</option>
                                 </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Live Website URL</label>
+                                <input
+                                    type="url"
+                                    value={currentItem.link || ''}
+                                    onChange={e => setCurrentItem({ ...currentItem, link: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="https://example.com"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Technologies</label>
+                                <div className="flex flex-wrap gap-2">
+                                    {techOptions.map(tech => (
+                                        <button
+                                            key={tech}
+                                            type="button"
+                                            onClick={() => toggleTechnology(tech)}
+                                            className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                                                (currentItem.technologies || []).includes(tech)
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                            }`}
+                                        >
+                                            {tech}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-6">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={currentItem.isFeatured || false}
+                                        onChange={e => setCurrentItem({ ...currentItem, isFeatured: e.target.checked })}
+                                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700">Featured Project</span>
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <label className="text-sm font-medium text-gray-700">Order</label>
+                                    <input
+                                        type="number"
+                                        value={currentItem.order || 0}
+                                        onChange={e => setCurrentItem({ ...currentItem, order: parseInt(e.target.value) })}
+                                        className="w-16 px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>

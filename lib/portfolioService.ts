@@ -4,10 +4,13 @@ import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy 
 export interface PortfolioItem {
     id: string;
     title: string;
-    category: string;
+    category: 'Shopify' | 'React' | 'WordPress' | 'Other';
     imageUrl: string;
     description?: string;
     link?: string;
+    technologies?: string[];
+    isFeatured?: boolean;
+    order?: number;
 }
 
 const PORTFOLIO_COLLECTION = 'portfolios';

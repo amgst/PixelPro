@@ -18,18 +18,18 @@ const Portfolio: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState('All');
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
   // Data State
-  const [projects, setProjects] = useState<ProjectItem[]>([]);
+  const [projects, setProjects] = useState<PortfolioItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const categories = ['All', 'Shopify', 'React', 'WordPress', 'Graphic Design & Print', 'Video & Animation'];
+  const categories = ['All', 'Shopify', 'React', 'WordPress', 'Other'];
 
   // Fetch Data
   useEffect(() => {
@@ -42,16 +42,11 @@ const Portfolio: React.FC = () => {
       try {
         const fetchedItems = await getPortfolios();
 
-        // Map to ProjectItem format
-        const mappedItems: ProjectItem[] = fetchedItems.map(item => ({
-          id: item.id,
-          title: item.title,
-          category: item.category,
-          img: item.imageUrl
-        }));
+        // Sort by order if available
+        const sortedItems = [...fetchedItems].sort((a, b) => (a.order || 0) - (b.order || 0));
 
         // Filter based on active tab or specific params
-        let filteredItems = mappedItems;
+        let filteredItems = sortedItems;
 
         if (activeTab !== 'All') {
           filteredItems = filteredItems.filter(item => item.category === activeTab);
@@ -88,23 +83,23 @@ const Portfolio: React.FC = () => {
 
   // Lightbox Handlers
   const openLightbox = (index: number) => {
-    // The index passed here is from the mapped currentItems (0-8)
-    // We need to convert it to the absolute index in the projects array
-    setCurrentImageIndex(indexOfFirstItem + index);
+    setCurrentProjectIndex(indexOfFirstItem + index);
     setLightboxOpen(true);
   };
 
   const closeLightbox = () => setLightboxOpen(false);
 
-  const nextImage = (e: React.MouseEvent) => {
+  const nextProject = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev + 1) % projects.length);
+    setCurrentProjectIndex((prev) => (prev + 1) % projects.length);
   };
 
-  const prevImage = (e: React.MouseEvent) => {
+  const prevProject = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev - 1 + projects.length) % projects.length);
+    setCurrentProjectIndex((prev) => (prev - 1 + projects.length) % projects.length);
   };
+
+  const currentProject = projects[currentProjectIndex];
 
   return (
     <div className="min-h-screen bg-white py-20">
@@ -176,23 +171,59 @@ const Portfolio: React.FC = () => {
                 currentItems.map((project, index) => (
                   <div
                     key={project.id}
-                    className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer aspect-[4/3] bg-gray-100"
-                    onClick={() => openLightbox(index)}
+                    className="group relative flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100"
                   >
-                    <img
-                      src={project.img}
-                      alt={project.title}
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                      <span className="text-blue-400 text-xs font-bold tracking-wider uppercase mb-1">
-                        {project.category}
-                      </span>
-                      <h3 className="text-white text-lg font-bold flex items-center justify-between">
+                    {/* Device Preview Mockup */}
+                    <div 
+                      className="relative aspect-[16/10] bg-gray-100 overflow-hidden cursor-pointer"
+                      onClick={() => openLightbox(index)}
+                    >
+                      <img
+                        src={project.imageUrl}
+                        alt={project.title}
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <div className="bg-white/90 backdrop-blur-sm p-3 rounded-full text-slate-900 shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                          <ArrowUpRight size={24} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-blue-600 text-[10px] font-bold tracking-wider uppercase px-2 py-1 bg-blue-50 rounded">
+                          {project.category}
+                        </span>
+                        {project.link && (
+                          <a 
+                            href={project.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-gray-400 hover:text-blue-600 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ExternalLink size={16} />
+                          </a>
+                        )}
+                      </div>
+                      <h3 className="text-slate-900 text-lg font-bold mb-2 group-hover:text-blue-600 transition-colors">
                         {project.title}
-                        <ArrowUpRight size={18} />
                       </h3>
+                      {project.technologies && (
+                        <div className="flex flex-wrap gap-1 mt-3">
+                          {project.technologies.slice(0, 3).map(tech => (
+                            <span key={tech} className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                              {tech}
+                            </span>
+                          ))}
+                          {project.technologies.length > 3 && (
+                            <span className="text-[10px] text-gray-400 px-1">+{project.technologies.length - 3}</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))
@@ -241,43 +272,86 @@ const Portfolio: React.FC = () => {
       </div>
 
       {/* Lightbox */}
-      {lightboxOpen && (
+      {lightboxOpen && currentProject && (
         <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center animate-fade-in" onClick={closeLightbox}>
           <button
             onClick={closeLightbox}
-            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors p-2"
+            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors p-2 z-[110]"
           >
             <X size={32} />
           </button>
 
-          <button
-            onClick={prevImage}
-            className="absolute left-4 md:left-8 text-white/70 hover:text-white transition-colors p-4 hover:bg-white/10 rounded-full"
-          >
-            <ChevronLeft size={40} />
-          </button>
+          <div className="w-full h-full flex flex-col md:flex-row items-center justify-center p-4 md:p-12 gap-8" onClick={(e) => e.stopPropagation()}>
+            {/* Image Container */}
+            <div className="relative flex-1 flex items-center justify-center w-full h-full max-h-[50vh] md:max-h-full">
+              <button
+                onClick={prevProject}
+                className="absolute left-0 text-white/50 hover:text-white transition-colors p-2 z-10"
+              >
+                <ChevronLeft size={48} />
+              </button>
 
-          <div className="max-w-5xl max-h-[85vh] w-full px-4 relative" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={projects[currentImageIndex].img}
-              alt={projects[currentImageIndex].title}
-              className="w-full h-full object-contain rounded-lg shadow-2xl"
-            />
-            <div className="absolute bottom-[-3rem] left-0 w-full text-center">
-              <h3 className="text-white text-xl font-bold">{projects[currentImageIndex].title}</h3>
-              <p className="text-gray-400 text-sm">{projects[currentImageIndex].category}</p>
+              <img
+                src={currentProject.imageUrl}
+                alt={currentProject.title}
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              />
+
+              <button
+                onClick={nextProject}
+                className="absolute right-0 text-white/50 hover:text-white transition-colors p-2 z-10"
+              >
+                <ChevronRight size={48} />
+              </button>
+            </div>
+
+            {/* Project Details */}
+            <div className="w-full md:w-80 flex flex-col text-white animate-fade-in-up">
+              <span className="text-blue-400 text-sm font-bold tracking-wider uppercase mb-2">
+                {currentProject.category}
+              </span>
+              <h2 className="text-3xl font-bold mb-4">{currentProject.title}</h2>
+              
+              {currentProject.description && (
+                <p className="text-gray-400 mb-6 leading-relaxed">
+                  {currentProject.description}
+                </p>
+              )}
+
+              {currentProject.technologies && (
+                <div className="mb-8">
+                  <h4 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-3">Technologies</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {currentProject.technologies.map(tech => (
+                      <span key={tech} className="text-xs bg-white/10 px-3 py-1 rounded-full border border-white/10">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {currentProject.link && (
+                <a
+                  href={currentProject.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-blue-600/20"
+                >
+                  Visit Website <ExternalLink size={18} />
+                </a>
+              )}
             </div>
           </div>
 
-          <button
-            onClick={nextImage}
-            className="absolute right-4 md:right-8 text-white/70 hover:text-white transition-colors p-4 hover:bg-white/10 rounded-full"
-          >
-            <ChevronRight size={40} />
-          </button>
-
-          <div className="absolute top-6 left-6 text-white/50 text-sm">
-            {currentImageIndex + 1} / {projects.length}
+          {/* Indicators */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+            {projects.map((_, i) => (
+              <div
+                key={i}
+                className={`w-2 h-2 rounded-full transition-all ${i === currentProjectIndex ? 'w-8 bg-blue-600' : 'bg-white/20'}`}
+              />
+            ))}
           </div>
         </div>
       )}
