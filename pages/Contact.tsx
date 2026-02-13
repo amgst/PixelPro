@@ -44,10 +44,11 @@ const Contact: React.FC = () => {
         });
         clearTimeout(timeoutId);
         
+        const result = await response.json();
         if (!response.ok) {
-          console.warn('Email API responded with error:', response.status);
+          console.warn('Email API responded with error:', response.status, result);
         } else {
-          console.log('Email sent successfully');
+          console.log('Email sent successfully:', result);
         }
       } catch (emailError: any) {
         clearTimeout(timeoutId);
