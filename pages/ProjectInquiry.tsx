@@ -47,15 +47,21 @@ const ProjectInquiry: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('Inquiry submission started', formData);
         setIsSubmitting(true);
         try {
             // Save to Firestore
+            console.log('Saving to Firestore...');
             await submitInquiry(formData);
             console.log('Form submitted to Firestore');
 
             // Send email via Vercel API
+            console.log('Sending email notification...');
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
             try {
-                await fetch('/api/send-email', {
+                const response = await fetch('/api/send-email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -63,10 +69,24 @@ const ProjectInquiry: React.FC = () => {
                     body: JSON.stringify({
                         type: 'inquiry',
                         data: formData
-                    })
+                    }),
+                    signal: controller.signal
                 });
-            } catch (emailError) {
-                console.error('Error sending email:', emailError);
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    console.warn('Email API responded with error:', response.status);
+                } else {
+                    console.log('Email sent successfully');
+                }
+            } catch (emailError: any) {
+                clearTimeout(timeoutId);
+                if (emailError.name === 'AbortError') {
+                    console.error('Email API timed out');
+                } else {
+                    console.error('Error sending email:', emailError);
+                }
+                // Don't fail the whole submission if just the email fails
             }
 
             setSubmitted(true);

@@ -16,22 +16,22 @@ const Contact: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submission started');
+    console.log('Form submission started', formData);
     setStatus('submitting');
 
     try {
-      // Validate service exists
-      if (typeof submitContactMessage !== 'function') {
-        throw new ReferenceError('submitContactMessage is not defined as a function');
-      }
-
       // Save to Firestore
+      console.log('Saving to Firestore...');
       await submitContactMessage(formData);
       console.log('Saved to Firestore successfully');
 
       // Send email via Vercel API
+      console.log('Sending email notification...');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
       try {
-        await fetch('/api/send-email', {
+        const response = await fetch('/api/send-email', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -39,10 +39,24 @@ const Contact: React.FC = () => {
           body: JSON.stringify({
             type: 'contact',
             data: formData
-          })
+          }),
+          signal: controller.signal
         });
-      } catch (emailError) {
-        console.error('Error sending email:', emailError);
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          console.warn('Email API responded with error:', response.status);
+        } else {
+          console.log('Email sent successfully');
+        }
+      } catch (emailError: any) {
+        clearTimeout(timeoutId);
+        if (emailError.name === 'AbortError') {
+          console.error('Email API timed out');
+        } else {
+          console.error('Error sending email:', emailError);
+        }
+        // Don't fail the whole submission if just the email fails
       }
 
       setStatus('success');

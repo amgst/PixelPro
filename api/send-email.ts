@@ -55,12 +55,19 @@ View details: https://www.wbify.com/admin/inquiries
     }
 
     try {
-        await transporter.sendMail({
+        // Add a timeout for the email sending process
+        const emailPromise = transporter.sendMail({
             from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_USER}>`,
             to: process.env.ADMIN_EMAIL,
             subject: subject,
             text: text,
         });
+
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Email sending timed out')), 8000)
+        );
+
+        await Promise.race([emailPromise, timeoutPromise]);
 
         return res.status(200).json({ message: 'Email sent successfully' });
     } catch (error: any) {
