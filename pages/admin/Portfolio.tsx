@@ -1,8 +1,8 @@
 import React from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { PortfolioItem, getPortfolios, addPortfolio, updatePortfolio, deletePortfolio } from '../../lib/portfolioService';
-import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
-import { uploadFileWithProgress, generateUniqueFileName } from '../../lib/storageService';
+import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { uploadFileWithProgress, generateUniqueFileName, uploadFromUrl } from '../../lib/storageService';
 
 const AdminPortfolio: React.FC = () => {
     const [items, setItems] = React.useState<PortfolioItem[]>([]);
@@ -11,6 +11,8 @@ const AdminPortfolio: React.FC = () => {
     const [currentItem, setCurrentItem] = React.useState<Partial<PortfolioItem>>({});
     const [isLoading, setIsLoading] = React.useState(true);
     const [isUploading, setIsUploading] = React.useState(false);
+    const [isSaving, setIsSaving] = React.useState(false);
+    const [isFetchingScreenshot, setIsFetchingScreenshot] = React.useState(false);
     const [uploadProgress, setUploadProgress] = React.useState(0);
 
     // Pagination State
@@ -40,6 +42,81 @@ const AdminPortfolio: React.FC = () => {
             alert("Failed to fetch portfolios.");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleAutoFetchData = async () => {
+        if (!currentItem.link) {
+            alert("Please provide a website link first.");
+            return;
+        }
+
+        setIsFetchingScreenshot(true);
+        try {
+            // 1. Fetch Metadata (Title, Description, etc.)
+            const metaResponse = await fetch(`https://api.microlink.io?url=${encodeURIComponent(currentItem.link)}&palette=true`);
+            const metaData = await metaResponse.json();
+
+            if (metaData.status === 'success') {
+                const { title, description, publisher } = metaData.data;
+                
+                // Update text fields if they are empty
+                setCurrentItem(prev => ({
+                    ...prev,
+                    title: prev.title || title || '',
+                    description: prev.description || description || '',
+                    // Try to guess category if publisher matches common ones
+                    category: prev.category || (publisher?.toLowerCase().includes('shopify') ? 'Shopify' : 
+                               publisher?.toLowerCase().includes('wordpress') ? 'WordPress' : 'Other')
+                }));
+
+                // Auto-detect technologies from metadata/publisher
+                const techList: string[] = [];
+                if (publisher?.toLowerCase().includes('shopify')) techList.push('Shopify', 'Liquid');
+                if (publisher?.toLowerCase().includes('wordpress')) techList.push('WordPress', 'PHP');
+                if (currentItem.link.includes('vercel.app')) techList.push('React', 'Next.js');
+                
+                if (techList.length > 0) {
+                    setCurrentItem(prev => ({
+                        ...prev,
+                        technologies: Array.from(new Set([...(prev.technologies || []), ...techList]))
+                    }));
+                }
+            }
+
+            // 2. Fetch & Upload Screenshot
+            const screenshotUrl = `https://api.microlink.io?url=${encodeURIComponent(currentItem.link)}&screenshot=true&meta=false&embed=screenshot.url`;
+            const fileName = generateUniqueFileName('screenshot.png');
+            const uploadPath = `portfolios/${fileName}`;
+            const downloadURL = await uploadFromUrl(screenshotUrl, uploadPath);
+            
+            setCurrentItem(prev => ({ ...prev, imageUrl: downloadURL }));
+            alert("Website data and screenshot imported successfully!");
+        } catch (error) {
+            console.error("Error auto-fetching data:", error);
+            alert("Failed to auto-fetch some data. You may need to fill it manually.");
+        } finally {
+            setIsFetchingScreenshot(false);
+        }
+    };
+
+    const handleImportFromUrl = async () => {
+        if (!currentItem.imageUrl || currentItem.imageUrl.includes('firebasestorage.googleapis.com')) {
+            return;
+        }
+
+        setIsUploading(true);
+        try {
+            const fileName = generateUniqueFileName('imported-image.png');
+            const uploadPath = `portfolios/${fileName}`;
+            const downloadURL = await uploadFromUrl(currentItem.imageUrl, uploadPath);
+            setCurrentItem(prev => ({ ...prev, imageUrl: downloadURL }));
+            alert("Image imported and saved to your hosting!");
+        } catch (error) {
+            console.error("Error importing image:", error);
+            alert("Failed to import image from URL.");
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -116,8 +193,12 @@ const AdminPortfolio: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!currentItem.title || !currentItem.imageUrl) return;
+        if (!currentItem.title || !currentItem.imageUrl) {
+            alert("Title and Image are required.");
+            return;
+        }
 
+        setIsSaving(true);
         try {
             if (currentItem.id) {
                 await updatePortfolio(currentItem.id, currentItem);
@@ -130,6 +211,8 @@ const AdminPortfolio: React.FC = () => {
         } catch (error) {
             console.error("Error saving item:", error);
             alert("Failed to save item.");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -202,6 +285,32 @@ const AdminPortfolio: React.FC = () => {
                                 />
                             </div>
                             <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Live Website URL</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="url"
+                                        value={currentItem.link || ''}
+                                        onChange={e => setCurrentItem({ ...currentItem, link: e.target.value })}
+                                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="https://example.com"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleAutoFetchData}
+                                        disabled={isFetchingScreenshot || !currentItem.link}
+                                        className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                                            isFetchingScreenshot || !currentItem.link
+                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                : 'bg-slate-900 text-white hover:bg-slate-800'
+                                        }`}
+                                        title="Auto-fetch title, description, tags, and screenshot"
+                                    >
+                                        {isFetchingScreenshot ? <Loader2 size={14} className="animate-spin" /> : <LayoutGrid size={14} />}
+                                        Magic Fill
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio Image</label>
                                 <div className="mt-1 flex items-center gap-4">
                                     {currentItem.imageUrl ? (
@@ -242,15 +351,27 @@ const AdminPortfolio: React.FC = () => {
                                              <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
                                          </label>
                                      )}
-                                    <div className="flex-1">
-                                        <input
-                                            type="url"
-                                            placeholder="Or paste image URL"
-                                            value={currentItem.imageUrl || ''}
-                                            onChange={e => setCurrentItem({ ...currentItem, imageUrl: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                                        />
-                                        <p className="text-[10px] text-gray-500 mt-1">Recommended: Square or 4:3 aspect ratio</p>
+                                    <div className="flex-1 space-y-2">
+                                        <div className="relative flex-1">
+                                            <input
+                                                type="url"
+                                                placeholder="Or paste image URL"
+                                                value={currentItem.imageUrl || ''}
+                                                onChange={e => setCurrentItem({ ...currentItem, imageUrl: e.target.value })}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm pr-10"
+                                            />
+                                            {currentItem.imageUrl && !currentItem.imageUrl.includes('firebasestorage.googleapis.com') && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleImportFromUrl}
+                                                    title="Save to our hosting"
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 hover:text-blue-800 p-1"
+                                                >
+                                                    {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+                                                </button>
+                                            )}
+                                        </div>
+                                        <p className="text-[10px] text-gray-500">Recommended: Square or 4:3 aspect ratio</p>
                                     </div>
                                 </div>
                             </div>
@@ -266,16 +387,6 @@ const AdminPortfolio: React.FC = () => {
                                     <option value="WordPress">WordPress</option>
                                     <option value="Other">Other</option>
                                 </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Live Website URL</label>
-                                <input
-                                    type="url"
-                                    value={currentItem.link || ''}
-                                    onChange={e => setCurrentItem({ ...currentItem, link: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    placeholder="https://example.com"
-                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Technologies</label>
@@ -325,15 +436,6 @@ const AdminPortfolio: React.FC = () => {
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Link (Optional)</label>
-                                <input
-                                    type="url"
-                                    value={currentItem.link || ''}
-                                    onChange={e => setCurrentItem({ ...currentItem, link: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
                             <div className="pt-4 flex justify-end gap-3">
                                 <button
                                     type="button"
@@ -344,9 +446,22 @@ const AdminPortfolio: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-2"
+                                    disabled={isSaving || isUploading}
+                                    className={`px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-2 ${
+                                        (isSaving || isUploading) ? 'opacity-70 cursor-not-allowed' : ''
+                                    }`}
                                 >
-                                    <Save size={18} /> Save Item
+                                    {isSaving ? (
+                                        <>
+                                            <Loader2 size={18} className="animate-spin" />
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Save size={18} />
+                                            Save Item
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </form>

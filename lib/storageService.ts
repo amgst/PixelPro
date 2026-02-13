@@ -41,6 +41,21 @@ export const uploadFileWithProgress = (
 };
 
 /**
+ * Downloads an image from a URL and uploads it to Firebase Storage.
+ */
+export const uploadFromUrl = async (url: string, path: string): Promise<string> => {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const file = new File([blob], 'imported-image', { type: blob.type });
+        return await uploadFileWithProgress(file, path);
+    } catch (error) {
+        console.error("Error importing image from URL:", error);
+        throw error;
+    }
+};
+
+/**
  * Generates a unique filename for storage to avoid collisions.
  */
 export const generateUniqueFileName = (originalName: string): string => {
