@@ -1,13 +1,34 @@
 import React from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { PortfolioItem, getPortfolios, addPortfolio, updatePortfolio, deletePortfolio } from '../../lib/portfolioService';
-import { Plus, Trash2, Edit2, Save, X } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { uploadFileWithProgress, generateUniqueFileName } from '../../lib/storageService';
 
 const AdminPortfolio: React.FC = () => {
     const [items, setItems] = React.useState<PortfolioItem[]>([]);
+    const [viewMode, setViewMode] = React.useState<'card' | 'list'>('card');
     const [isEditing, setIsEditing] = React.useState(false);
     const [currentItem, setCurrentItem] = React.useState<Partial<PortfolioItem>>({});
     const [isLoading, setIsLoading] = React.useState(true);
+    const [isUploading, setIsUploading] = React.useState(false);
+    const [uploadProgress, setUploadProgress] = React.useState(0);
+
+    // Pagination State
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const [itemsPerPage, setItemsPerPage] = React.useState(10);
+
+    // Pagination Logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(items.length / itemsPerPage);
+
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+    const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setItemsPerPage(Number(e.target.value));
+        setCurrentPage(1); // Reset to first page when changing page size
+    };
 
     const fetchItems = async () => {
         setIsLoading(true);
@@ -25,6 +46,28 @@ const AdminPortfolio: React.FC = () => {
     React.useEffect(() => {
         fetchItems();
     }, []);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        setUploadProgress(0);
+        try {
+            const fileName = generateUniqueFileName(file.name);
+            const uploadPath = `portfolios/${fileName}`;
+            const downloadURL = await uploadFileWithProgress(file, uploadPath, (progress) => {
+                setUploadProgress(progress);
+            });
+            setCurrentItem(prev => ({ ...prev, imageUrl: downloadURL }));
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            alert("Failed to upload image.");
+        } finally {
+            setIsUploading(false);
+            setUploadProgress(0);
+        }
+    };
 
     const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this item?')) {
@@ -75,17 +118,48 @@ const AdminPortfolio: React.FC = () => {
 
     return (
         <AdminLayout>
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Manage Portfolio</h1>
                     <p className="text-gray-500">Add or edit portfolio items.</p>
                 </div>
-                <button
-                    onClick={handleAddNew}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
-                >
-                    <Plus size={18} /> Add New Item
-                </button>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <div className="flex items-center gap-2 mr-2">
+                        <span className="text-sm text-gray-500 hidden md:block">Show</span>
+                        <select 
+                            value={itemsPerPage} 
+                            onChange={handleItemsPerPageChange}
+                            className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-1.5 outline-none"
+                        >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                        </select>
+                    </div>
+                    <div className="flex items-center bg-gray-100 p-1 rounded-lg">
+                        <button
+                            onClick={() => setViewMode('card')}
+                            className={`p-1.5 rounded-md transition-all ${viewMode === 'card' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                            title="Card View"
+                        >
+                            <LayoutGrid size={18} />
+                        </button>
+                        <button
+                            onClick={() => setViewMode('list')}
+                            className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                            title="List View"
+                        >
+                            <List size={18} />
+                        </button>
+                    </div>
+                    <button
+                        onClick={handleAddNew}
+                        className="flex-1 sm:flex-none bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                    >
+                        <Plus size={18} /> Add New Item
+                    </button>
+                </div>
             </div>
 
             {isEditing && (
@@ -111,14 +185,57 @@ const AdminPortfolio: React.FC = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                                <input
-                                    type="url"
-                                    required
-                                    value={currentItem.imageUrl || ''}
-                                    onChange={e => setCurrentItem({ ...currentItem, imageUrl: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio Image</label>
+                                <div className="mt-1 flex items-center gap-4">
+                                    {currentItem.imageUrl ? (
+                                        <div className="relative group">
+                                            <img
+                                                src={currentItem.imageUrl}
+                                                alt="Preview"
+                                                className="w-24 h-24 object-cover rounded-lg border border-gray-200"
+                                            />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                                <label className="cursor-pointer text-white p-1">
+                                                    <Upload size={16} />
+                                                    <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                         <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all overflow-hidden relative">
+                                             {isUploading ? (
+                                                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90">
+                                                     <div className="relative w-12 h-12 flex items-center justify-center">
+                                                         <Loader2 className="w-full h-full text-blue-600 animate-spin absolute" />
+                                                         <span className="text-[10px] font-bold text-blue-700">{uploadProgress}%</span>
+                                                     </div>
+                                                     <div className="w-16 h-1 bg-gray-100 rounded-full mt-2 overflow-hidden">
+                                                         <div 
+                                                             className="h-full bg-blue-600 transition-all duration-300" 
+                                                             style={{ width: `${uploadProgress}%` }}
+                                                         />
+                                                     </div>
+                                                 </div>
+                                             ) : (
+                                                 <>
+                                                     <Upload className="w-6 h-6 text-gray-400" />
+                                                     <span className="text-[10px] text-gray-500 mt-1">Upload</span>
+                                                 </>
+                                             )}
+                                             <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
+                                         </label>
+                                     )}
+                                    <div className="flex-1">
+                                        <input
+                                            type="url"
+                                            placeholder="Or paste image URL"
+                                            value={currentItem.imageUrl || ''}
+                                            onChange={e => setCurrentItem({ ...currentItem, imageUrl: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                        />
+                                        <p className="text-[10px] text-gray-500 mt-1">Recommended: Square or 4:3 aspect ratio</p>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
@@ -172,56 +289,172 @@ const AdminPortfolio: React.FC = () => {
                 </div>
             )}
 
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                        <tr>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Image</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Title</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Category</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {items.map((item) => (
-                            <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4">
-                                    <img src={item.imageUrl} alt={item.title} className="w-12 h-12 object-cover rounded-lg" />
-                                </td>
-                                <td className="px-6 py-4 font-medium text-slate-900">{item.title}</td>
-                                <td className="px-6 py-4">
-                                    <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
+            {viewMode === 'card' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {currentItems.map((item) => (
+                        <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-shadow">
+                            <div className="relative aspect-video overflow-hidden bg-gray-100">
+                                <img 
+                                    src={item.imageUrl} 
+                                    alt={item.title} 
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={() => handleEdit(item)}
+                                        className="p-1.5 bg-white/90 text-blue-600 rounded-md shadow-sm hover:bg-white"
+                                    >
+                                        <Edit2 size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(item.id)}
+                                        className="p-1.5 bg-white/90 text-red-600 rounded-md shadow-sm hover:bg-white"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                                <div className="absolute bottom-2 left-2">
+                                    <span className="px-2 py-0.5 bg-black/60 text-white text-[10px] font-medium rounded backdrop-blur-sm">
                                         {item.category}
                                     </span>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <button
+                                </div>
+                            </div>
+                            <div className="p-4 flex-1 flex flex-col">
+                                <h3 className="font-bold text-slate-900 mb-1 line-clamp-1">{item.title}</h3>
+                                <p className="text-gray-500 text-sm line-clamp-2 mb-4 flex-1">
+                                    {item.description || 'No description provided.'}
+                                </p>
+                                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                                    {item.link ? (
+                                        <a 
+                                            href={item.link} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:text-blue-700 text-xs font-medium flex items-center gap-1"
+                                        >
+                                            <ExternalLink size={12} /> View Live
+                                        </a>
+                                    ) : (
+                                        <span className="text-gray-400 text-xs italic">No link</span>
+                                    )}
+                                    <div className="flex gap-2">
+                                        <button 
                                             onClick={() => handleEdit(item)}
-                                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            className="text-gray-400 hover:text-blue-600 transition-colors"
                                         >
-                                            <Edit2 size={18} />
+                                            <Edit2 size={16} />
                                         </button>
-                                        <button
+                                        <button 
                                             onClick={() => handleDelete(item.id)}
-                                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            className="text-gray-400 hover:text-red-600 transition-colors"
                                         >
-                                            <Trash2 size={18} />
+                                            <Trash2 size={16} />
                                         </button>
                                     </div>
-                                </td>
-                            </tr>
-                        ))}
-                        {items.length === 0 && !isLoading && (
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                    {items.length === 0 && !isLoading && (
+                        <div className="col-span-full py-12 text-center bg-white rounded-xl border-2 border-dashed border-gray-200">
+                            <p className="text-gray-500">No portfolio items found. Start by adding a new one!</p>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table className="w-full text-left">
+                        <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                                    No items found. Click "Add New Item" to create one.
-                                </td>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Image</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Title</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Category</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700 text-right">Actions</th>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {currentItems.map((item) => (
+                                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="px-6 py-4">
+                                        <img src={item.imageUrl} alt={item.title} className="w-12 h-12 object-cover rounded-lg" />
+                                    </td>
+                                    <td className="px-6 py-4 font-medium text-slate-900">{item.title}</td>
+                                    <td className="px-6 py-4">
+                                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
+                                            {item.category}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button
+                                                onClick={() => handleEdit(item)}
+                                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            >
+                                                <Edit2 size={18} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(item.id)}
+                                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {items.length === 0 && !isLoading && (
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                                        No items found. Click "Add New Item" to create one.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {/* Pagination Controls */}
+            {items.length > itemsPerPage && (
+                <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                    <p className="text-sm text-gray-500">
+                        Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to <span className="font-medium">{Math.min(indexOfLastItem, items.length)}</span> of <span className="font-medium">{items.length}</span> items
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => paginate(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            <ChevronLeft size={18} />
+                        </button>
+                        
+                        <div className="flex items-center gap-1">
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                                <button
+                                    key={number}
+                                    onClick={() => paginate(number)}
+                                    className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${
+                                        currentPage === number
+                                            ? 'bg-blue-600 text-white shadow-md'
+                                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                                    }`}
+                                >
+                                    {number}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={() => paginate(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            <ChevronRight size={18} />
+                        </button>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 };

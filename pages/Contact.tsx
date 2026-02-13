@@ -16,13 +16,18 @@ const Contact: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted');
+    console.log('Form submission started');
     setStatus('submitting');
 
     try {
+      // Validate service exists
+      if (typeof submitContactMessage !== 'function') {
+        throw new ReferenceError('submitContactMessage is not defined as a function');
+      }
+
       // Save to Firestore
       await submitContactMessage(formData);
-      console.log('Saved to Firestore');
+      console.log('Saved to Firestore successfully');
 
       // Send email via Vercel API
       try {
