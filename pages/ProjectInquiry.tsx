@@ -74,9 +74,20 @@ const ProjectInquiry: React.FC = () => {
                 });
                 clearTimeout(timeoutId);
 
-                const result = await response.json();
+                let result;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    result = await response.json();
+                } else {
+                    result = { message: await response.text() };
+                }
+
                 if (!response.ok) {
-                    console.warn('Email API responded with error:', response.status, result);
+                    if (response.status === 404) {
+                        console.warn('Email API not found (404). If you are running locally with Vite, use "vercel dev" to test APIs.');
+                    } else {
+                        console.warn('Email API responded with error:', response.status, result);
+                    }
                 } else {
                     console.log('Email sent successfully:', result);
                 }
