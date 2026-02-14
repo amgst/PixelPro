@@ -11,6 +11,11 @@ export interface PortfolioItem {
     technologies?: string[];
     isFeatured?: boolean;
     order?: number;
+    performanceScore?: number;
+    seoScore?: number;
+    accessibilityScore?: number;
+    bestPracticesScore?: number;
+    lastChecked?: string;
 }
 
 const PORTFOLIO_COLLECTION = 'portfolios';

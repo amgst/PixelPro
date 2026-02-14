@@ -11,6 +11,7 @@ import About from './pages/About';
 import ShopifyLanding from './pages/ShopifyLanding';
 import WebDevLanding from './pages/WebDevLanding';
 import GraphicsLanding from './pages/GraphicsLanding';
+import WordPressLanding from './pages/WordPressLanding';
 import ProjectInquiry from './pages/ProjectInquiry';
 import Pricing from './pages/Pricing';
 import Portfolio from './pages/Portfolio';
@@ -59,6 +60,7 @@ const AppContent: React.FC = () => {
             <Route path="/shopify" element={<ShopifyLanding />} />
             <Route path="/web-dev" element={<WebDevLanding />} />
             <Route path="/graphics" element={<GraphicsLanding />} />
+            <Route path="/wordpress" element={<WordPressLanding />} />
             <Route path="/inquiry" element={<ProjectInquiry />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/portfolio" element={<Portfolio />} />

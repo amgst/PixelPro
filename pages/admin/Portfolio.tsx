@@ -1,8 +1,9 @@
 import React from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { PortfolioItem, getPortfolios, addPortfolio, updatePortfolio, deletePortfolio } from '../../lib/portfolioService';
-import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight, Download, Zap, ShieldCheck, Search, CheckCircle } from 'lucide-react';
 import { uploadFileWithProgress, generateUniqueFileName, uploadFromUrl } from '../../lib/storageService';
+import { fetchPageSpeedMetrics } from '../../lib/performanceService';
 
 const AdminPortfolio: React.FC = () => {
     const [items, setItems] = React.useState<PortfolioItem[]>([]);
@@ -13,6 +14,7 @@ const AdminPortfolio: React.FC = () => {
     const [isUploading, setIsUploading] = React.useState(false);
     const [isSaving, setIsSaving] = React.useState(false);
     const [isFetchingScreenshot, setIsFetchingScreenshot] = React.useState(false);
+    const [isCheckingPerformance, setIsCheckingPerformance] = React.useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = React.useState(0);
 
     // Pagination State
@@ -42,6 +44,39 @@ const AdminPortfolio: React.FC = () => {
             alert("Failed to fetch portfolios.");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleCheckPerformance = async (id: string, url: string) => {
+        if (!url) {
+            alert("This item has no live link to check.");
+            return;
+        }
+
+        setIsCheckingPerformance(id);
+        try {
+            const metrics = await fetchPageSpeedMetrics(url);
+            const updateData: Partial<PortfolioItem> = {
+                performanceScore: metrics.performance,
+                seoScore: metrics.seo,
+                accessibilityScore: metrics.accessibility,
+                bestPracticesScore: metrics.bestPractices,
+                lastChecked: new Date().toISOString()
+            };
+            
+            await updatePortfolio(id, updateData);
+            
+            // Update local state
+            setItems(prev => prev.map(item => 
+                item.id === id ? { ...item, ...updateData } : item
+            ));
+            
+            alert("Performance metrics updated successfully!");
+        } catch (error) {
+            console.error("Error checking performance:", error);
+            alert("Failed to fetch performance metrics. Make sure the URL is accessible.");
+        } finally {
+            setIsCheckingPerformance(null);
         }
     };
 
@@ -195,6 +230,12 @@ const AdminPortfolio: React.FC = () => {
         'React', 'Next.js', 'Tailwind CSS', 'Shopify', 'Liquid', 'WordPress', 
         'PHP', 'Node.js', 'Firebase', 'TypeScript', 'SEO', 'UI/UX'
     ];
+
+    const getScoreColor = (score: number) => {
+        if (score >= 90) return 'text-green-600 bg-green-50 border-green-100';
+        if (score >= 50) return 'text-yellow-600 bg-yellow-50 border-yellow-100';
+        return 'text-red-600 bg-red-50 border-red-100';
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -506,22 +547,52 @@ const AdminPortfolio: React.FC = () => {
                             </div>
                             <div className="p-4 flex-1 flex flex-col">
                                 <h3 className="font-bold text-slate-900 mb-1 line-clamp-1">{item.title}</h3>
-                                <p className="text-gray-500 text-sm line-clamp-2 mb-4 flex-1">
+                                <p className="text-gray-500 text-sm line-clamp-2 mb-3 flex-1">
                                     {item.description || 'No description provided.'}
                                 </p>
+                                
+                                {item.performanceScore !== undefined && (
+                                    <div className="grid grid-cols-2 gap-2 mb-4">
+                                        <div className={`flex items-center justify-between px-2 py-1 rounded border text-[10px] font-bold ${getScoreColor(item.performanceScore)}`}>
+                                            <span className="flex items-center gap-1"><Zap size={10} /> Perf</span>
+                                            <span>{item.performanceScore}</span>
+                                        </div>
+                                        <div className={`flex items-center justify-between px-2 py-1 rounded border text-[10px] font-bold ${getScoreColor(item.seoScore || 0)}`}>
+                                            <span className="flex items-center gap-1"><Search size={10} /> SEO</span>
+                                            <span>{item.seoScore}</span>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="flex items-center justify-between pt-4 border-t border-gray-50">
-                                    {item.link ? (
-                                        <a 
-                                            href={item.link} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="text-blue-600 hover:text-blue-700 text-xs font-medium flex items-center gap-1"
-                                        >
-                                            <ExternalLink size={12} /> View Live
-                                        </a>
-                                    ) : (
-                                        <span className="text-gray-400 text-xs italic">No link</span>
-                                    )}
+                                    <div className="flex gap-3">
+                                        {item.link ? (
+                                            <>
+                                                <a 
+                                                    href={item.link} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:text-blue-700 text-xs font-medium flex items-center gap-1"
+                                                >
+                                                    <ExternalLink size={12} /> View
+                                                </a>
+                                                <button
+                                                    onClick={() => handleCheckPerformance(item.id, item.link!)}
+                                                    disabled={isCheckingPerformance === item.id}
+                                                    className="text-slate-600 hover:text-slate-900 text-xs font-medium flex items-center gap-1 disabled:opacity-50"
+                                                >
+                                                    {isCheckingPerformance === item.id ? (
+                                                        <Loader2 size={12} className="animate-spin" />
+                                                    ) : (
+                                                        <Zap size={12} />
+                                                    )}
+                                                    Audit
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <span className="text-gray-400 text-xs italic">No link</span>
+                                        )}
+                                    </div>
                                     <div className="flex gap-2">
                                         <button 
                                             onClick={() => handleEdit(item)}
@@ -554,6 +625,7 @@ const AdminPortfolio: React.FC = () => {
                                 <th className="px-6 py-4 font-semibold text-gray-700">Image</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Title</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Category</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Performance</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -568,6 +640,26 @@ const AdminPortfolio: React.FC = () => {
                                         <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
                                             {item.category}
                                         </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {item.performanceScore !== undefined ? (
+                                            <div className="flex gap-2">
+                                                <div className={`px-2 py-0.5 rounded border text-[10px] font-bold ${getScoreColor(item.performanceScore)}`}>
+                                                    P: {item.performanceScore}
+                                                </div>
+                                                <div className={`px-2 py-0.5 rounded border text-[10px] font-bold ${getScoreColor(item.seoScore || 0)}`}>
+                                                    S: {item.seoScore}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleCheckPerformance(item.id, item.link!)}
+                                                disabled={isCheckingPerformance === item.id || !item.link}
+                                                className="text-blue-600 hover:underline text-xs disabled:text-gray-400"
+                                            >
+                                                {isCheckingPerformance === item.id ? 'Auditing...' : 'Run Audit'}
+                                            </button>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">

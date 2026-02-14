@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUpRight, X, ChevronLeft, ChevronRight, Loader, ExternalLink, AlertCircle, ArrowLeft } from 'lucide-react';
-import { getPortfolios } from '../lib/portfolioService';
+import { ArrowUpRight, X, ChevronLeft, ChevronRight, Loader, ExternalLink, AlertCircle, ArrowLeft, Zap, Search, ShieldCheck, CheckCircle } from 'lucide-react';
+import { getPortfolios, PortfolioItem } from '../lib/portfolioService';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
@@ -13,10 +13,17 @@ interface ProjectItem {
 
 const Portfolio: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category');
   const specificFolderId = searchParams.get('folderId');
   const specificTitle = searchParams.get('title');
 
-  const [activeTab, setActiveTab] = useState('All');
+  const [activeTab, setActiveTab] = useState(categoryParam || 'All');
+
+  useEffect(() => {
+    if (categoryParam) {
+      setActiveTab(categoryParam);
+    }
+  }, [categoryParam]);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
 
@@ -30,7 +37,7 @@ const Portfolio: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const categories = ['All', 'Shopify', 'React', 'WordPress', 'Other'];
+  const categories = ['All', 'Shopify', 'React', 'WordPress', 'Graphics', 'Other'];
 
   // Fetch Data
   useEffect(() => {
@@ -287,6 +294,20 @@ const Portfolio: React.FC = () => {
                       <h3 className="text-slate-900 text-lg font-bold mb-2 group-hover:text-blue-600 transition-colors">
                         {project.title}
                       </h3>
+                      
+                      {project.performanceScore !== undefined && (
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="flex items-center gap-1" title="Performance Score">
+                            <Zap size={12} className={project.performanceScore >= 90 ? 'text-green-500' : project.performanceScore >= 50 ? 'text-yellow-500' : 'text-red-500'} />
+                            <span className="text-[10px] font-bold text-gray-600">{project.performanceScore}</span>
+                          </div>
+                          <div className="flex items-center gap-1" title="SEO Score">
+                            <Search size={12} className={(project.seoScore || 0) >= 90 ? 'text-green-500' : (project.seoScore || 0) >= 50 ? 'text-yellow-500' : 'text-red-500'} />
+                            <span className="text-[10px] font-bold text-gray-600">{project.seoScore}</span>
+                          </div>
+                        </div>
+                      )}
+
                       {project.technologies && (
                         <div className="flex flex-wrap gap-1 mt-3">
                           {project.technologies.slice(0, 3).map(tech => (
@@ -406,6 +427,26 @@ const Portfolio: React.FC = () => {
               </span>
               <h2 className="text-3xl font-bold mb-4">{currentProject.title}</h2>
               
+              {currentProject.performanceScore !== undefined && (
+                <div className="flex gap-4 mb-6">
+                  <div className="flex flex-col items-center p-3 bg-white/5 rounded-xl border border-white/10 min-w-[70px]">
+                    <Zap size={20} className={currentProject.performanceScore >= 90 ? 'text-green-400' : currentProject.performanceScore >= 50 ? 'text-yellow-400' : 'text-red-400'} />
+                    <span className="text-xl font-bold mt-1">{currentProject.performanceScore}</span>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Perf</span>
+                  </div>
+                  <div className="flex flex-col items-center p-3 bg-white/5 rounded-xl border border-white/10 min-w-[70px]">
+                    <Search size={20} className={(currentProject.seoScore || 0) >= 90 ? 'text-green-400' : (currentProject.seoScore || 0) >= 50 ? 'text-yellow-400' : 'text-red-400'} />
+                    <span className="text-xl font-bold mt-1">{currentProject.seoScore}</span>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">SEO</span>
+                  </div>
+                  <div className="flex flex-col items-center p-3 bg-white/5 rounded-xl border border-white/10 min-w-[70px]">
+                    <ShieldCheck size={20} className={(currentProject.accessibilityScore || 0) >= 90 ? 'text-green-400' : (currentProject.accessibilityScore || 0) >= 50 ? 'text-yellow-400' : 'text-red-400'} />
+                    <span className="text-xl font-bold mt-1">{currentProject.accessibilityScore}</span>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Access</span>
+                  </div>
+                </div>
+              )}
+
               {currentProject.description && (
                 <p className="text-gray-400 mb-6 leading-relaxed">
                   {currentProject.description}

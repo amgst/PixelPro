@@ -35,7 +35,7 @@ const WebDevLanding: React.FC = () => {
                                 <span>Custom Web Development</span>
                             </div>
                             <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-                                Custom Websites <br /><span className="text-blue-500">That Drive Results.</span>
+                                <span className="text-blue-500">React</span> & Next.js <br />Web Development.
                             </h1>
                             <p className="text-xl text-gray-300 max-w-xl leading-relaxed">
                                 We design and develop custom websites that are fast, secure, and built to convert. From simple landing pages to complex web applications.
@@ -46,7 +46,7 @@ const WebDevLanding: React.FC = () => {
                                         Start Your Project <ArrowRight size={18} />
                                     </button>
                                 </Link>
-                                <Link to="/portfolio">
+                                <Link to="/portfolio?category=React">
                                     <button className="px-8 py-4 bg-transparent border border-gray-600 text-white rounded-full font-medium hover:bg-white/5 transition-all">
                                         View Portfolio
                                     </button>

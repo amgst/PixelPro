@@ -16,6 +16,7 @@ const Navbar: React.FC = () => {
       dropdown: [
         { name: 'Shopify Solutions', path: '/shopify' },
         { name: 'Custom Web Dev', path: '/web-dev' },
+        { name: 'WordPress Development', path: '/wordpress' },
         { name: 'Graphics & Branding', path: '/graphics' },
         { name: 'All Services', path: '/services' }
       ]

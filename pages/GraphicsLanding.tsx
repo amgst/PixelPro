@@ -46,7 +46,7 @@ const GraphicsLanding: React.FC = () => {
                                         Start Your Design <ArrowRight size={18} />
                                     </button>
                                 </Link>
-                                <Link to="/portfolio">
+                                <Link to="/portfolio?category=Graphics">
                                     <button className="px-8 py-4 bg-transparent border border-gray-400 text-white rounded-full font-medium hover:bg-white/10 transition-all">
                                         View Portfolio
                                     </button>
