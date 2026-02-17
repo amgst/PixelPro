@@ -7,6 +7,7 @@ export interface ReadySite {
     features: string[];
     previewLink?: string;
     order?: number; // For ordering templates
+    isConcept?: boolean;
 }
 
 export const READY_SITES_SEED_DATA: ReadySite[] = [

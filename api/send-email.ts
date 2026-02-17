@@ -69,6 +69,24 @@ ${data.additionalInfo}
 
 View details: https://www.wbify.com/admin/inquiries
         `;
+    } else if (type === 'application') {
+        subject = `New Job Application: ${data.role} from ${data.fullName}`;
+        text = `
+New Job Application Received!
+
+Name: ${data.fullName}
+Email: ${data.email}
+Role: ${data.role}
+Experience: ${data.experienceYears || 'N/A'}
+Skills: ${data.skills || 'N/A'}
+Portfolio: ${data.portfolioUrl || 'N/A'}
+LinkedIn: ${data.linkedinUrl || 'N/A'}
+
+Cover Letter:
+${data.coverLetter}
+
+View details: https://www.wbify.com/admin/dashboard
+        `;
     } else {
         console.warn('Invalid submission type received:', type);
         return res.status(400).json({ message: 'Invalid submission type' });

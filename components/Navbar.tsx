@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Rocket } from 'lucide-react';
 import { useSettings } from './SettingsProvider';
 
 const Navbar: React.FC = () => {
@@ -24,7 +24,7 @@ const Navbar: React.FC = () => {
     { name: 'Blog', path: '/blog', dropdown: false },
     { name: 'Portfolio', path: '/portfolio', dropdown: false },
     { name: 'Tools', path: '/tools', dropdown: false },
-    { name: 'Ready Sites ($200)', path: '/websites-for-sale', dropdown: false },
+    { name: 'Fast Track', path: '/websites-for-sale', dropdown: false },
     { name: 'About', path: '/about', dropdown: false },
     { name: 'Contact', path: '/contact', dropdown: false },
   ];
@@ -65,7 +65,12 @@ const Navbar: React.FC = () => {
                       : 'text-gray-600 hover:text-slate-900'
                       }`}
                   >
-                    {link.name}
+                    <span className="inline-flex items-center gap-1">
+                      {link.name}
+                      {link.name === 'Fast Track' && (
+                        <Rocket size={16} className="text-blue-600 animate-bounce" />
+                      )}
+                    </span>
                   </Link>
                 )}
 
@@ -120,7 +125,12 @@ const Navbar: React.FC = () => {
                     : 'text-gray-600 hover:text-slate-900 hover:bg-gray-50'
                     }`}
                 >
-                  {link.name}
+                  <span className="inline-flex items-center gap-2">
+                    {link.name}
+                    {link.name === 'Fast Track' && (
+                      <Rocket size={18} className="text-blue-600 animate-bounce" />
+                    )}
+                  </span>
                 </Link>
 
                 {link.dropdown && (

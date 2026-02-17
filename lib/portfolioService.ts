@@ -16,6 +16,7 @@ export interface PortfolioItem {
     accessibilityScore?: number;
     bestPracticesScore?: number;
     lastChecked?: string;
+    isConcept?: boolean;
 }
 
 const PORTFOLIO_COLLECTION = 'portfolios';

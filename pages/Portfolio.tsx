@@ -94,7 +94,7 @@ const Portfolio: React.FC = () => {
   };
 
   const getGridClass = () => {
-    switch(gridCols) {
+    switch (gridCols) {
       case 2: return 'grid-cols-1 md:grid-cols-2';
       case 4: return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4';
       default: return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
@@ -156,8 +156,8 @@ const Portfolio: React.FC = () => {
                 key={cat}
                 onClick={() => setActiveTab(cat)}
                 className={`px-6 py-3 text-sm font-medium transition-all relative ${activeTab === cat
-                    ? 'text-blue-600'
-                    : 'text-gray-500 hover:text-slate-900'
+                  ? 'text-blue-600'
+                  : 'text-gray-500 hover:text-slate-900'
                   }`}
               >
                 {cat}
@@ -185,12 +185,12 @@ const Portfolio: React.FC = () => {
             <div className="text-sm text-gray-500 font-medium">
               Showing <span className="text-slate-900">{showingStart}-{showingEnd}</span> of <span className="text-slate-900">{totalResults}</span> projects
             </div>
-            
+
             <div className="flex items-center gap-6">
               {/* Items Per Page */}
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-400 uppercase tracking-wider font-bold">Show:</span>
-                <select 
+                <select
                   value={itemsPerPage}
                   onChange={(e) => {
                     setItemsPerPage(Number(e.target.value));
@@ -214,11 +214,10 @@ const Portfolio: React.FC = () => {
                     <button
                       key={num}
                       onClick={() => setGridCols(num)}
-                      className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
-                        gridCols === num 
-                          ? 'bg-slate-900 text-white shadow-sm' 
-                          : 'text-gray-400 hover:text-slate-900'
-                      }`}
+                      className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${gridCols === num
+                        ? 'bg-slate-900 text-white shadow-sm'
+                        : 'text-gray-400 hover:text-slate-900'
+                        }`}
                     >
                       {num}
                     </button>
@@ -244,7 +243,7 @@ const Portfolio: React.FC = () => {
                     className="group relative flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100"
                   >
                     {/* Browser Mockup Frame */}
-                    <div 
+                    <div
                       className="relative aspect-[16/10] bg-gray-100 overflow-hidden cursor-pointer flex flex-col"
                       onClick={() => openLightbox(index)}
                     >
@@ -257,7 +256,7 @@ const Portfolio: React.FC = () => {
                           <div className="w-1/3 h-1.5 bg-gray-300/50 rounded-full"></div>
                         </div>
                       </div>
-                      
+
                       <div className="relative flex-1 overflow-hidden">
                         <img
                           src={project.imageUrl}
@@ -276,13 +275,20 @@ const Portfolio: React.FC = () => {
                     {/* Content */}
                     <div className="p-6">
                       <div className="flex justify-between items-start mb-2">
-                        <span className="text-blue-600 text-[10px] font-bold tracking-wider uppercase px-2 py-1 bg-blue-50 rounded">
-                          {project.category}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-blue-600 text-[10px] font-bold tracking-wider uppercase px-2 py-1 bg-blue-50 rounded">
+                            {project.category}
+                          </span>
+                          {project.isConcept && (
+                            <span className="text-purple-600 text-[10px] font-bold tracking-wider uppercase px-2 py-1 bg-purple-50 rounded flex items-center gap-1">
+                              <Zap size={10} className="fill-purple-600" /> Concept
+                            </span>
+                          )}
+                        </div>
                         {project.link && (
-                          <a 
-                            href={project.link} 
-                            target="_blank" 
+                          <a
+                            href={project.link}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-gray-400 hover:text-blue-600 transition-colors"
                             onClick={(e) => e.stopPropagation()}
@@ -294,7 +300,7 @@ const Portfolio: React.FC = () => {
                       <h3 className="text-slate-900 text-lg font-bold mb-2 group-hover:text-blue-600 transition-colors">
                         {project.title}
                       </h3>
-                      
+
                       {project.performanceScore !== undefined && (
                         <div className="flex items-center gap-3 mb-3">
                           <div className="flex items-center gap-1" title="Performance Score">
@@ -341,11 +347,10 @@ const Portfolio: React.FC = () => {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-medium transition-all ${
-                      currentPage === 1 
-                        ? 'border-gray-100 text-gray-300 cursor-not-allowed' 
-                        : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-slate-900 hover:border-gray-300'
-                    }`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-medium transition-all ${currentPage === 1
+                      ? 'border-gray-100 text-gray-300 cursor-not-allowed'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-slate-900 hover:border-gray-300'
+                      }`}
                   >
                     <ChevronLeft size={18} />
                     <span className="hidden sm:inline">Previous</span>
@@ -356,11 +361,10 @@ const Portfolio: React.FC = () => {
                       <button
                         key={number}
                         onClick={() => handlePageChange(number)}
-                        className={`w-10 h-10 rounded-xl font-bold transition-all ${
-                          currentPage === number
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                            : 'text-gray-500 hover:bg-gray-50 hover:text-slate-900'
-                        }`}
+                        className={`w-10 h-10 rounded-xl font-bold transition-all ${currentPage === number
+                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                          : 'text-gray-500 hover:bg-gray-50 hover:text-slate-900'
+                          }`}
                       >
                         {number}
                       </button>
@@ -370,11 +374,10 @@ const Portfolio: React.FC = () => {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-medium transition-all ${
-                      currentPage === totalPages 
-                        ? 'border-gray-100 text-gray-300 cursor-not-allowed' 
-                        : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-slate-900 hover:border-gray-300'
-                    }`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-medium transition-all ${currentPage === totalPages
+                      ? 'border-gray-100 text-gray-300 cursor-not-allowed'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-slate-900 hover:border-gray-300'
+                      }`}
                   >
                     <span className="hidden sm:inline">Next</span>
                     <ChevronRight size={18} />
@@ -422,11 +425,18 @@ const Portfolio: React.FC = () => {
 
             {/* Project Details */}
             <div className="w-full md:w-80 flex flex-col text-white animate-fade-in-up">
-              <span className="text-blue-400 text-sm font-bold tracking-wider uppercase mb-2">
-                {currentProject.category}
-              </span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-blue-400 text-sm font-bold tracking-wider uppercase">
+                  {currentProject.category}
+                </span>
+                {currentProject.isConcept && (
+                  <span className="text-purple-400 text-[10px] font-bold tracking-wider uppercase px-2 py-1 bg-purple-50/10 rounded border border-purple-400/20 flex items-center gap-1">
+                    <Zap size={10} className="fill-purple-400" /> Concept
+                  </span>
+                )}
+              </div>
               <h2 className="text-3xl font-bold mb-4">{currentProject.title}</h2>
-              
+
               {currentProject.performanceScore !== undefined && (
                 <div className="flex gap-4 mb-6">
                   <div className="flex flex-col items-center p-3 bg-white/5 rounded-xl border border-white/10 min-w-[70px]">

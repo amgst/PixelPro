@@ -59,7 +59,8 @@ const AdminReadySites: React.FC = () => {
             description: '',
             features: [],
             previewLink: '',
-            order: readySites.length + 1
+            order: readySites.length + 1,
+            isConcept: false
         });
         setImagePreview(null);
         setSelectedImageFile(null);
@@ -318,6 +319,16 @@ const AdminReadySites: React.FC = () => {
                                     placeholder="https://example.com"
                                 />
                             </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="isConcept"
+                                    checked={currentSite.isConcept || false}
+                                    onChange={e => setCurrentSite({ ...currentSite, isConcept: e.target.checked })}
+                                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                />
+                                <label htmlFor="isConcept" className="text-sm font-medium text-gray-700">Concept Demo</label>
+                            </div>
                             <div className="pt-4 flex justify-end gap-3">
                                 <button
                                     type="button"
@@ -365,7 +376,14 @@ const AdminReadySites: React.FC = () => {
                                             />
                                         )}
                                         <div>
-                                            <p className="font-medium text-slate-900">{site.title}</p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-medium text-slate-900">{site.title}</p>
+                                                {site.isConcept && (
+                                                    <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold rounded uppercase">
+                                                        Concept
+                                                    </span>
+                                                )}
+                                            </div>
                                             <p className="text-xs text-gray-500 truncate max-w-[200px]">{site.description}</p>
                                         </div>
                                     </div>

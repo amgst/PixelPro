@@ -63,14 +63,14 @@ const AdminPortfolio: React.FC = () => {
                 bestPracticesScore: metrics.bestPractices,
                 lastChecked: new Date().toISOString()
             };
-            
+
             await updatePortfolio(id, updateData);
-            
+
             // Update local state
-            setItems(prev => prev.map(item => 
+            setItems(prev => prev.map(item =>
                 item.id === id ? { ...item, ...updateData } : item
             ));
-            
+
             alert("Performance metrics updated successfully!");
         } catch (error) {
             console.error("Error checking performance:", error);
@@ -94,15 +94,15 @@ const AdminPortfolio: React.FC = () => {
 
             if (metaData.status === 'success') {
                 const { title, description, publisher } = metaData.data;
-                
+
                 // Update text fields if they are empty
                 setCurrentItem(prev => ({
                     ...prev,
                     title: prev.title || title || '',
                     description: prev.description || description || '',
                     // Try to guess category if publisher matches common ones
-                    category: prev.category || (publisher?.toLowerCase().includes('shopify') ? 'Shopify' : 
-                               publisher?.toLowerCase().includes('wordpress') ? 'WordPress' : 'Other')
+                    category: prev.category || (publisher?.toLowerCase().includes('shopify') ? 'Shopify' :
+                        publisher?.toLowerCase().includes('wordpress') ? 'WordPress' : 'Other')
                 }));
 
                 // Auto-detect technologies from metadata/publisher
@@ -110,7 +110,7 @@ const AdminPortfolio: React.FC = () => {
                 if (publisher?.toLowerCase().includes('shopify')) techList.push('Shopify', 'Liquid');
                 if (publisher?.toLowerCase().includes('wordpress')) techList.push('WordPress', 'PHP');
                 if (currentItem.link.includes('vercel.app')) techList.push('React', 'Next.js');
-                
+
                 if (techList.length > 0) {
                     setCurrentItem(prev => ({
                         ...prev,
@@ -124,7 +124,7 @@ const AdminPortfolio: React.FC = () => {
             const fileName = generateUniqueFileName('screenshot.jpg');
             const uploadPath = `portfolios/${fileName}`;
             const downloadURL = await uploadFromUrl(screenshotUrl, uploadPath);
-            
+
             setCurrentItem(prev => ({ ...prev, imageUrl: downloadURL }));
             alert("Website data and screenshot imported successfully!");
         } catch (error) {
@@ -168,10 +168,10 @@ const AdminPortfolio: React.FC = () => {
         try {
             // Generate a filename, forcing .jpg if it's an image since we optimize to JPEG
             const baseName = file.name.split('.')[0];
-            const fileName = file.type.startsWith('image/') 
+            const fileName = file.type.startsWith('image/')
                 ? generateUniqueFileName(`${baseName}.jpg`)
                 : generateUniqueFileName(file.name);
-                
+
             const uploadPath = `portfolios/${fileName}`;
             const downloadURL = await uploadFileWithProgress(file, uploadPath, (progress) => {
                 setUploadProgress(progress);
@@ -212,6 +212,7 @@ const AdminPortfolio: React.FC = () => {
             link: '',
             technologies: [],
             isFeatured: false,
+            isConcept: false,
             order: 0
         });
         setIsEditing(true);
@@ -227,7 +228,7 @@ const AdminPortfolio: React.FC = () => {
     };
 
     const techOptions = [
-        'React', 'Next.js', 'Tailwind CSS', 'Shopify', 'Liquid', 'WordPress', 
+        'React', 'Next.js', 'Tailwind CSS', 'Shopify', 'Liquid', 'WordPress',
         'PHP', 'Node.js', 'Firebase', 'TypeScript', 'SEO', 'UI/UX'
     ];
 
@@ -272,8 +273,8 @@ const AdminPortfolio: React.FC = () => {
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     <div className="flex items-center gap-2 mr-2">
                         <span className="text-sm text-gray-500 hidden md:block">Show</span>
-                        <select 
-                            value={itemsPerPage} 
+                        <select
+                            value={itemsPerPage}
                             onChange={handleItemsPerPageChange}
                             className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-1.5 outline-none"
                         >
@@ -344,11 +345,10 @@ const AdminPortfolio: React.FC = () => {
                                         type="button"
                                         onClick={handleAutoFetchData}
                                         disabled={isFetchingScreenshot || !currentItem.link}
-                                        className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
-                                            isFetchingScreenshot || !currentItem.link
+                                        className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${isFetchingScreenshot || !currentItem.link
                                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                                 : 'bg-slate-900 text-white hover:bg-slate-800'
-                                        }`}
+                                            }`}
                                         title="Auto-fetch title, description, tags, and screenshot"
                                     >
                                         {isFetchingScreenshot ? <Loader2 size={14} className="animate-spin" /> : <LayoutGrid size={14} />}
@@ -374,29 +374,29 @@ const AdminPortfolio: React.FC = () => {
                                             </div>
                                         </div>
                                     ) : (
-                                         <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all overflow-hidden relative">
-                                             {isUploading ? (
-                                                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90">
-                                                     <div className="relative w-12 h-12 flex items-center justify-center">
-                                                         <Loader2 className="w-full h-full text-blue-600 animate-spin absolute" />
-                                                         <span className="text-[10px] font-bold text-blue-700">{uploadProgress}%</span>
-                                                     </div>
-                                                     <div className="w-16 h-1 bg-gray-100 rounded-full mt-2 overflow-hidden">
-                                                         <div 
-                                                             className="h-full bg-blue-600 transition-all duration-300" 
-                                                             style={{ width: `${uploadProgress}%` }}
-                                                         />
-                                                     </div>
-                                                 </div>
-                                             ) : (
-                                                 <>
-                                                     <Upload className="w-6 h-6 text-gray-400" />
-                                                     <span className="text-[10px] text-gray-500 mt-1">Upload</span>
-                                                 </>
-                                             )}
-                                             <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
-                                         </label>
-                                     )}
+                                        <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all overflow-hidden relative">
+                                            {isUploading ? (
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90">
+                                                    <div className="relative w-12 h-12 flex items-center justify-center">
+                                                        <Loader2 className="w-full h-full text-blue-600 animate-spin absolute" />
+                                                        <span className="text-[10px] font-bold text-blue-700">{uploadProgress}%</span>
+                                                    </div>
+                                                    <div className="w-16 h-1 bg-gray-100 rounded-full mt-2 overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-blue-600 transition-all duration-300"
+                                                            style={{ width: `${uploadProgress}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <Upload className="w-6 h-6 text-gray-400" />
+                                                    <span className="text-[10px] text-gray-500 mt-1">Upload</span>
+                                                </>
+                                            )}
+                                            <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
+                                        </label>
+                                    )}
                                     <div className="flex-1 space-y-2">
                                         <div className="relative flex-1">
                                             <input
@@ -442,11 +442,10 @@ const AdminPortfolio: React.FC = () => {
                                             key={tech}
                                             type="button"
                                             onClick={() => toggleTechnology(tech)}
-                                            className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                                                (currentItem.technologies || []).includes(tech)
+                                            className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${(currentItem.technologies || []).includes(tech)
                                                     ? 'bg-blue-600 text-white'
                                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                            }`}
+                                                }`}
                                         >
                                             {tech}
                                         </button>
@@ -462,6 +461,15 @@ const AdminPortfolio: React.FC = () => {
                                         className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                     />
                                     <span className="text-sm font-medium text-gray-700">Featured Project</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={currentItem.isConcept || false}
+                                        onChange={e => setCurrentItem({ ...currentItem, isConcept: e.target.checked })}
+                                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700">Concept Demo</span>
                                 </label>
                                 <div className="flex items-center gap-2">
                                     <label className="text-sm font-medium text-gray-700">Order</label>
@@ -493,9 +501,8 @@ const AdminPortfolio: React.FC = () => {
                                 <button
                                     type="submit"
                                     disabled={isSaving || isUploading}
-                                    className={`px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-2 ${
-                                        (isSaving || isUploading) ? 'opacity-70 cursor-not-allowed' : ''
-                                    }`}
+                                    className={`px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-2 ${(isSaving || isUploading) ? 'opacity-70 cursor-not-allowed' : ''
+                                        }`}
                                 >
                                     {isSaving ? (
                                         <>
@@ -520,9 +527,9 @@ const AdminPortfolio: React.FC = () => {
                     {currentItems.map((item) => (
                         <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-shadow">
                             <div className="relative aspect-video overflow-hidden bg-gray-100">
-                                <img 
-                                    src={item.imageUrl} 
-                                    alt={item.title} 
+                                <img
+                                    src={item.imageUrl}
+                                    alt={item.title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
                                 <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -539,10 +546,15 @@ const AdminPortfolio: React.FC = () => {
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
-                                <div className="absolute bottom-2 left-2">
+                                <div className="absolute bottom-2 left-2 flex flex-col gap-1">
                                     <span className="px-2 py-0.5 bg-black/60 text-white text-[10px] font-medium rounded backdrop-blur-sm">
                                         {item.category}
                                     </span>
+                                    {item.isConcept && (
+                                        <span className="px-2 py-0.5 bg-purple-600/80 text-white text-[10px] font-bold rounded backdrop-blur-sm uppercase">
+                                            Concept
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                             <div className="p-4 flex-1 flex flex-col">
@@ -550,7 +562,7 @@ const AdminPortfolio: React.FC = () => {
                                 <p className="text-gray-500 text-sm line-clamp-2 mb-3 flex-1">
                                     {item.description || 'No description provided.'}
                                 </p>
-                                
+
                                 {item.performanceScore !== undefined && (
                                     <div className="grid grid-cols-2 gap-2 mb-4">
                                         <div className={`flex items-center justify-between px-2 py-1 rounded border text-[10px] font-bold ${getScoreColor(item.performanceScore)}`}>
@@ -568,9 +580,9 @@ const AdminPortfolio: React.FC = () => {
                                     <div className="flex gap-3">
                                         {item.link ? (
                                             <>
-                                                <a 
-                                                    href={item.link} 
-                                                    target="_blank" 
+                                                <a
+                                                    href={item.link}
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-blue-600 hover:text-blue-700 text-xs font-medium flex items-center gap-1"
                                                 >
@@ -594,13 +606,13 @@ const AdminPortfolio: React.FC = () => {
                                         )}
                                     </div>
                                     <div className="flex gap-2">
-                                        <button 
+                                        <button
                                             onClick={() => handleEdit(item)}
                                             className="text-gray-400 hover:text-blue-600 transition-colors"
                                         >
                                             <Edit2 size={16} />
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => handleDelete(item.id)}
                                             className="text-gray-400 hover:text-red-600 transition-colors"
                                         >
@@ -635,7 +647,16 @@ const AdminPortfolio: React.FC = () => {
                                     <td className="px-6 py-4">
                                         <img src={item.imageUrl} alt={item.title} className="w-12 h-12 object-cover rounded-lg" />
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-slate-900">{item.title}</td>
+                                    <td className="px-6 py-4 font-medium text-slate-900">
+                                        <div className="flex items-center gap-2">
+                                            {item.title}
+                                            {item.isConcept && (
+                                                <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold rounded uppercase">
+                                                    Concept
+                                                </span>
+                                            )}
+                                        </div>
+                                    </td>
                                     <td className="px-6 py-4">
                                         <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
                                             {item.category}
@@ -705,17 +726,16 @@ const AdminPortfolio: React.FC = () => {
                         >
                             <ChevronLeft size={18} />
                         </button>
-                        
+
                         <div className="flex items-center gap-1">
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
                                 <button
                                     key={number}
                                     onClick={() => paginate(number)}
-                                    className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${
-                                        currentPage === number
+                                    className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${currentPage === number
                                             ? 'bg-blue-600 text-white shadow-md'
                                             : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
-                                    }`}
+                                        }`}
                                 >
                                     {number}
                                 </button>

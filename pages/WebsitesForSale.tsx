@@ -28,27 +28,22 @@ const WebsitesForSale: React.FC = () => {
 
     const productStructuredData = {
         '@context': 'https://schema.org',
-        '@type': 'ItemList',
-        name: 'Ready-Made Websites for Sale',
-        description: 'Professional, fully responsive websites ready to launch in 48 hours for just $200',
-        itemListElement: templates.map((template, index) => ({
-            '@type': 'Product',
-            position: index + 1,
-            name: template.title,
-            description: template.description,
-            offers: {
-                '@type': 'Offer',
-                price: '200',
-                priceCurrency: 'USD'
-            }
-        }))
+        '@type': 'Service',
+        name: 'Fast-Track Business Launch',
+        description: 'Turnkey website launch in 48 hours: SEO-ready, optimized, and guided.',
+        offers: {
+            '@type': 'Offer',
+            price: '499',
+            priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock'
+        }
     };
 
     return (
         <div className="flex flex-col min-h-screen bg-slate-50">
             <SEO
-                title="Buy Ready-Made Websites | Launch in 48 Hours for $200"
-                description="Get a professional, fully responsive website launched in just 48 hours for a flat $200. Perfect for startups. Includes mobile-ready design and fast hosting."
+                title="Launch Your Digital Business in 48 Hours | Fast-Track"
+                description="Skip the 3-month dev cycle. Our turnkey launch service delivers an SEO-ready, optimized website in 48 hours."
                 canonical="/websites-for-sale"
                 structuredData={productStructuredData}
             />
@@ -57,13 +52,13 @@ const WebsitesForSale: React.FC = () => {
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-600/10 rounded-l-full blur-3xl"></div>
                 <div className="max-w-7xl mx-auto text-center relative z-10">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-500/20 text-blue-300 text-sm font-semibold mb-6">
-                        Limited Time Offer
+                        Fast-Track Launch
                     </span>
                     <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                        Launch Your Website for <span className="text-blue-400">Just $200</span>
+                        Launch Your Digital Business in 48 Hours
                     </h1>
                     <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
-                        Get a professional, fully responsive website launched in 48 hours. No hidden fees, just a flat $200.
+                        Skip the 3-month development cycle. We’ve built the foundation; you lead the brand.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <a href="#templates" className="px-8 py-4 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-500 transition-all shadow-lg hover:shadow-blue-500/25">
@@ -82,26 +77,26 @@ const WebsitesForSale: React.FC = () => {
             <section className="py-20 px-4">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-slate-900 mb-4">What's Included for $200?</h2>
-                        <p className="text-gray-500">We don't just give you a template; we set it up for you.</p>
+                        <h2 className="text-3xl font-bold text-slate-900 mb-4">What You Get in the Launchpad</h2>
+                        <p className="text-gray-500">A turnkey foundation optimized for speed, SEO, and growth.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
                                 icon: Layout,
-                                title: 'Professional Template',
-                                desc: 'Choose from our curated collection of high-quality, responsive designs.'
+                                title: 'Foundation Design',
+                                desc: 'Choose a modern, responsive base tailored to your industry.'
                             },
                             {
                                 icon: Zap,
-                                title: 'Basic Customization',
-                                desc: 'We add your logo, update the color scheme to match your brand, and upload your content.'
+                                title: 'Brand Integration',
+                                desc: 'We apply your logo, colors, and core content for a cohesive presence.'
                             },
                             {
                                 icon: CheckCircle,
-                                title: 'Launch Support',
-                                desc: 'We handle the technical setup, domain connection, and ensure your site is live.'
+                                title: 'Deployment & SEO Setup',
+                                desc: 'Technical setup, domain connection, and baseline SEO configuration to go live fast.'
                             }
                         ].map((item, idx) => (
                             <div key={idx} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all">
@@ -131,21 +126,21 @@ const WebsitesForSale: React.FC = () => {
                         {[
                             {
                                 step: "01",
-                                title: "Purchase & Secure Your Template",
+                                title: "Kickoff & Strategy",
                                 icon: ShoppingCart,
                                 content: (
                                     <ul className="space-y-2 text-gray-600">
                                         <li className="flex items-start gap-2">
                                             <CheckCircle size={18} className="text-blue-500 mt-1 flex-shrink-0" />
-                                            <span>Select your preferred design from our collection.</span>
+                                            <span>Select your foundation and define goals for launch.</span>
                                         </li>
                                         <li className="flex items-start gap-2">
                                             <CheckCircle size={18} className="text-blue-500 mt-1 flex-shrink-0" />
-                                            <span>Complete the secure checkout process ($200 one-time fee).</span>
+                                            <span>We align on brand, content, and deployment plan.</span>
                                         </li>
                                         <li className="flex items-start gap-2">
                                             <CheckCircle size={18} className="text-blue-500 mt-1 flex-shrink-0" />
-                                            <span>Receive an instant confirmation email with next steps.</span>
+                                            <span>Receive next steps and timeline to go live within 48 hours.</span>
                                         </li>
                                     </ul>
                                 )
@@ -160,7 +155,7 @@ const WebsitesForSale: React.FC = () => {
                                         <ul className="space-y-2 pl-4 border-l-2 border-blue-100">
                                             <li>• Your <strong>Domain Name</strong> (e.g., mybusiness.com)</li>
                                             <li>• <strong>Hosting Credentials</strong> (if you already have hosting)</li>
-                                            <li>• Or we can help you set up a free Vercel account.</li>
+                                            <li>• We can help you set up a Vercel account.</li>
                                         </ul>
                                     </div>
                                 )
@@ -296,8 +291,8 @@ const WebsitesForSale: React.FC = () => {
                 <div className="max-w-7xl mx-auto">
                     <div className="flex justify-between items-end mb-12">
                         <div>
-                            <h2 className="text-3xl font-bold text-slate-900 mb-2">Available Templates</h2>
-                            <p className="text-gray-500">Select a design to get started.</p>
+                        <h2 className="text-3xl font-bold text-slate-900 mb-2">Launch Foundations</h2>
+                        <p className="text-gray-500">Pick a starting point and we’ll tailor it to your brand.</p>
                         </div>
                     </div>
 
@@ -340,8 +335,15 @@ const WebsitesForSale: React.FC = () => {
                                                 <span>No Image Available</span>
                                             </div>
                                         )}
-                                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-slate-900 uppercase tracking-wide">
-                                            {template.category}
+                                        <div className="absolute top-4 left-4 flex flex-col gap-2">
+                                            <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-slate-900 uppercase tracking-wide">
+                                                {template.category}
+                                            </div>
+                                            {template.isConcept && (
+                                                <div className="bg-purple-600/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-white uppercase tracking-wide flex items-center gap-1 shadow-lg">
+                                                    <Zap size={12} className="fill-white" /> Concept Demo
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="p-8">
@@ -359,7 +361,7 @@ const WebsitesForSale: React.FC = () => {
                                         <div className="flex items-center gap-4">
                                             <Link to="/contact" className="flex-1">
                                                 <button className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
-                                                    Buy Now <ShoppingCart size={18} />
+                                                    Request Launch <ShoppingCart size={18} />
                                                 </button>
                                             </Link>
                                             {template.previewLink ? (
@@ -394,19 +396,19 @@ const WebsitesForSale: React.FC = () => {
                         {[
                             {
                                 q: "Is there a monthly fee?",
-                                a: "No! We deploy your site on Vercel's Basic plan, which is completely free for personal and hobby projects. You only pay the one-time $200 setup fee."
+                                a: "Your hosting is billed by your provider (e.g., Vercel). Our setup is a one-time fee with no ongoing charges from us."
                             },
                             {
                                 q: "Do I need to pay for hosting?",
-                                a: "Hosting is free on Vercel as long as you stay within their generous usage limits (which are plenty for most small business sites)."
+                                a: "Yes. Hosting costs depend on the provider and plan you choose."
                             },
                             {
                                 q: "Is SSL included?",
-                                a: "Yes, a secure SSL certificate (HTTPS) is automatically included for free, keeping your site and visitors safe."
+                                a: "Most hosting providers include SSL certificates (HTTPS) at no additional cost."
                             },
                             {
                                 q: "What do I need to provide?",
-                                a: "We'll need you to create a free Vercel account and a free GitHub (or GitLab/Bitbucket) account so we can transfer ownership of the code and project to you."
+                                a: "You'll need a Vercel account and a GitHub (or GitLab/Bitbucket) account so we can transfer ownership of the code and project to you."
                             }
                         ].map((faq, idx) => (
                             <div key={idx} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">

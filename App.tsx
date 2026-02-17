@@ -19,6 +19,7 @@ import WebsitesForSale from './pages/WebsitesForSale';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import Tools from './pages/Tools';
+import Careers from './pages/Careers';
 import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminTools from './pages/admin/Tools';
@@ -68,6 +69,7 @@ const AppContent: React.FC = () => {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/tools" element={<Tools />} />
+            <Route path="/careers" element={<Careers />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
