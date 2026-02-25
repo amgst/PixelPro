@@ -351,7 +351,7 @@ const WebsitesForSale: React.FC = () => {
                                         <p className="text-gray-500 mb-6">{template.description}</p>
 
                                         <div className="flex flex-wrap gap-2 mb-8">
-                                            {template.features && template.features.map((feature, i) => (
+                                            {Array.isArray(template.features) && template.features.map((feature, i) => (
                                                 <span key={i} className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600">
                                                     {feature}
                                                 </span>

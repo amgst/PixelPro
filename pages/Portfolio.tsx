@@ -3,6 +3,7 @@ import { ArrowUpRight, X, ChevronLeft, ChevronRight, Loader, ExternalLink, Alert
 import { getPortfolios, PortfolioItem } from '../lib/portfolioService';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { PORTFOLIO_CONFIG } from '../data/portfolioConfig';
 
 interface ProjectItem {
   id: string | number;
@@ -48,23 +49,47 @@ const Portfolio: React.FC = () => {
       setCurrentPage(1);
 
       try {
-        const fetchedItems = await getPortfolios();
+        if (specificFolderId) {
+          // Fetch from Google Drive
+          if (!PORTFOLIO_CONFIG.apiKey) {
+            throw new Error("Google Drive API key is missing in config.");
+          }
 
-        // Sort by order if available
-        const sortedItems = [...fetchedItems].sort((a, b) => (a.order || 0) - (b.order || 0));
+          const query = `'${specificFolderId}' in parents and trashed = false and mimeType contains 'image/'`;
+          const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name)&key=${PORTFOLIO_CONFIG.apiKey}&pageSize=100`;
 
-        // Filter based on active tab or specific params
-        let filteredItems = sortedItems;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`Google Drive API Error: ${res.status}`);
 
-        if (activeTab !== 'All') {
-          filteredItems = filteredItems.filter(item => item.category === activeTab);
+          const result = await res.json();
+          if (result.files) {
+            const driveItems: PortfolioItem[] = result.files.map((f: any) => ({
+              id: f.id,
+              title: f.name.split('.')[0], // Use filename without extension as title
+              imageUrl: `https://lh3.googleusercontent.com/d/${f.id}`,
+              category: 'Other',
+              description: `Project from ${specificTitle || 'Gallery'}`,
+            }));
+            setProjects(driveItems);
+          }
+        } else {
+          // Fetch from Firebase
+          const fetchedItems = await getPortfolios();
+
+          // Sort by order if available
+          const sortedItems = [...fetchedItems].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+          // Filter based on active tab
+          let filteredItems = sortedItems;
+          if (activeTab !== 'All') {
+            filteredItems = filteredItems.filter(item => item.category === activeTab);
+          }
+
+          setProjects(filteredItems);
         }
-
-        setProjects(filteredItems);
-
       } catch (err: any) {
         console.error("Error fetching portfolios:", err);
-        setError("Failed to load portfolio items.");
+        setError(err.message || "Failed to load portfolio items.");
       } finally {
         setIsLoading(false);
       }
@@ -314,7 +339,7 @@ const Portfolio: React.FC = () => {
                         </div>
                       )}
 
-                      {project.technologies && (
+                      {Array.isArray(project.technologies) && project.technologies.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-3">
                           {project.technologies.slice(0, 3).map(tech => (
                             <span key={tech} className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
@@ -463,7 +488,7 @@ const Portfolio: React.FC = () => {
                 </p>
               )}
 
-              {currentProject.technologies && (
+              {Array.isArray(currentProject.technologies) && currentProject.technologies.length > 0 && (
                 <div className="mb-8">
                   <h4 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-3">Technologies</h4>
                   <div className="flex flex-wrap gap-2">

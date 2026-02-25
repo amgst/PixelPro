@@ -146,7 +146,7 @@ const ServiceDetail: React.FC = () => {
             <div>
               <h2 className="text-2xl font-bold text-slate-900 mb-6">What's Included</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {service.features.map((feature, index) => (
+                {Array.isArray(service.features) && service.features.map((feature, index) => (
                   <div key={index} className="flex items-center p-4 bg-gray-50 rounded-lg">
                     <Check className="text-blue-600 mr-3" size={20} />
                     <span className="text-slate-800 font-medium">{feature}</span>
@@ -236,7 +236,7 @@ const ServiceDetail: React.FC = () => {
 
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-slate-900">Features:</p>
-                  {service.features.slice(0, 3).map((f, i) => (
+                  {Array.isArray(service.features) && service.features.slice(0, 3).map((f, i) => (
                     <div key={i} className="flex items-start text-sm text-gray-600">
                       <Check size={16} className="text-green-500 mr-2 mt-0.5" />
                       {f}
