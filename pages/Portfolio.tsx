@@ -339,9 +339,9 @@ const Portfolio: React.FC = () => {
                         </div>
                       )}
 
-                      {Array.isArray(project.technologies) && project.technologies.length > 0 && (
+                      {Array.isArray(project.technologies) && (
                         <div className="flex flex-wrap gap-1 mt-3">
-                          {project.technologies.slice(0, 3).map(tech => (
+                          {Array.from(project.technologies).slice(0, 3).map((tech: any) => (
                             <span key={tech} className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
                               {tech}
                             </span>
@@ -492,7 +492,7 @@ const Portfolio: React.FC = () => {
                 <div className="mb-8">
                   <h4 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-3">Technologies</h4>
                   <div className="flex flex-wrap gap-2">
-                    {currentProject.technologies.map(tech => (
+                    {Array.from(currentProject.technologies).map((tech: any) => (
                       <span key={tech} className="text-xs bg-white/10 px-3 py-1 rounded-full border border-white/10">
                         {tech}
                       </span>
