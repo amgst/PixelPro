@@ -27,7 +27,6 @@ import AdminPortfolio from './pages/admin/Portfolio';
 import AdminServices from './pages/admin/Services';
 import AdminBlog from './pages/admin/Blog';
 import AdminReadySites from './pages/admin/ReadySites';
-import AdminSettings from './pages/admin/Settings';
 import AdminMessages from './pages/admin/Messages';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
@@ -88,7 +87,6 @@ const AppContent: React.FC = () => {
               <Route path="blog" element={<AdminBlog />} />
               <Route path="ready-sites" element={<AdminReadySites />} />
               <Route path="messages" element={<AdminMessages />} />
-              <Route path="settings" element={<AdminSettings />} />
             </Route>
 
             {/* 404 Route */}

@@ -1,6 +1,3 @@
-import { doc, getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
-import { db } from './firebase';
-
 export interface SiteSettings {
     siteName: string;
     adminEmail: string;
@@ -14,52 +11,29 @@ export interface SiteSettings {
     };
 }
 
-const SETTINGS_COLLECTION = 'settings';
-const GENERAL_SETTINGS_DOC = 'general';
-
-export const getSiteSettings = async (): Promise<SiteSettings> => {
-    const docRef = doc(db, SETTINGS_COLLECTION, GENERAL_SETTINGS_DOC);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-        return docSnap.data() as SiteSettings;
-    } else {
-        // Return default settings if not found
-        return {
-            siteName: 'wbify',
-            adminEmail: 'admin@wbify.com'
-        };
+export const STATIC_SITE_SETTINGS: SiteSettings = {
+    siteName: 'wbify',
+    adminEmail: 'admin@wbify.com',
+    logoUrl: '',
+    faviconUrl: '',
+    socialUrls: {
+        facebook: '',
+        twitter: '',
+        instagram: '',
+        linkedin: ''
     }
 };
 
-export const updateSiteSettings = async (settings: Partial<SiteSettings>): Promise<void> => {
-    const docRef = doc(db, SETTINGS_COLLECTION, GENERAL_SETTINGS_DOC);
-    
-    // Check if doc exists first
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-        await updateDoc(docRef, settings);
-    } else {
-        // Create if doesn't exist (merging with defaults)
-        await setDoc(docRef, {
-            siteName: 'wbify',
-            adminEmail: 'admin@wbify.com',
-            ...settings
-        });
-    }
+export const getSiteSettings = async (): Promise<SiteSettings> => {
+    return STATIC_SITE_SETTINGS;
+};
+
+export const updateSiteSettings = async (_settings: Partial<SiteSettings>): Promise<void> => {
+    // Site settings are now static and no longer editable from the admin.
+    return Promise.resolve();
 };
 
 export const subscribeToSiteSettings = (callback: (settings: SiteSettings) => void) => {
-    const docRef = doc(db, SETTINGS_COLLECTION, GENERAL_SETTINGS_DOC);
-    return onSnapshot(docRef, (doc) => {
-        if (doc.exists()) {
-            callback(doc.data() as SiteSettings);
-        } else {
-            callback({
-                siteName: 'wbify',
-                adminEmail: 'admin@wbify.com'
-            });
-        }
-    });
+    callback(STATIC_SITE_SETTINGS);
+    return () => {};
 };

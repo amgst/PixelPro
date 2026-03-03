@@ -1,31 +1,25 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { SiteSettings, subscribeToSiteSettings } from '../lib/settingsService';
+import { SiteSettings, STATIC_SITE_SETTINGS, subscribeToSiteSettings } from '../lib/settingsService';
 
 interface SettingsContextType {
     settings: SiteSettings;
     loading: boolean;
 }
 
-const defaultSettings: SiteSettings = {
-    siteName: 'wbify',
-    adminEmail: 'admin@wbify.com'
-};
-
 const SettingsContext = createContext<SettingsContextType>({
-    settings: defaultSettings,
-    loading: true
+    settings: STATIC_SITE_SETTINGS,
+    loading: false
 });
 
 export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
-    const [loading, setLoading] = useState(true);
+    const [settings, setSettings] = useState<SiteSettings>(STATIC_SITE_SETTINGS);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const unsubscribe = subscribeToSiteSettings((newSettings) => {
             setSettings(newSettings);
-            setLoading(false);
             
             // Update favicon dynamically
             if (newSettings.faviconUrl) {

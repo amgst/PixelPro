@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderOpen, Settings, LogOut, Globe, Store, Inbox, X, Bell } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, LogOut, Globe, Store, Inbox, X, Bell } from 'lucide-react';
 import { NotificationContext } from './NotificationProvider';
 
 interface AdminSidebarProps {
@@ -28,7 +28,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onClose }) 
         { name: 'Services', path: '/admin/services', icon: FolderOpen },
         { name: 'Blog', path: '/admin/blog', icon: FolderOpen },
         { name: 'Ready Sites', path: '/admin/ready-sites', icon: Store },
-        { name: 'Settings', path: '/admin/settings', icon: Settings },
     ];
 
     const sidebarClasses = `
