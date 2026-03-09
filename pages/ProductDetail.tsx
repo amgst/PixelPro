@@ -105,7 +105,7 @@ const ProductDetail: React.FC = () => {
     return <Navigate to="/store" replace />;
   }
 
-  const pageTitle = `${product.name} | Vance Graphix & Print (VGP)`;
+  const pageTitle = `${product.name} | Wbify`;
   const description = product.shortDescription || product.description;
 
   const lineTotal =
@@ -171,10 +171,10 @@ const ProductDetail: React.FC = () => {
               {product.price ? (
                 <p className="text-3xl font-bold text-slate-900">${product.price.toFixed(2)}</p>
               ) : (
-                <p className="text-sm font-semibold text-slate-600">Price will be confirmed by VGP.</p>
+                <p className="text-sm font-semibold text-slate-600">Price will be confirmed by Wbify.</p>
               )}
               <p className="text-xs text-gray-500 mt-1">
-                No payment is taken on this website. Your request will be sent to the VGP team to confirm
+                No payment is taken on this website. Your request will be sent to the Wbify team to confirm
                 details and pricing.
               </p>
             </div>
@@ -269,7 +269,7 @@ const ProductDetail: React.FC = () => {
                 <div className="flex items-start gap-2 text-xs text-green-700 bg-green-50 border border-green-100 rounded-lg p-3">
                   <CheckCircle size={14} className="mt-0.5" />
                   <p>
-                    Thank you. Your order request has been sent to the VGP team. We will contact you to
+                    Thank you. Your order request has been sent to the Wbify team. We will contact you to
                     confirm pricing and next steps.
                   </p>
                 </div>

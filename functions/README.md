@@ -31,7 +31,7 @@ This directory contains Cloud Functions that send email notifications for new `i
 
    Or set runtime config for deployed functions:
    ```bash
-   firebase functions:config:set resend.api_key="re_xxx" resend.from_email="no-reply@yourdomain.com" email.from_name="Vance Graphix & Print" notifications.admin_email="admin@yourdomain.com.au"
+   firebase functions:config:set resend.api_key="re_xxx" resend.from_email="no-reply@yourdomain.com" email.from_name="Wbify" notifications.admin_email="admin@yourdomain.com.au"
    ```
 
 4. **Deploy Functions**:

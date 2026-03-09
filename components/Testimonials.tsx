@@ -22,7 +22,7 @@ const Testimonials: React.FC = () => {
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Trusted by Australian Businesses</h2>
                     <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-                        Don't just take our word for it. Here's what our clients say about working with Vance Graphix &amp; Print (VGP).
+                        Don't just take our word for it. Here's what our clients say about working with Wbify.
                     </p>
                 </div>
 

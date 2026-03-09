@@ -48,7 +48,7 @@ const ShopifyLanding: React.FC = () => {
         serviceType: 'Shopify Store Development',
         provider: {
             '@type': 'Organization',
-            name: 'Vance Graphix & Print (VGP)'
+            name: 'Wbify'
         },
         areaServed: 'Worldwide',
         description: 'Professional Shopify store setup, design, and optimization services'

@@ -31,7 +31,7 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
     } else {
         // Return default settings if not found
         return {
-            siteName: 'Vance Graphix & Print (VGP)',
+            siteName: 'Wbify',
             adminEmail: 'ahmed@vancegraphix.com.au',
             logoUrl: DEFAULT_LOGO_URL,
             googleAnalyticsId: DEFAULT_GA4_ID
@@ -50,7 +50,7 @@ export const updateSiteSettings = async (settings: Partial<SiteSettings>): Promi
     } else {
         // Create if doesn't exist (merging with defaults)
         await setDoc(docRef, {
-            siteName: 'Vance Graphix & Print (VGP)',
+            siteName: 'Wbify',
             adminEmail: 'ahmed@vancegraphix.com.au',
             logoUrl: DEFAULT_LOGO_URL,
             googleAnalyticsId: DEFAULT_GA4_ID,
@@ -66,7 +66,7 @@ export const subscribeToSiteSettings = (callback: (settings: SiteSettings) => vo
             callback(doc.data() as SiteSettings);
         } else {
             callback({
-                siteName: 'Vance Graphix & Print (VGP)',
+                siteName: 'Wbify',
                 adminEmail: 'ahmed@vancegraphix.com.au',
                 logoUrl: DEFAULT_LOGO_URL,
                 googleAnalyticsId: DEFAULT_GA4_ID

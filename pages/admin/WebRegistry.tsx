@@ -121,14 +121,14 @@ const AdminWebRegistry: React.FC = () => {
                                                     type="text"
                                                     list={`hosting-options-${item.id}`}
                                                     value={item.hostingProvider || ''}
-                                                    placeholder="e.g. Bluehost, VGP Host"
+                                                    placeholder="e.g. Bluehost, Wbify Host"
                                                     onChange={(e) => setItems(prev => prev.map(p => p.id === item.id ? { ...p, hostingProvider: e.target.value } : p))}
                                                     onBlur={(e) => handleUpdateField(item.id, 'hostingProvider', e.target.value)}
                                                     className="w-full pl-8 pr-2 py-1.5 text-sm border-transparent hover:border-gray-200 focus:border-blue-500 focus:bg-white rounded-md bg-transparent transition-all outline-none"
                                                 />
                                                 <datalist id={`hosting-options-${item.id}`}>
                                                     <option value="Bluehost" />
-                                                    <option value="VGP Host" />
+                                                    <option value="Wbify Host" />
                                                     <option value="Vercel" />
                                                     <option value="Shopify" />
                                                     <option value="WordPress.com" />
@@ -143,13 +143,13 @@ const AdminWebRegistry: React.FC = () => {
                                                     type="text"
                                                     list={`registrar-options-${item.id}`}
                                                     value={item.domainRegistrar || ''}
-                                                    placeholder="e.g. GoDaddy, VGP Host"
+                                                    placeholder="e.g. GoDaddy, Wbify Host"
                                                     onChange={(e) => setItems(prev => prev.map(p => p.id === item.id ? { ...p, domainRegistrar: e.target.value } : p))}
                                                     onBlur={(e) => handleUpdateField(item.id, 'domainRegistrar', e.target.value)}
                                                     className="w-full pl-8 pr-2 py-1.5 text-sm border-transparent hover:border-gray-200 focus:border-blue-500 focus:bg-white rounded-md bg-transparent transition-all outline-none"
                                                 />
                                                 <datalist id={`registrar-options-${item.id}`}>
-                                                    <option value="VGP Host" />
+                                                    <option value="Wbify Host" />
                                                     <option value="GoDaddy" />
                                                     <option value="Crazy Domains" />
                                                     <option value="Namecheap" />

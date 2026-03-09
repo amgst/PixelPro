@@ -10,7 +10,7 @@ const VideoAnimation: React.FC = () => {
     serviceType: 'Video and Animation Production',
     provider: {
       '@type': 'Organization',
-      name: 'Vance Graphix & Print (VGP)',
+      name: 'Wbify',
     },
     areaServed: 'Australia',
     description:
@@ -21,7 +21,7 @@ const VideoAnimation: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-white">
       <SEO
         title="Video & Animation Services | Video Editing, Logo Animation & More"
-        description="Bring your brand to life with professional video editing, logo animation, explainer videos and social media content crafted by Vance Graphix & Print (VGP)."
+        description="Bring your brand to life with professional video editing, logo animation, explainer videos and social media content crafted by Wbify."
         canonical="/video-animation"
         structuredData={structuredData}
       />
@@ -127,7 +127,7 @@ const VideoAnimation: React.FC = () => {
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Why Choose VGP for Video?</h2>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Why Choose Wbify for Video?</h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
               Design, animation and editing under one roof, with a clear process from concept to delivery.
             </p>

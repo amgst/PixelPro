@@ -123,7 +123,7 @@ const Portfolio: React.FC = () => {
   return (
     <div className="min-h-screen bg-white py-20">
       <Helmet>
-        <title>Our Portfolio | Vance Graphix &amp; Print (VGP)</title>
+        <title>Our Portfolio | Wbify</title>
         <meta name="description" content="Explore our portfolio of graphic design, web development, and video projects. See how we help brands stand out." />
         <link rel="canonical" href="https://vancegraphix.com.au/portfolio" />
       </Helmet>

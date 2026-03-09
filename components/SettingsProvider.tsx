@@ -7,7 +7,7 @@ interface SettingsContextType {
 }
 
 const defaultSettings: SiteSettings = {
-    siteName: 'Vance Graphix & Print (VGP)',
+    siteName: 'Wbify',
     adminEmail: 'ahmed@vancegraphix.com.au',
     logoUrl: 'https://nbyomoqura0jkgxd.public.blob.vercel-storage.com/vgp%20logo%20horizontal.png',
     googleAnalyticsId: 'G-EB1Z519BGJ'

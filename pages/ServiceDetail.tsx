@@ -118,7 +118,7 @@ const ServiceDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-white pb-20">
       <Helmet>
-        <title>{service.title} | Vance Graphix &amp; Print (VGP)</title>
+        <title>{service.title} | Wbify</title>
         <meta name="description" content={service.description} />
         <link rel="canonical" href={`https://vancegraphix.com.au/service/${service.id}`} />
       </Helmet>
@@ -193,7 +193,7 @@ const ServiceDetail: React.FC = () => {
 
             {/* Why Choose Us */}
             <div className="bg-blue-50 rounded-2xl p-8 border border-blue-100 mt-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Why choose Vance Graphix &amp; Print for {service.title}?</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Why choose Wbify for {service.title}?</h3>
               <p className="text-slate-700 mb-4 leading-relaxed">
                 We don't just deliver files; we deliver results. Our team of experts follows industry best practices to ensure your project stands out. We offer unlimited revisions during the draft phase to ensure you are 100% happy.
               </p>

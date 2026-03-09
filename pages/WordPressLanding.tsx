@@ -48,7 +48,7 @@ const WordPressLanding: React.FC = () => {
         serviceType: 'WordPress Development',
         provider: {
             '@type': 'Organization',
-            name: 'Vance Graphix & Print (VGP)'
+            name: 'Wbify'
         },
         areaServed: 'Worldwide',
         description: 'Professional WordPress design, development, and optimization services'

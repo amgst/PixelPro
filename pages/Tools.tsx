@@ -35,7 +35,7 @@ const Tools: React.FC = () => {
     return (
         <div className="min-h-screen bg-white">
             <SEO
-                title="Free Web Design & Development Tools | VGP Resources"
+                title="Free Web Design & Development Tools | Wbify Resources"
                 description="A curated list of essential free tools for developers and designers. Boost your productivity with our hand-picked digital resources, calculators, and utilities."
                 canonical="/tools"
                 structuredData={toolsStructuredData}

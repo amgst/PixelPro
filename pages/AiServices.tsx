@@ -10,7 +10,7 @@ const AiServices: React.FC = () => {
     serviceType: 'AI Services and Automation',
     provider: {
       '@type': 'Organization',
-      name: 'Vance Graphix & Print (VGP)',
+      name: 'Wbify',
     },
     areaServed: 'Australia',
     description:
@@ -21,7 +21,7 @@ const AiServices: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <SEO
         title="AI Services & Automation | Content, Images & Workflows"
-        description="Use AI to speed up content creation, image generation and business workflows. Vance Graphix & Print (VGP) helps you integrate AI tools into real projects."
+        description="Use AI to speed up content creation, image generation and business workflows. Wbify helps you integrate AI tools into real projects."
         canonical="/ai-services"
         structuredData={structuredData}
       />
@@ -206,4 +206,3 @@ const AiServices: React.FC = () => {
 };
 
 export default AiServices;
-

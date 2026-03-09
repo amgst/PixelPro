@@ -29,15 +29,15 @@ const Store: React.FC = () => {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'OfferCatalog',
-    name: 'VGP POD',
-    description: 'Print on demand products you can order directly from VGP.',
+    name: 'Wbify POD',
+    description: 'Print on demand products you can order directly from Wbify.',
   };
 
   return (
     <div className="min-h-screen bg-white pb-20">
       <SEO
         title="POD | Print on Demand Products"
-        description="Browse print on demand products from Vance Graphix & Print (VGP). Request an order for print, signage and marketing materials without online payment."
+        description="Browse print on demand products from Wbify. Request an order for print, signage and marketing materials without online payment."
         canonical="/store"
         structuredData={structuredData}
       />
@@ -47,7 +47,7 @@ const Store: React.FC = () => {
           <div className="flex-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-semibold mb-4">
               <ShoppingCart size={14} />
-              <span>VGP POD</span>
+              <span>Wbify POD</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
               Order Print, Signage and Marketing Materials
