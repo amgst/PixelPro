@@ -1,9 +1,8 @@
 import React from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { PortfolioItem, getPortfolios, addPortfolio, updatePortfolio, deletePortfolio } from '../../lib/portfolioService';
-import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight, Download, Zap, ShieldCheck, Search, CheckCircle } from 'lucide-react';
-import { uploadFileWithProgress, generateUniqueFileName, uploadFromUrl } from '../../lib/storageService';
-import { fetchPageSpeedMetrics } from '../../lib/performanceService';
+import { Plus, Trash2, Edit2, Save, X, Loader2, LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight, CheckCircle, Search } from 'lucide-react';
+import { getWebPortfolioImageUrl, normalizeWebPortfolioImage, WEB_PORTFOLIO_IMAGE_FOLDER, WEB_PORTFOLIO_IMAGE_PLACEHOLDER } from '../../lib/webPortfolioImage';
 
 const AdminPortfolio: React.FC = () => {
     const [items, setItems] = React.useState<PortfolioItem[]>([]);
@@ -11,21 +10,23 @@ const AdminPortfolio: React.FC = () => {
     const [isEditing, setIsEditing] = React.useState(false);
     const [currentItem, setCurrentItem] = React.useState<Partial<PortfolioItem>>({});
     const [isLoading, setIsLoading] = React.useState(true);
-    const [isUploading, setIsUploading] = React.useState(false);
     const [isSaving, setIsSaving] = React.useState(false);
-    const [isFetchingScreenshot, setIsFetchingScreenshot] = React.useState(false);
-    const [isCheckingPerformance, setIsCheckingPerformance] = React.useState<string | null>(null);
-    const [uploadProgress, setUploadProgress] = React.useState(0);
+    const [searchQuery, setSearchQuery] = React.useState('');
 
     // Pagination State
     const [currentPage, setCurrentPage] = React.useState(1);
     const [itemsPerPage, setItemsPerPage] = React.useState(10);
 
-    // Pagination Logic
+    // Filter + Pagination Logic
+    const filteredItems = items.filter(item =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.link?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(items.length / itemsPerPage);
+    const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -47,38 +48,7 @@ const AdminPortfolio: React.FC = () => {
         }
     };
 
-    const handleCheckPerformance = async (id: string, url: string) => {
-        if (!url) {
-            alert("This item has no live link to check.");
-            return;
-        }
 
-        setIsCheckingPerformance(id);
-        try {
-            const metrics = await fetchPageSpeedMetrics(url);
-            const updateData: Partial<PortfolioItem> = {
-                performanceScore: metrics.performance,
-                seoScore: metrics.seo,
-                accessibilityScore: metrics.accessibility,
-                bestPracticesScore: metrics.bestPractices,
-                lastChecked: new Date().toISOString()
-            };
-
-            await updatePortfolio(id, updateData);
-
-            // Update local state
-            setItems(prev => prev.map(item =>
-                item.id === id ? { ...item, ...updateData } : item
-            ));
-
-            alert("Performance metrics updated successfully!");
-        } catch (error) {
-            console.error("Error checking performance:", error);
-            alert("Failed to fetch performance metrics. Make sure the URL is accessible.");
-        } finally {
-            setIsCheckingPerformance(null);
-        }
-    };
 
     const handleAutoFetchData = async () => {
         if (!currentItem.link) {
@@ -86,9 +56,7 @@ const AdminPortfolio: React.FC = () => {
             return;
         }
 
-        setIsFetchingScreenshot(true);
         try {
-            // 1. Fetch Metadata (Title, Description, etc.)
             const metaResponse = await fetch(`https://api.microlink.io?url=${encodeURIComponent(currentItem.link)}&palette=true`);
             const metaData = await metaResponse.json();
 
@@ -118,73 +86,16 @@ const AdminPortfolio: React.FC = () => {
                     }));
                 }
             }
-
-            // 2. Fetch & Upload Screenshot (optimized for size)
-            const screenshotUrl = `https://api.microlink.io?url=${encodeURIComponent(currentItem.link)}&screenshot=true&meta=false&embed=screenshot.url&screenshot.width=1000&screenshot.type=jpeg&screenshot.quality=80`;
-            const fileName = generateUniqueFileName('screenshot.jpg');
-            const uploadPath = `portfolios/${fileName}`;
-            const downloadURL = await uploadFromUrl(screenshotUrl, uploadPath);
-
-            setCurrentItem(prev => ({ ...prev, imageUrl: downloadURL }));
-            alert("Website data and screenshot imported successfully!");
+            alert("Website details imported. Add the matching image filename from the local web-portfolio folder.");
         } catch (error) {
             console.error("Error auto-fetching data:", error);
             alert("Failed to auto-fetch some data. You may need to fill it manually.");
-        } finally {
-            setIsFetchingScreenshot(false);
-        }
-    };
-
-    const handleImportFromUrl = async () => {
-        if (!currentItem.imageUrl || currentItem.imageUrl.includes('firebasestorage.googleapis.com')) {
-            return;
-        }
-
-        setIsUploading(true);
-        try {
-            const fileName = generateUniqueFileName('imported-image.jpg');
-            const uploadPath = `portfolios/${fileName}`;
-            const downloadURL = await uploadFromUrl(currentItem.imageUrl, uploadPath);
-            setCurrentItem(prev => ({ ...prev, imageUrl: downloadURL }));
-            alert("Image imported and saved to your hosting!");
-        } catch (error) {
-            console.error("Error importing image:", error);
-            alert("Failed to import image from URL.");
-        } finally {
-            setIsUploading(false);
         }
     };
 
     React.useEffect(() => {
         fetchItems();
     }, []);
-
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        setIsUploading(true);
-        setUploadProgress(0);
-        try {
-            // Generate a filename, forcing .jpg if it's an image since we optimize to JPEG
-            const baseName = file.name.split('.')[0];
-            const fileName = file.type.startsWith('image/')
-                ? generateUniqueFileName(`${baseName}.jpg`)
-                : generateUniqueFileName(file.name);
-
-            const uploadPath = `portfolios/${fileName}`;
-            const downloadURL = await uploadFileWithProgress(file, uploadPath, (progress) => {
-                setUploadProgress(progress);
-            });
-            setCurrentItem(prev => ({ ...prev, imageUrl: downloadURL }));
-        } catch (error) {
-            console.error("Error uploading image:", error);
-            alert("Failed to upload image.");
-        } finally {
-            setIsUploading(false);
-            setUploadProgress(0);
-        }
-    };
 
     const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this item?')) {
@@ -213,6 +124,7 @@ const AdminPortfolio: React.FC = () => {
             technologies: [],
             isFeatured: false,
             isConcept: false,
+            isPublic: true,
             order: 0
         });
         setIsEditing(true);
@@ -247,10 +159,14 @@ const AdminPortfolio: React.FC = () => {
 
         setIsSaving(true);
         try {
+            const payload = {
+                ...currentItem,
+                imageUrl: normalizeWebPortfolioImage(currentItem.imageUrl)
+            };
             if (currentItem.id) {
-                await updatePortfolio(currentItem.id, currentItem);
+                await updatePortfolio(currentItem.id, payload);
             } else {
-                await addPortfolio(currentItem as PortfolioItem);
+                await addPortfolio(payload as PortfolioItem);
             }
             await fetchItems();
             setIsEditing(false);
@@ -265,47 +181,61 @@ const AdminPortfolio: React.FC = () => {
 
     return (
         <AdminLayout>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Manage Portfolio</h1>
-                    <p className="text-gray-500">Add or edit portfolio items.</p>
+            <div className="flex flex-col gap-4 mb-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-slate-900">Manage Portfolio</h1>
+                        <p className="text-gray-500">Add or edit portfolio items.</p>
+                    </div>
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                        <div className="flex items-center gap-2 mr-2">
+                            <span className="text-sm text-gray-500 hidden md:block">Show</span>
+                            <select
+                                value={itemsPerPage}
+                                onChange={handleItemsPerPageChange}
+                                className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-1.5 outline-none"
+                            >
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={50}>50</option>
+                            </select>
+                        </div>
+                        <div className="flex items-center bg-gray-100 p-1 rounded-lg">
+                            <button
+                                onClick={() => setViewMode('card')}
+                                className={`p-1.5 rounded-md transition-all ${viewMode === 'card' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                title="Card View"
+                            >
+                                <LayoutGrid size={18} />
+                            </button>
+                            <button
+                                onClick={() => setViewMode('list')}
+                                className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                title="List View"
+                            >
+                                <List size={18} />
+                            </button>
+                        </div>
+                        <button
+                            onClick={handleAddNew}
+                            className="flex-1 sm:flex-none bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                        >
+                            <Plus size={18} /> Add New Item
+                        </button>
+                    </div>
                 </div>
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <div className="flex items-center gap-2 mr-2">
-                        <span className="text-sm text-gray-500 hidden md:block">Show</span>
-                        <select
-                            value={itemsPerPage}
-                            onChange={handleItemsPerPageChange}
-                            className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-1.5 outline-none"
-                        >
-                            <option value={5}>5</option>
-                            <option value={10}>10</option>
-                            <option value={20}>20</option>
-                            <option value={50}>50</option>
-                        </select>
-                    </div>
-                    <div className="flex items-center bg-gray-100 p-1 rounded-lg">
-                        <button
-                            onClick={() => setViewMode('card')}
-                            className={`p-1.5 rounded-md transition-all ${viewMode === 'card' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-                            title="Card View"
-                        >
-                            <LayoutGrid size={18} />
-                        </button>
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-                            title="List View"
-                        >
-                            <List size={18} />
-                        </button>
-                    </div>
-                    <button
-                        onClick={handleAddNew}
-                        className="flex-1 sm:flex-none bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                    >
-                        <Plus size={18} /> Add New Item
-                    </button>
+
+                {/* Search Bar */}
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Search by title, category, or URL..."
+                        value={searchQuery}
+                        onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                        className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
+                    />
                 </div>
             </div>
 
@@ -344,81 +274,43 @@ const AdminPortfolio: React.FC = () => {
                                     <button
                                         type="button"
                                         onClick={handleAutoFetchData}
-                                        disabled={isFetchingScreenshot || !currentItem.link}
-                                        className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${isFetchingScreenshot || !currentItem.link
-                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                : 'bg-slate-900 text-white hover:bg-slate-800'
+                                        disabled={!currentItem.link}
+                                        className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${!currentItem.link
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-slate-900 text-white hover:bg-slate-800'
                                             }`}
-                                        title="Auto-fetch title, description, tags, and screenshot"
+                                        title="Auto-fill title, description, and category from the website URL"
                                     >
-                                        {isFetchingScreenshot ? <Loader2 size={14} className="animate-spin" /> : <LayoutGrid size={14} />}
+                                        <LayoutGrid size={14} />
                                         Magic Fill
                                     </button>
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio Image</label>
-                                <div className="mt-1 flex items-center gap-4">
-                                    {currentItem.imageUrl ? (
-                                        <div className="relative group">
-                                            <img
-                                                src={currentItem.imageUrl}
-                                                alt="Preview"
-                                                className="w-24 h-24 object-cover rounded-lg border border-gray-200"
-                                            />
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                                                <label className="cursor-pointer text-white p-1">
-                                                    <Upload size={16} />
-                                                    <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
-                                                </label>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all overflow-hidden relative">
-                                            {isUploading ? (
-                                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90">
-                                                    <div className="relative w-12 h-12 flex items-center justify-center">
-                                                        <Loader2 className="w-full h-full text-blue-600 animate-spin absolute" />
-                                                        <span className="text-[10px] font-bold text-blue-700">{uploadProgress}%</span>
-                                                    </div>
-                                                    <div className="w-16 h-1 bg-gray-100 rounded-full mt-2 overflow-hidden">
-                                                        <div
-                                                            className="h-full bg-blue-600 transition-all duration-300"
-                                                            style={{ width: `${uploadProgress}%` }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <Upload className="w-6 h-6 text-gray-400" />
-                                                    <span className="text-[10px] text-gray-500 mt-1">Upload</span>
-                                                </>
-                                            )}
-                                            <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
-                                        </label>
+                                <div className="mt-1 space-y-3">
+                                    {currentItem.imageUrl && (
+                                        <img
+                                            src={getWebPortfolioImageUrl(currentItem.imageUrl)}
+                                            alt="Preview"
+                                            className="w-24 h-24 object-cover rounded-lg border border-gray-200"
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = WEB_PORTFOLIO_IMAGE_PLACEHOLDER;
+                                            }}
+                                        />
                                     )}
-                                    <div className="flex-1 space-y-2">
-                                        <div className="relative flex-1">
-                                            <input
-                                                type="url"
-                                                placeholder="Or paste image URL"
-                                                value={currentItem.imageUrl || ''}
-                                                onChange={e => setCurrentItem({ ...currentItem, imageUrl: e.target.value })}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm pr-10"
-                                            />
-                                            {currentItem.imageUrl && !currentItem.imageUrl.includes('firebasestorage.googleapis.com') && (
-                                                <button
-                                                    type="button"
-                                                    onClick={handleImportFromUrl}
-                                                    title="Save to our hosting"
-                                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 hover:text-blue-800 p-1"
-                                                >
-                                                    {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-                                                </button>
-                                            )}
-                                        </div>
-                                        <p className="text-[10px] text-gray-500">Recommended: Square or 4:3 aspect ratio</p>
-                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="example.jpg or /web-portfolio/example.jpg"
+                                        value={currentItem.imageUrl || ''}
+                                        onChange={e => setCurrentItem({ ...currentItem, imageUrl: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                    />
+                                    <p className="text-[10px] text-gray-500">
+                                        Store website images in <code>public\web-portfolio</code>. Enter only the filename and it will save as <code>{WEB_PORTFOLIO_IMAGE_FOLDER}filename</code>.
+                                    </p>
+                                    <p className="text-[10px] text-gray-500">Existing absolute URLs still work until you replace them. Recommended: 4:3 or 16:10 aspect ratio.</p>
                                 </div>
                             </div>
                             <div>
@@ -443,8 +335,8 @@ const AdminPortfolio: React.FC = () => {
                                             type="button"
                                             onClick={() => toggleTechnology(tech)}
                                             className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${(currentItem.technologies || []).includes(tech)
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                ? 'bg-blue-600 text-white'
+                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                                 }`}
                                         >
                                             {tech}
@@ -452,7 +344,7 @@ const AdminPortfolio: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
-                            <div className="flex items-center gap-6">
+                            <div className="flex flex-wrap items-center gap-6">
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -461,6 +353,15 @@ const AdminPortfolio: React.FC = () => {
                                         className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                     />
                                     <span className="text-sm font-medium text-gray-700">Featured Project</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={currentItem.isPublic !== false}
+                                        onChange={e => setCurrentItem({ ...currentItem, isPublic: e.target.checked })}
+                                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700">Public on website</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input
@@ -490,6 +391,7 @@ const AdminPortfolio: React.FC = () => {
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                 />
                             </div>
+
                             <div className="pt-4 flex justify-end gap-3">
                                 <button
                                     type="button"
@@ -500,8 +402,8 @@ const AdminPortfolio: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={isSaving || isUploading}
-                                    className={`px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-2 ${(isSaving || isUploading) ? 'opacity-70 cursor-not-allowed' : ''
+                                    disabled={isSaving}
+                                    className={`px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-2 ${isSaving ? 'opacity-70 cursor-not-allowed' : ''
                                         }`}
                                 >
                                     {isSaving ? (
@@ -528,9 +430,13 @@ const AdminPortfolio: React.FC = () => {
                         <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-shadow">
                             <div className="relative aspect-video overflow-hidden bg-gray-100">
                                 <img
-                                    src={item.imageUrl}
+                                    src={getWebPortfolioImageUrl(item.imageUrl)}
                                     alt={item.title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    onError={(e) => {
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = WEB_PORTFOLIO_IMAGE_PLACEHOLDER;
+                                    }}
                                 />
                                 <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
@@ -555,6 +461,11 @@ const AdminPortfolio: React.FC = () => {
                                             Concept
                                         </span>
                                     )}
+                                    {item.isPublic === false && (
+                                        <span className="px-2 py-0.5 bg-yellow-500/80 text-black text-[10px] font-bold rounded backdrop-blur-sm uppercase">
+                                            Hidden
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                             <div className="p-4 flex-1 flex flex-col">
@@ -563,44 +474,19 @@ const AdminPortfolio: React.FC = () => {
                                     {item.description || 'No description provided.'}
                                 </p>
 
-                                {item.performanceScore !== undefined && (
-                                    <div className="grid grid-cols-2 gap-2 mb-4">
-                                        <div className={`flex items-center justify-between px-2 py-1 rounded border text-[10px] font-bold ${getScoreColor(item.performanceScore)}`}>
-                                            <span className="flex items-center gap-1"><Zap size={10} /> Perf</span>
-                                            <span>{item.performanceScore}</span>
-                                        </div>
-                                        <div className={`flex items-center justify-between px-2 py-1 rounded border text-[10px] font-bold ${getScoreColor(item.seoScore || 0)}`}>
-                                            <span className="flex items-center gap-1"><Search size={10} /> SEO</span>
-                                            <span>{item.seoScore}</span>
-                                        </div>
-                                    </div>
-                                )}
+
 
                                 <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                                     <div className="flex gap-3">
                                         {item.link ? (
-                                            <>
-                                                <a
-                                                    href={item.link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-600 hover:text-blue-700 text-xs font-medium flex items-center gap-1"
-                                                >
-                                                    <ExternalLink size={12} /> View
-                                                </a>
-                                                <button
-                                                    onClick={() => handleCheckPerformance(item.id, item.link!)}
-                                                    disabled={isCheckingPerformance === item.id}
-                                                    className="text-slate-600 hover:text-slate-900 text-xs font-medium flex items-center gap-1 disabled:opacity-50"
-                                                >
-                                                    {isCheckingPerformance === item.id ? (
-                                                        <Loader2 size={12} className="animate-spin" />
-                                                    ) : (
-                                                        <Zap size={12} />
-                                                    )}
-                                                    Audit
-                                                </button>
-                                            </>
+                                            <a
+                                                href={item.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 hover:text-blue-700 text-xs font-medium flex items-center gap-1"
+                                            >
+                                                <ExternalLink size={12} /> View
+                                            </a>
                                         ) : (
                                             <span className="text-gray-400 text-xs italic">No link</span>
                                         )}
@@ -638,6 +524,7 @@ const AdminPortfolio: React.FC = () => {
                                 <th className="px-6 py-4 font-semibold text-gray-700">Title</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Category</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Performance</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Visibility</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -645,7 +532,15 @@ const AdminPortfolio: React.FC = () => {
                             {currentItems.map((item) => (
                                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4">
-                                        <img src={item.imageUrl} alt={item.title} className="w-12 h-12 object-cover rounded-lg" />
+                                        <img
+                                            src={getWebPortfolioImageUrl(item.imageUrl)}
+                                            alt={item.title}
+                                            className="w-12 h-12 object-cover rounded-lg"
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = WEB_PORTFOLIO_IMAGE_PLACEHOLDER;
+                                            }}
+                                        />
                                     </td>
                                     <td className="px-6 py-4 font-medium text-slate-900">
                                         <div className="flex items-center gap-2">
@@ -662,24 +557,18 @@ const AdminPortfolio: React.FC = () => {
                                             {item.category}
                                         </span>
                                     </td>
+
                                     <td className="px-6 py-4">
-                                        {item.performanceScore !== undefined ? (
-                                            <div className="flex gap-2">
-                                                <div className={`px-2 py-0.5 rounded border text-[10px] font-bold ${getScoreColor(item.performanceScore)}`}>
-                                                    P: {item.performanceScore}
-                                                </div>
-                                                <div className={`px-2 py-0.5 rounded border text-[10px] font-bold ${getScoreColor(item.seoScore || 0)}`}>
-                                                    S: {item.seoScore}
-                                                </div>
-                                            </div>
+                                        {item.isPublic === false ? (
+                                            <span className="px-2 py-1 bg-yellow-50 text-yellow-700 text-xs font-medium rounded-full flex items-center gap-1">
+                                                <CheckCircle size={10} className="text-yellow-500" />
+                                                Hidden
+                                            </span>
                                         ) : (
-                                            <button
-                                                onClick={() => handleCheckPerformance(item.id, item.link!)}
-                                                disabled={isCheckingPerformance === item.id || !item.link}
-                                                className="text-blue-600 hover:underline text-xs disabled:text-gray-400"
-                                            >
-                                                {isCheckingPerformance === item.id ? 'Auditing...' : 'Run Audit'}
-                                            </button>
+                                            <span className="px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full flex items-center gap-1">
+                                                <CheckCircle size={10} className="text-green-500" />
+                                                Public
+                                            </span>
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right">
@@ -733,8 +622,8 @@ const AdminPortfolio: React.FC = () => {
                                     key={number}
                                     onClick={() => paginate(number)}
                                     className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${currentPage === number
-                                            ? 'bg-blue-600 text-white shadow-md'
-                                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                                        ? 'bg-blue-600 text-white shadow-md'
+                                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                                         }`}
                                 >
                                     {number}

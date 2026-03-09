@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderOpen, LogOut, Globe, Store, Inbox, X, Bell } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, Settings, LogOut, Globe, Store, Inbox, X, Bell, MessageSquare } from 'lucide-react';
 import { NotificationContext } from './NotificationProvider';
+import { useAuth } from './AuthProvider';
 
 interface AdminSidebarProps {
     isOpen?: boolean;
@@ -12,12 +13,17 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onClose }) 
     const location = useLocation();
     const navigate = useNavigate();
     const { permission, requestPermission } = useContext(NotificationContext);
+    const { logout } = useAuth();
 
     const isActive = (path: string) => location.pathname === path;
 
-    const handleLogout = () => {
-        // In a real app, clear auth tokens here
-        navigate('/admin/login');
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/admin/login');
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
     };
 
     const menuItems = [
@@ -25,9 +31,15 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onClose }) 
         { name: 'Messages', path: '/admin/messages', icon: Inbox },
         { name: 'Tools', path: '/admin/tools', icon: FolderOpen },
         { name: 'Portfolio', path: '/admin/portfolio', icon: FolderOpen },
+        { name: 'Web Registry', path: '/admin/web-registry', icon: Globe },
+        { name: 'Print Portfolio', path: '/admin/print-portfolio', icon: FolderOpen },
         { name: 'Services', path: '/admin/services', icon: FolderOpen },
         { name: 'Blog', path: '/admin/blog', icon: FolderOpen },
+        { name: 'Testimonials', path: '/admin/testimonials', icon: MessageSquare },
         { name: 'Ready Sites', path: '/admin/ready-sites', icon: Store },
+        { name: 'POD Products', path: '/admin/store', icon: Store },
+        { name: 'Orders', path: '/admin/orders', icon: Inbox },
+        { name: 'Settings', path: '/admin/settings', icon: Settings },
     ];
 
     const sidebarClasses = `
@@ -40,7 +52,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onClose }) 
         <>
             {/* Mobile Backdrop */}
             {isOpen && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black/50 z-40 md:hidden"
                     onClick={onClose}
                 />
@@ -49,10 +61,10 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onClose }) 
             <div className={sidebarClasses}>
                 <div className="p-6 border-b border-slate-800 flex items-center justify-between">
                     <div className="flex items-center gap-2 font-bold text-xl">
-                        <span>wb<span className="text-blue-500">ify</span> Admin</span>
+                        <span>VGP Admin</span>
                     </div>
                     {/* Mobile Close Button */}
-                    <button 
+                    <button
                         onClick={onClose}
                         className="md:hidden text-slate-400 hover:text-white"
                     >

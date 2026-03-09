@@ -12,11 +12,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 md:col-span-1">
             <span className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              {settings.logoUrl ? (
-                <img src={settings.logoUrl} alt={settings.siteName} className="h-8 w-auto object-contain" />
-              ) : (
-                <>wb<span className="text-blue-600">ify</span></>
-              )}
+              {settings.siteName || <>wb<span className="text-blue-600">ify</span></>}
             </span>
             <p className="mt-4 text-gray-500 text-sm leading-relaxed">
               All your creative & digital services in one place. From web design to printing, we deliver premium quality for your business.

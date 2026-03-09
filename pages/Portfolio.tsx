@@ -3,7 +3,7 @@ import { ArrowUpRight, X, ChevronLeft, ChevronRight, Loader, ExternalLink, Alert
 import { getPortfolios, PortfolioItem } from '../lib/portfolioService';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { PORTFOLIO_CONFIG } from '../data/portfolioConfig';
+import { getPreferredPortfolioImage } from '../lib/webPortfolioImages';
 
 interface ProjectItem {
   id: string | number;
@@ -49,47 +49,21 @@ const Portfolio: React.FC = () => {
       setCurrentPage(1);
 
       try {
-        if (specificFolderId) {
-          // Fetch from Google Drive
-          if (!PORTFOLIO_CONFIG.apiKey) {
-            throw new Error("Google Drive API key is missing in config.");
-          }
+        const fetchedItems = await getPortfolios();
 
-          const query = `'${specificFolderId}' in parents and trashed = false and mimeType contains 'image/'`;
-          const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name)&key=${PORTFOLIO_CONFIG.apiKey}&pageSize=100`;
+        const sortedItems = [...fetchedItems].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-          const res = await fetch(url);
-          if (!res.ok) throw new Error(`Google Drive API Error: ${res.status}`);
+        let filteredItems = sortedItems.filter(item => item.isPublic !== false);
 
-          const result = await res.json();
-          if (result.files) {
-            const driveItems: PortfolioItem[] = result.files.map((f: any) => ({
-              id: f.id,
-              title: f.name.split('.')[0], // Use filename without extension as title
-              imageUrl: `https://lh3.googleusercontent.com/d/${f.id}`,
-              category: 'Other',
-              description: `Project from ${specificTitle || 'Gallery'}`,
-            }));
-            setProjects(driveItems);
-          }
-        } else {
-          // Fetch from Firebase
-          const fetchedItems = await getPortfolios();
-
-          // Sort by order if available
-          const sortedItems = [...fetchedItems].sort((a, b) => (a.order || 0) - (b.order || 0));
-
-          // Filter based on active tab
-          let filteredItems = sortedItems;
-          if (activeTab !== 'All') {
-            filteredItems = filteredItems.filter(item => item.category === activeTab);
-          }
-
-          setProjects(filteredItems);
+        if (activeTab !== 'All') {
+          filteredItems = filteredItems.filter(item => item.category === activeTab);
         }
+
+        setProjects(filteredItems);
+
       } catch (err: any) {
         console.error("Error fetching portfolios:", err);
-        setError(err.message || "Failed to load portfolio items.");
+        setError("Failed to load portfolio items.");
       } finally {
         setIsLoading(false);
       }
@@ -149,9 +123,9 @@ const Portfolio: React.FC = () => {
   return (
     <div className="min-h-screen bg-white py-20">
       <Helmet>
-        <title>Our Portfolio | wbify Creative Studio</title>
+        <title>Our Portfolio | Vance Graphix &amp; Print (VGP)</title>
         <meta name="description" content="Explore our portfolio of graphic design, web development, and video projects. See how we help brands stand out." />
-        <link rel="canonical" href="https://www.wbify.com/portfolio" />
+        <link rel="canonical" href="https://vancegraphix.com.au/portfolio" />
       </Helmet>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -284,7 +258,7 @@ const Portfolio: React.FC = () => {
 
                       <div className="relative flex-1 overflow-hidden">
                         <img
-                          src={project.imageUrl}
+                          src={getPreferredPortfolioImage(project, indexOfFirstItem + index)}
                           alt={project.title}
                           className="w-full h-full object-cover object-top transform group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"
@@ -339,9 +313,9 @@ const Portfolio: React.FC = () => {
                         </div>
                       )}
 
-                      {Array.isArray(project.technologies) && (
+                      {project.technologies && (
                         <div className="flex flex-wrap gap-1 mt-3">
-                          {Array.from(project.technologies).slice(0, 3).map((tech: any) => (
+                          {project.technologies.slice(0, 3).map(tech => (
                             <span key={tech} className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
                               {tech}
                             </span>
@@ -435,7 +409,7 @@ const Portfolio: React.FC = () => {
               </button>
 
               <img
-                src={currentProject.imageUrl}
+                src={getPreferredPortfolioImage(currentProject, currentProjectIndex)}
                 alt={currentProject.title}
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
               />
@@ -488,11 +462,11 @@ const Portfolio: React.FC = () => {
                 </p>
               )}
 
-              {Array.isArray(currentProject.technologies) && currentProject.technologies.length > 0 && (
+              {currentProject.technologies && (
                 <div className="mb-8">
                   <h4 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-3">Technologies</h4>
                   <div className="flex flex-wrap gap-2">
-                    {Array.from(currentProject.technologies).map((tech: any) => (
+                    {currentProject.technologies.map(tech => (
                       <span key={tech} className="text-xs bg-white/10 px-3 py-1 rounded-full border border-white/10">
                         {tech}
                       </span>

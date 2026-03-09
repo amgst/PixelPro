@@ -1,8 +1,14 @@
+import { doc, getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { db } from './firebase';
+
 export interface SiteSettings {
     siteName: string;
     adminEmail: string;
     logoUrl?: string;
     faviconUrl?: string;
+    googleAnalyticsId?: string;
+    googleTagManagerId?: string;
+    googleSiteVerification?: string;
     socialUrls?: {
         facebook?: string;
         twitter?: string;
@@ -11,29 +17,60 @@ export interface SiteSettings {
     };
 }
 
-export const STATIC_SITE_SETTINGS: SiteSettings = {
-    siteName: 'wbify',
-    adminEmail: 'admin@wbify.com',
-    logoUrl: '',
-    faviconUrl: '',
-    socialUrls: {
-        facebook: '',
-        twitter: '',
-        instagram: '',
-        linkedin: ''
+const SETTINGS_COLLECTION = 'settings';
+const GENERAL_SETTINGS_DOC = 'general';
+const DEFAULT_LOGO_URL = 'https://nbyomoqura0jkgxd.public.blob.vercel-storage.com/vgp%20logo%20horizontal.png';
+const DEFAULT_GA4_ID = 'G-EB1Z519BGJ';
+
+export const getSiteSettings = async (): Promise<SiteSettings> => {
+    const docRef = doc(db, SETTINGS_COLLECTION, GENERAL_SETTINGS_DOC);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        return docSnap.data() as SiteSettings;
+    } else {
+        // Return default settings if not found
+        return {
+            siteName: 'Vance Graphix & Print (VGP)',
+            adminEmail: 'ahmed@vancegraphix.com.au',
+            logoUrl: DEFAULT_LOGO_URL,
+            googleAnalyticsId: DEFAULT_GA4_ID
+        };
     }
 };
 
-export const getSiteSettings = async (): Promise<SiteSettings> => {
-    return STATIC_SITE_SETTINGS;
-};
-
-export const updateSiteSettings = async (_settings: Partial<SiteSettings>): Promise<void> => {
-    // Site settings are now static and no longer editable from the admin.
-    return Promise.resolve();
+export const updateSiteSettings = async (settings: Partial<SiteSettings>): Promise<void> => {
+    const docRef = doc(db, SETTINGS_COLLECTION, GENERAL_SETTINGS_DOC);
+    
+    // Check if doc exists first
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+        await updateDoc(docRef, settings);
+    } else {
+        // Create if doesn't exist (merging with defaults)
+        await setDoc(docRef, {
+            siteName: 'Vance Graphix & Print (VGP)',
+            adminEmail: 'ahmed@vancegraphix.com.au',
+            logoUrl: DEFAULT_LOGO_URL,
+            googleAnalyticsId: DEFAULT_GA4_ID,
+            ...settings
+        });
+    }
 };
 
 export const subscribeToSiteSettings = (callback: (settings: SiteSettings) => void) => {
-    callback(STATIC_SITE_SETTINGS);
-    return () => {};
+    const docRef = doc(db, SETTINGS_COLLECTION, GENERAL_SETTINGS_DOC);
+    return onSnapshot(docRef, (doc) => {
+        if (doc.exists()) {
+            callback(doc.data() as SiteSettings);
+        } else {
+            callback({
+                siteName: 'Vance Graphix & Print (VGP)',
+                adminEmail: 'ahmed@vancegraphix.com.au',
+                logoUrl: DEFAULT_LOGO_URL,
+                googleAnalyticsId: DEFAULT_GA4_ID
+            });
+        }
+    });
 };

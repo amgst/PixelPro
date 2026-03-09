@@ -56,8 +56,7 @@ const ServiceDetail: React.FC = () => {
       setLoadingImages(true);
       try {
         const query = `'${service.galleryFolderId}' in parents and trashed = false and mimeType contains 'image/'`;
-        // Limit to 6 images for the preview
-        const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id)&key=${PORTFOLIO_CONFIG.apiKey}&pageSize=6`;
+        const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,mimeType)&key=${PORTFOLIO_CONFIG.apiKey}&pageSize=6`;
 
         const res = await fetch(url);
 
@@ -68,8 +67,10 @@ const ServiceDetail: React.FC = () => {
         const result = await res.json();
 
         if (result.files) {
-          // Use lh3.googleusercontent.com/d/ for more reliable image hosting than /thumbnail
-          const images = result.files.map((f: any) => `https://lh3.googleusercontent.com/d/${f.id}`);
+          const images = result.files.map(
+            (f: any) =>
+              `https://drive.google.com/thumbnail?id=${f.id}&sz=w2000`
+          );
           setGalleryImages(images);
         }
       } catch (e) {
@@ -117,9 +118,9 @@ const ServiceDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-white pb-20">
       <Helmet>
-        <title>{service.title} | wbify Creative Studio</title>
+        <title>{service.title} | Vance Graphix &amp; Print (VGP)</title>
         <meta name="description" content={service.description} />
-        <link rel="canonical" href={`https://www.wbify.com/service/${service.id}`} />
+        <link rel="canonical" href={`https://vancegraphix.com.au/service/${service.id}`} />
       </Helmet>
 
       {/* Breadcrumb */}
@@ -146,7 +147,7 @@ const ServiceDetail: React.FC = () => {
             <div>
               <h2 className="text-2xl font-bold text-slate-900 mb-6">What's Included</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Array.isArray(service.features) && Array.from(service.features).map((feature: any, index: number) => (
+                {service.features.map((feature, index) => (
                   <div key={index} className="flex items-center p-4 bg-gray-50 rounded-lg">
                     <Check className="text-blue-600 mr-3" size={20} />
                     <span className="text-slate-800 font-medium">{feature}</span>
@@ -192,7 +193,7 @@ const ServiceDetail: React.FC = () => {
 
             {/* Why Choose Us */}
             <div className="bg-blue-50 rounded-2xl p-8 border border-blue-100 mt-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Why choose wbify for {service.title}?</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Why choose Vance Graphix &amp; Print for {service.title}?</h3>
               <p className="text-slate-700 mb-4 leading-relaxed">
                 We don't just deliver files; we deliver results. Our team of experts follows industry best practices to ensure your project stands out. We offer unlimited revisions during the draft phase to ensure you are 100% happy.
               </p>
@@ -236,7 +237,7 @@ const ServiceDetail: React.FC = () => {
 
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-slate-900">Features:</p>
-                  {Array.isArray(service.features) && Array.from(service.features).slice(0, 3).map((f: any, i: number) => (
+                  {service.features.slice(0, 3).map((f, i) => (
                     <div key={i} className="flex items-start text-sm text-gray-600">
                       <Check size={16} className="text-green-500 mr-2 mt-0.5" />
                       {f}

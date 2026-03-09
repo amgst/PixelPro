@@ -1,5 +1,6 @@
 import { db } from './firebase';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
+import { normalizeWebPortfolioImage } from './webPortfolioImage';
 
 export interface PortfolioItem {
     id: string;
@@ -17,27 +18,52 @@ export interface PortfolioItem {
     bestPracticesScore?: number;
     lastChecked?: string;
     isConcept?: boolean;
+    isPublic?: boolean;
+    // Internal Registry Fields
+    hostingProvider?: string;
+    domainRegistrar?: string;
+    domainExpiry?: string;
+    internalNotes?: string;
 }
 
 const PORTFOLIO_COLLECTION = 'portfolios';
 
+const normalizePortfolioItem = <T extends Partial<PortfolioItem>>(item: T): T => {
+    const payload = { ...item } as T;
+
+    if (Object.prototype.hasOwnProperty.call(payload, 'imageUrl')) {
+        payload.imageUrl = normalizeWebPortfolioImage(payload.imageUrl) as T['imageUrl'];
+    }
+
+    return payload;
+};
+
 export const getPortfolios = async (): Promise<PortfolioItem[]> => {
     const colRef = collection(db, PORTFOLIO_COLLECTION);
-    // You might want to order by something, e.g., creation date if you add it
     const q = query(colRef);
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PortfolioItem));
+    return snapshot.docs.map(doc => {
+        const data = doc.data();
+        // Normalize technologies to always be an array (older docs may store it as a string)
+        if (data.technologies && !Array.isArray(data.technologies)) {
+            data.technologies = [data.technologies].filter(Boolean);
+        } else if (!data.technologies) {
+            data.technologies = [];
+        }
+        return { id: doc.id, ...data } as PortfolioItem;
+    });
 };
 
 export const addPortfolio = async (item: Omit<PortfolioItem, 'id'>): Promise<PortfolioItem> => {
     const colRef = collection(db, PORTFOLIO_COLLECTION);
-    const docRef = await addDoc(colRef, item);
-    return { id: docRef.id, ...item };
+    const payload = normalizePortfolioItem(item);
+    const docRef = await addDoc(colRef, payload);
+    return { id: docRef.id, ...payload };
 };
 
 export const updatePortfolio = async (id: string, item: Partial<PortfolioItem>) => {
     const docRef = doc(db, PORTFOLIO_COLLECTION, id);
-    await updateDoc(docRef, item);
+    await updateDoc(docRef, normalizePortfolioItem(item));
 };
 
 export const deletePortfolio = async (id: string) => {

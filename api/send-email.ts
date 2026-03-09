@@ -32,7 +32,28 @@ export default async function handler(req: any, res: any) {
         });
     }
 
-    const { type, data } = req.body;
+    const body =
+        typeof req.body === 'string'
+            ? (() => {
+                try {
+                    return JSON.parse(req.body);
+                } catch {
+                    return null;
+                }
+            })()
+            : req.body;
+
+    if (!body || typeof body !== 'object') {
+        console.warn('Invalid or missing JSON body');
+        return res.status(400).json({ message: 'Invalid JSON body' });
+    }
+
+    const { type, data } = body;
+    if (!type || !data || typeof data !== 'object') {
+        console.warn('Missing required payload fields', { type, hasData: !!data });
+        return res.status(400).json({ message: 'Missing required payload: type and data are required' });
+    }
+
     console.log('Submission Type:', type);
     console.log('Payload Data:', JSON.stringify(data, null, 2));
 
@@ -51,7 +72,7 @@ Service: ${data.service}
 Message:
 ${data.message}
 
-View details: https://www.wbify.com/admin/dashboard
+View details: https://vancegraphix.com.au/admin/dashboard
         `;
     } else if (type === 'inquiry') {
         subject = `New Project Inquiry: ${data.serviceType} from ${data.name}`;
@@ -67,7 +88,7 @@ Timeline: ${data.timeline}
 Additional Info:
 ${data.additionalInfo}
 
-View details: https://www.wbify.com/admin/inquiries
+View details: https://vancegraphix.com.au/admin/inquiries
         `;
     } else if (type === 'application') {
         subject = `New Job Application: ${data.role} from ${data.fullName}`;
@@ -85,7 +106,7 @@ LinkedIn: ${data.linkedinUrl || 'N/A'}
 Cover Letter:
 ${data.coverLetter}
 
-View details: https://www.wbify.com/admin/dashboard
+View details: https://vancegraphix.com.au/admin/dashboard
         `;
     } else {
         console.warn('Invalid submission type received:', type);
@@ -93,7 +114,6 @@ View details: https://www.wbify.com/admin/dashboard
     }
 
     try {
-        // Create transporter inside handler to ensure fresh connection and env vars
         console.log('Creating nodemailer transporter...');
         const transporter = nodemailer.createTransport({
             host: process.env.EMAIL_HOST,
@@ -109,24 +129,6 @@ View details: https://www.wbify.com/admin/dashboard
             socketTimeout: 10000,
         });
 
-        // Verify connection configuration
-        console.log('Verifying SMTP connection...');
-        try {
-            await transporter.verify();
-            console.log('SMTP Connection Verified Successfully');
-        } catch (verifyError: any) {
-            console.error('SMTP Verification Failed:', {
-                message: verifyError.message,
-                code: verifyError.code,
-                command: verifyError.command
-            });
-            return res.status(500).json({ 
-                message: 'SMTP Verification Failed', 
-                error: verifyError.message,
-                details: verifyError
-            });
-        }
-
         // Add a timeout for the email sending process
         console.log('Attempting to send mail to:', process.env.ADMIN_EMAIL);
         const emailPromise = transporter.sendMail({
@@ -134,6 +136,7 @@ View details: https://www.wbify.com/admin/dashboard
             to: process.env.ADMIN_EMAIL,
             subject: subject,
             text: text,
+            replyTo: data.email,
         });
 
         const timeoutPromise = new Promise((_, reject) =>

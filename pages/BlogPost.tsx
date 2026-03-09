@@ -50,7 +50,7 @@ const BlogPost: React.FC = () => {
         '@type': 'BlogPosting',
         headline: post.title,
         description: post.excerpt,
-        image: post.image || 'https://www.wbify.com/og-image.jpg',
+        image: post.image || 'https://nbyomoqura0jkgxd.public.blob.vercel-storage.com/vgp%20logo%20horizontal.png',
         datePublished: post.date,
         dateModified: post.date,
         author: {
@@ -59,10 +59,10 @@ const BlogPost: React.FC = () => {
         },
         publisher: {
             '@type': 'Organization',
-            name: 'wbify Creative Studio',
+            name: 'Vance Graphix & Print (VGP)',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://www.wbify.com/logo.png'
+                url: 'https://nbyomoqura0jkgxd.public.blob.vercel-storage.com/vgp%20logo%20horizontal.png'
             }
         },
         keywords: post.tags.join(', ')
@@ -259,7 +259,7 @@ const BlogPost: React.FC = () => {
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Link
-                                    to="/contact"
+                                    to="/contact-us"
                                     className="px-8 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
                                 >
                                     Contact Us

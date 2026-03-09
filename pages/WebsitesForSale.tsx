@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { CheckCircle, Layout, ShoppingCart, Zap, ArrowRight } from 'lucide-react';
 import { ReadySite } from '../data/readySitesData';
 import { getReadySites } from '../lib/readySitesService';
+import { getReadySiteImageUrl } from '../lib/readySiteImage';
 import SEO from '../components/SEO';
 
 const WebsitesForSale: React.FC = () => {
@@ -226,7 +227,7 @@ const WebsitesForSale: React.FC = () => {
                     </div>
 
                     <div className="mt-16 text-center">
-                        <Link to="/contact">
+                        <Link to="/contact-us">
                             <button className="px-8 py-4 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
                                 Start Your Project Now
                             </button>
@@ -306,7 +307,7 @@ const WebsitesForSale: React.FC = () => {
                     ) : templates.length === 0 ? (
                         <div className="text-center py-20">
                             <p className="text-gray-500 text-lg mb-4">No templates available at the moment.</p>
-                            <Link to="/contact">
+                            <Link to="/contact-us">
                                 <button className="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors">
                                     Contact Us
                                 </button>
@@ -319,7 +320,7 @@ const WebsitesForSale: React.FC = () => {
                                     <div className="relative h-80 overflow-hidden bg-gray-200">
                                         {template.image ? (
                                             <img
-                                                src={template.image}
+                                                src={getReadySiteImageUrl(template.image)}
                                                 alt={template.title}
                                                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                                                 onError={(e) => {
@@ -351,7 +352,7 @@ const WebsitesForSale: React.FC = () => {
                                         <p className="text-gray-500 mb-6">{template.description}</p>
 
                                         <div className="flex flex-wrap gap-2 mb-8">
-                                            {Array.isArray(template.features) && template.features.map((feature, i) => (
+                                            {template.features && template.features.map((feature, i) => (
                                                 <span key={i} className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600">
                                                     {feature}
                                                 </span>
@@ -359,7 +360,7 @@ const WebsitesForSale: React.FC = () => {
                                         </div>
 
                                         <div className="flex items-center gap-4">
-                                            <Link to="/contact" className="flex-1">
+                                            <Link to="/contact-us" className="flex-1">
                                                 <button className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
                                                     Request Launch <ShoppingCart size={18} />
                                                 </button>
@@ -427,7 +428,7 @@ const WebsitesForSale: React.FC = () => {
                     <p className="text-xl text-gray-300 mb-10">
                         We also offer fully custom web design and development services tailored to your specific requirements.
                     </p>
-                    <Link to="/contact">
+                    <Link to="/contact-us">
                         <button className="px-10 py-5 bg-white text-slate-900 rounded-full font-bold text-lg hover:bg-gray-100 transition-all">
                             Get a Custom Quote
                         </button>

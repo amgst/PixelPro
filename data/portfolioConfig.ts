@@ -1,15 +1,15 @@
 // ==============================================================================
 // ==============================================================================
-// WBIFY PORTFOLIO CONFIGURATION
+// VANCE GRAPHIX & PRINT PORTFOLIO CONFIGURATION
 // ==============================================================================
 // This file replaces the Admin page. 
 // Enter your Google Drive details here to sync the portfolio.
 // ==============================================================================
 
+const apiKey = import.meta.env.VITE_GOOGLE_DRIVE_API_KEY || "";
+
 export const PORTFOLIO_CONFIG = {
-  // 1. Google Cloud API Key
-  // Must have "Google Drive API" enabled.
-  apiKey: "AIzaSyAR2OJEg72JYnrk488De536TS_5wyFTYMA",
+  apiKey,
 
   // 2. Google Drive Folder IDs
   // Paste the ID of the folder for each category.
