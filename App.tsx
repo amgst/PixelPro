@@ -34,6 +34,13 @@ import NotFound from './pages/NotFound';
 import { HelmetProvider } from 'react-helmet-async';
 import { NotificationProvider } from './components/admin/NotificationProvider';
 import { SettingsProvider } from './components/SettingsProvider';
+import { AuthProvider } from './components/admin/AuthProvider';
+import ProtectedRoute from './components/admin/ProtectedRoute';
+import AdminWebRegistry from './pages/admin/WebRegistry';
+import AdminTestimonials from './pages/admin/Testimonials';
+import AdminStore from './pages/admin/Store';
+import AdminOrders from './pages/admin/Orders';
+import AdminSettings from './pages/admin/Settings';
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -74,19 +81,28 @@ const AppContent: React.FC = () => {
 
             {/* Admin Routes */}
             <Route path="/admin" element={
-              <NotificationProvider>
-                <Outlet />
-              </NotificationProvider>
+              <AuthProvider>
+                <NotificationProvider>
+                  <Outlet />
+                </NotificationProvider>
+              </AuthProvider>
             }>
               <Route index element={<AdminLogin />} />
               <Route path="login" element={<AdminLogin />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="tools" element={<AdminTools />} />
-              <Route path="portfolio" element={<AdminPortfolio />} />
-              <Route path="services" element={<AdminServices />} />
-              <Route path="blog" element={<AdminBlog />} />
-              <Route path="ready-sites" element={<AdminReadySites />} />
-              <Route path="messages" element={<AdminMessages />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="tools" element={<AdminTools />} />
+                <Route path="portfolio" element={<AdminPortfolio />} />
+                <Route path="web-registry" element={<AdminWebRegistry />} />
+                <Route path="services" element={<AdminServices />} />
+                <Route path="blog" element={<AdminBlog />} />
+                <Route path="testimonials" element={<AdminTestimonials />} />
+                <Route path="ready-sites" element={<AdminReadySites />} />
+                <Route path="store" element={<AdminStore />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="messages" element={<AdminMessages />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
             </Route>
 
             {/* 404 Route */}
