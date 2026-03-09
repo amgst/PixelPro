@@ -10,6 +10,43 @@ import { BLOG_POSTS_SEED_DATA } from '../../data/blogPostsSeed';
 import { Plus, Edit2, Trash2, X, Eye, EyeOff, Download } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 
+const LONG_FORM_BLOG_TEMPLATE = `## Introduction
+Open with the business problem, trend, or opportunity. Make it clear who this article is for and what they will learn.
+
+## Why This Matters in 2026
+- Explain the current market context
+- Mention common mistakes or outdated assumptions
+- Set expectations for the rest of the article
+
+## Key Challenges
+### Challenge 1
+Describe the issue in practical terms.
+
+### Challenge 2
+Add supporting detail, examples, or data points.
+
+## Step-by-Step Strategy
+### Step 1
+Explain the first action clearly.
+
+### Step 2
+Explain how to implement it.
+
+### Step 3
+Cover measurement, iteration, or optimization.
+
+## Real-World Example
+Use a scenario, mini case study, or before/after comparison.
+
+## Common Mistakes to Avoid
+- Mistake 1
+- Mistake 2
+- Mistake 3
+
+## Final Takeaway
+Summarize the main recommendation and point the reader toward the next action.
+`;
+
 const AdminBlog: React.FC = () => {
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -82,6 +119,9 @@ const AdminBlog: React.FC = () => {
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/(^-|-$)+/g, '');
     };
+
+    const contentWordCount = (currentPost.content || '').trim().split(/\s+/).filter(Boolean).length;
+    const estimatedReadTime = Math.max(1, Math.ceil(contentWordCount / 220));
 
     const handleImportPosts = async () => {
         if (!window.confirm('This will import 3 service-related blog posts. Continue?')) {
@@ -326,7 +366,29 @@ const AdminBlog: React.FC = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Content (Markdown)</label>
+                                    <div className="flex items-center justify-between mb-1">
+                                        <label className="block text-sm font-medium">Content (Markdown)</label>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (!currentPost.content?.trim()) {
+                                                    setCurrentPost({ ...currentPost, content: LONG_FORM_BLOG_TEMPLATE });
+                                                    return;
+                                                }
+
+                                                const shouldAppend = window.confirm('Append the long-form template to the current content? Click Cancel to replace the content instead.');
+                                                setCurrentPost({
+                                                    ...currentPost,
+                                                    content: shouldAppend
+                                                        ? `${currentPost.content}\n\n${LONG_FORM_BLOG_TEMPLATE}`
+                                                        : LONG_FORM_BLOG_TEMPLATE,
+                                                });
+                                            }}
+                                            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                        >
+                                            Insert long-form template
+                                        </button>
+                                    </div>
                                     <textarea
                                         value={currentPost.content || ''}
                                         onChange={e => setCurrentPost({ ...currentPost, content: e.target.value })}
@@ -334,16 +396,33 @@ const AdminBlog: React.FC = () => {
                                         rows={15}
                                         required
                                     />
+                                    <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                                        <span>{contentWordCount} words</span>
+                                        <span>{estimatedReadTime} min read</span>
+                                        <span>Use `##` and `###` headings to generate a table of contents on the public post page.</span>
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Image URL</label>
-                                    <input
-                                        type="text"
-                                        value={currentPost.image || ''}
-                                        onChange={e => setCurrentPost({ ...currentPost, image: e.target.value })}
-                                        className="w-full border p-2 rounded"
-                                    />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">Image URL</label>
+                                        <input
+                                            type="text"
+                                            value={currentPost.image || ''}
+                                            onChange={e => setCurrentPost({ ...currentPost, image: e.target.value })}
+                                            className="w-full border p-2 rounded"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">Image Alt Text</label>
+                                        <input
+                                            type="text"
+                                            value={currentPost.imageAlt || ''}
+                                            onChange={e => setCurrentPost({ ...currentPost, imageAlt: e.target.value })}
+                                            className="w-full border p-2 rounded"
+                                            placeholder="Describe the image for accessibility and SEO"
+                                        />
+                                    </div>
                                 </div>
 
                                 <div>
@@ -354,6 +433,7 @@ const AdminBlog: React.FC = () => {
                                         onChange={e => setCurrentPost({ ...currentPost, tags: e.target.value })}
                                         className="w-full border p-2 rounded"
                                     />
+                                    <p className="mt-1 text-xs text-gray-500">Use 3 to 6 focused tags. Keep them specific to the article topic and search intent.</p>
                                 </div>
 
                                 <div className="flex justify-end gap-2 pt-4 border-t">
