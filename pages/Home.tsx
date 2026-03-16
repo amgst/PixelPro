@@ -29,7 +29,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <SEO
-        title="wbify - Expert Shopify Development & Custom Web Solutions"
+        title="wbify Creative Studio | Expert Shopify & Web Services"
         description="Elevate your business with wbify. We specialize in high-converting Shopify stores, fast custom websites, and premium brand identity design. Start growing today."
         canonical="/"
         structuredData={websiteStructuredData}
