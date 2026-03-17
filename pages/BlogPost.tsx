@@ -99,7 +99,7 @@ const BlogPost: React.FC = () => {
         '@type': 'BlogPosting',
         headline: post.title,
         description: post.excerpt,
-        image: post.image || 'https://www.wbify.com/favicon.ico',
+        image: post.image || 'https://www.wbify.com/favicon.png',
         datePublished: post.date,
         dateModified: post.date,
         author: {
@@ -111,7 +111,7 @@ const BlogPost: React.FC = () => {
             name: 'Wbify',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://www.wbify.com/favicon.ico'
+                url: 'https://www.wbify.com/favicon.png'
             }
         },
         keywords: post.tags.join(', ')

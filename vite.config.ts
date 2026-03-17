@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
         tailwindcss(),
         VitePWA({
           registerType: 'autoUpdate',
-          includeAssets: ['favicon.ico', 'robots.txt', 'shopify.png'],
+          includeAssets: ['favicon.png', 'robots.txt', 'shopify.png'],
           manifest: {
             name: 'wbify Admin',
             short_name: 'wbify',
