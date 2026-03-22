@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Send, ArrowLeft, Loader2 } from 'lucide-react';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { submitInquiry } from '../lib/inquiryService';
 
 interface FormData {
@@ -40,6 +41,8 @@ const ProjectInquiry: React.FC = () => {
 
     const [submitted, setSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+    const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
     useEffect(() => {
         setFormData(prev => ({ ...prev, serviceType }));
@@ -47,6 +50,12 @@ const ProjectInquiry: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!recaptchaToken) {
+            alert('Please complete the reCAPTCHA');
+            return;
+        }
+
         console.log('Inquiry submission started', formData);
         setIsSubmitting(true);
         try {
@@ -68,7 +77,8 @@ const ProjectInquiry: React.FC = () => {
                     },
                     body: JSON.stringify({
                         type: 'inquiry',
-                        data: formData
+                        data: formData,
+                        recaptchaToken: recaptchaToken
                     }),
                     signal: controller.signal
                 });
@@ -102,6 +112,12 @@ const ProjectInquiry: React.FC = () => {
             }
 
             setSubmitted(true);
+            
+            // Reset reCAPTCHA
+            setRecaptchaToken(null);
+            if (recaptchaRef.current) {
+                recaptchaRef.current.reset();
+            }
         } catch (error) {
             console.error('Error submitting inquiry:', error);
             alert('Something went wrong. Please try again.');
@@ -413,6 +429,14 @@ const ProjectInquiry: React.FC = () => {
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
                                 />
                             </div>
+                        </div>
+
+                        <div className="flex justify-center my-6">
+                            <ReCAPTCHA
+                                ref={recaptchaRef}
+                                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                                onChange={(token) => setRecaptchaToken(token)}
+                            />
                         </div>
 
                         <button

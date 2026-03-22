@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ShoppingCart, Loader, Tag, ArrowLeft, CheckCircle } from 'lucide-react';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { Helmet } from 'react-helmet-async';
 import { Product } from '../data/productsData';
 import { getProductById } from '../lib/productsService';
@@ -15,6 +16,8 @@ const ProductDetail: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const [formData, setFormData] = useState({
     customerName: '',
@@ -59,6 +62,10 @@ const ProductDetail: React.FC = () => {
       setFormError('Name and email are required.');
       return;
     }
+    if (!recaptchaToken) {
+      setFormError('Please complete the reCAPTCHA.');
+      return;
+    }
     setFormError(null);
     setIsSubmitting(true);
     try {
@@ -77,7 +84,45 @@ const ProductDetail: React.FC = () => {
           },
         ],
       });
+
+      // Send email via Vercel API
+      console.log('Sending email notification...');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+      try {
+        const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'order',
+            data: {
+              ...formData,
+              productName: product.name,
+              productSku: product.sku
+            },
+            recaptchaToken: recaptchaToken
+          }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+          console.warn('Email API error:', response.status);
+        }
+      } catch (emailError) {
+        clearTimeout(timeoutId);
+        console.warn('Email API request failed:', emailError);
+      }
+
       setSubmitted(true);
+      
+      // Reset reCAPTCHA
+      setRecaptchaToken(null);
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
       setFormData({
         customerName: '',
         email: '',
@@ -242,6 +287,14 @@ const ProductDetail: React.FC = () => {
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                   placeholder="Include size, material, quantity breakdown or any other details."
+                />
+              </div>
+
+              <div className="flex justify-center my-4">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                  onChange={(token) => setRecaptchaToken(token)}
                 />
               </div>
 

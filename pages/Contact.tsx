@@ -1,5 +1,5 @@
-import React from 'react';
 import { Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { submitContactMessage } from '../lib/contactService';
 
 import SEO from '../components/SEO';
@@ -13,9 +13,17 @@ const Contact: React.FC = () => {
     message: ''
   });
   const [status, setStatus] = React.useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [recaptchaToken, setRecaptchaToken] = React.useState<string | null>(null);
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!recaptchaToken) {
+      alert('Please complete the reCAPTCHA');
+      return;
+    }
+
     console.log('Form submission started', formData);
     setStatus('submitting');
 
@@ -38,7 +46,8 @@ const Contact: React.FC = () => {
           },
           body: JSON.stringify({
             type: 'contact',
-            data: formData
+            data: formData,
+            recaptchaToken: recaptchaToken
           }),
           signal: controller.signal
         });
@@ -79,6 +88,12 @@ const Contact: React.FC = () => {
         service: 'Graphic Design',
         message: ''
       });
+      
+      // Reset reCAPTCHA
+      setRecaptchaToken(null);
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
     } catch (error) {
       console.error('Error submitting message:', error);
       setStatus('error');
@@ -207,6 +222,14 @@ const Contact: React.FC = () => {
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                 placeholder="Tell us about your project..."
               ></textarea>
+            </div>
+
+            <div className="flex justify-center my-4">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                onChange={(token) => setRecaptchaToken(token)}
+              />
             </div>
 
             <button

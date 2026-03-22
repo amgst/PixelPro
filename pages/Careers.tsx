@@ -1,6 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
 import { Briefcase, MapPin, ArrowRight, Sparkles, Send } from 'lucide-react';
+import ReCAPTCHA from 'react-google-recaptcha';
 import SEO from '../components/SEO';
 import { submitJobApplication } from '../lib/careersService';
 
@@ -45,6 +44,8 @@ const Careers: React.FC = () => {
     coverLetter: '',
   });
   const [status, setStatus] = React.useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [recaptchaToken, setRecaptchaToken] = React.useState<string | null>(null);
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -53,6 +54,12 @@ const Careers: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!recaptchaToken) {
+      alert('Please complete the reCAPTCHA');
+      return;
+    }
+
     setStatus('submitting');
     try {
       await submitJobApplication(appData);
@@ -64,7 +71,11 @@ const Careers: React.FC = () => {
         const response = await fetch('/api/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'application', data: appData }),
+          body: JSON.stringify({ 
+            type: 'application', 
+            data: appData,
+            recaptchaToken: recaptchaToken
+          }),
           signal: controller.signal
         });
         clearTimeout(timeoutId);
@@ -89,6 +100,12 @@ const Careers: React.FC = () => {
         linkedinUrl: '',
         coverLetter: '',
       });
+
+      // Reset reCAPTCHA
+      setRecaptchaToken(null);
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
     } catch (error) {
       console.error('Error submitting application:', error);
       setStatus('error');
@@ -283,6 +300,14 @@ const Careers: React.FC = () => {
                 rows={6}
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                 placeholder="Share why you’d be a great fit..."
+              />
+            </div>
+
+            <div className="flex justify-center my-4">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                onChange={(token) => setRecaptchaToken(token)}
               />
             </div>
 

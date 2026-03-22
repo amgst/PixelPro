@@ -48,10 +48,41 @@ export default async function handler(req: any, res: any) {
         return res.status(400).json({ message: 'Invalid JSON body' });
     }
 
-    const { type, data } = body;
+    const { type, data, recaptchaToken } = body;
     if (!type || !data || typeof data !== 'object') {
         console.warn('Missing required payload fields', { type, hasData: !!data });
         return res.status(400).json({ message: 'Missing required payload: type and data are required' });
+    }
+
+    // Verify reCAPTCHA
+    if (!recaptchaToken) {
+        console.warn('Missing reCAPTCHA token');
+        return res.status(400).json({ message: 'reCAPTCHA token is required' });
+    }
+
+    try {
+        console.log('Verifying reCAPTCHA token...');
+        const verifyResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
+        });
+
+        const verifyData = await verifyResponse.json() as any;
+        console.log('reCAPTCHA verification result:', verifyData.success);
+
+        if (!verifyData.success) {
+            console.warn('reCAPTCHA verification failed:', verifyData['error-codes']);
+            return res.status(403).json({ 
+                message: 'reCAPTCHA verification failed', 
+                errors: verifyData['error-codes'] 
+            });
+        }
+    } catch (verifyError) {
+        console.error('Error verifying reCAPTCHA:', verifyError);
+        // In case of verification API error, we might still want to proceed or fail.
+        // Usually, failing is safer.
+        return res.status(500).json({ message: 'Error verifying reCAPTCHA' });
     }
 
     console.log('Submission Type:', type);
@@ -105,6 +136,24 @@ LinkedIn: ${data.linkedinUrl || 'N/A'}
 
 Cover Letter:
 ${data.coverLetter}
+
+View details: https://vancegraphix.com.au/admin/dashboard
+        `;
+    } else if (type === 'order') {
+        subject = `New Product Order/Inquiry: ${data.productName} from ${data.customerName}`;
+        text = `
+New Product Order/Inquiry Received!
+
+Product: ${data.productName}
+SKU: ${data.productSku}
+Quantity: ${data.quantity}
+
+Customer Name: ${data.customerName}
+Email: ${data.email}
+Phone: ${data.phone || 'N/A'}
+
+Notes/Specs:
+${data.notes || 'No notes provided'}
 
 View details: https://vancegraphix.com.au/admin/dashboard
         `;
