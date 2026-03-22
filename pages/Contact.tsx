@@ -1,3 +1,4 @@
+import React from 'react';
 import { Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { submitContactMessage } from '../lib/contactService';

@@ -1,3 +1,5 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { Briefcase, MapPin, ArrowRight, Sparkles, Send } from 'lucide-react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import SEO from '../components/SEO';
