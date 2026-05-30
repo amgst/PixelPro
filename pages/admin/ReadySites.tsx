@@ -5,10 +5,14 @@ import { getReadySites, addReadySite, updateReadySite, deleteReadySite } from '.
 import { getReadySiteImageUrl, normalizeReadySiteImage, READY_SITE_IMAGE_FOLDER, READY_SITE_IMAGE_PLACEHOLDER } from '../../lib/readySiteImage';
 import { Plus, Trash2, Edit2, Save, X, Eye, EyeOff } from 'lucide-react';
 
+// While editing, the features field is held as a comma-separated string and
+// only converted to string[] on save.
+type EditableReadySite = Partial<Omit<ReadySite, 'features'>> & { features?: string | string[] };
+
 const AdminReadySites: React.FC = () => {
     const [readySites, setReadySites] = useState<ReadySite[]>([]);
     const [isEditing, setIsEditing] = useState(false);
-    const [currentSite, setCurrentSite] = useState<Partial<ReadySite>>({});
+    const [currentSite, setCurrentSite] = useState<EditableReadySite>({});
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchReadySites = async () => {

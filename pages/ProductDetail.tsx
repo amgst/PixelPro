@@ -161,7 +161,7 @@ const ProductDetail: React.FC = () => {
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href={`https://vancegraphix.com.au/store/${product.id}`} />
+        <link rel="canonical" href={`https://www.wbify.com/store/${product.id}`} />
       </Helmet>
 
       <div className="bg-slate-50 border-b border-gray-100">

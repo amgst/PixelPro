@@ -1,9 +1,15 @@
 import React from 'react';
 import { FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const TermsAndConditions: React.FC = () => {
   return (
     <div className="min-h-screen bg-white pt-24 pb-16">
+      <SEO
+        title="Terms and Conditions"
+        description="Read the terms and conditions governing the use of wbify Creative Studio's website and services, including intellectual property and liability details."
+        canonical="/terms-and-conditions"
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-slate-900 mb-4">Terms and Conditions</h1>

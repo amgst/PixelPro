@@ -29,7 +29,7 @@ const Tools: React.FC = () => {
         '@type': 'CollectionPage',
         name: 'Tools & Resources',
         description: 'A collection of handy tools and resources for developers and designers',
-        url: 'https://vancegraphix.com.au/tools'
+        url: 'https://www.wbify.com/tools'
     };
 
     return (

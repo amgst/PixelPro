@@ -252,7 +252,7 @@ const BlogPost: React.FC = () => {
                                             </code>
                                         </pre>
                                     ),
-                                    img: ({node, ...props}: any) => <img className="rounded-2xl shadow-xl my-8 w-full" {...props} />,
+                                    img: ({node, ...props}: any) => <img loading="lazy" decoding="async" className="rounded-2xl shadow-xl my-8 w-full" {...props} />,
                                     a: ({node, ...props}: any) => <a className="text-blue-600 font-semibold hover:text-blue-700 no-underline hover:underline" {...props} />,
                                     strong: ({node, ...props}) => <strong className="text-slate-900 font-bold" {...props} />,
                                     hr: ({node, ...props}) => <hr className="my-12 border-gray-200" {...props} />,
@@ -326,7 +326,7 @@ const BlogPost: React.FC = () => {
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                     <Link
-                                        to="/contact-us"
+                                        to="/contact"
                                         className="px-8 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
                                     >
                                         Contact Us

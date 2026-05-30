@@ -31,7 +31,11 @@ import AdminMessages from './pages/admin/Messages';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 import NotFound from './pages/NotFound';
-import { HelmetProvider } from 'react-helmet-async';
+import Store from './pages/Store';
+import ProductDetail from './pages/ProductDetail';
+import AiServices from './pages/AiServices';
+import VideoAnimation from './pages/VideoAnimation';
+import GoogleServices from './components/GoogleServices';
 import { NotificationProvider } from './components/admin/NotificationProvider';
 import { SettingsProvider } from './components/SettingsProvider';
 import { AuthProvider } from './components/admin/AuthProvider';
@@ -55,6 +59,7 @@ const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const AppContent: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
+      <GoogleServices />
       <Navbar />
       <main className="flex-grow">
         <PageWrapper>
@@ -76,6 +81,10 @@ const AppContent: React.FC = () => {
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/tools" element={<Tools />} />
             <Route path="/careers" element={<Careers />} />
+            <Route path="/ai-services" element={<AiServices />} />
+            <Route path="/video-animation" element={<VideoAnimation />} />
+            <Route path="/store" element={<Store />} />
+            <Route path="/store/:id" element={<ProductDetail />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 

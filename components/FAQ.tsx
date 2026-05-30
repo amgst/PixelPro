@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 const faqs = [
     {
@@ -24,6 +25,19 @@ const faqs = [
     }
 ];
 
+const faqStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+            '@type': 'Answer',
+            text: faq.answer
+        }
+    }))
+};
+
 const FAQ: React.FC = () => {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -33,6 +47,11 @@ const FAQ: React.FC = () => {
 
     return (
         <section className="py-24 bg-white">
+            <Helmet>
+                <script type="application/ld+json">
+                    {JSON.stringify(faqStructuredData)}
+                </script>
+            </Helmet>
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <div className="inline-flex items-center justify-center p-3 bg-blue-50 rounded-xl text-blue-600 mb-4">

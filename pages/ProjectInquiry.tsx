@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Send, ArrowLeft, Loader2 } from 'lucide-react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { submitInquiry } from '../lib/inquiryService';
+import SEO from '../components/SEO';
 
 interface FormData {
     name: string;
@@ -166,6 +167,11 @@ const ProjectInquiry: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-slate-50 py-16 px-4">
+            <SEO
+                title="Start Your Project Inquiry"
+                description="Tell us about your Shopify, web development, or branding project and get a tailored quote within 24 hours. Start your project journey with wbify Creative Studio."
+                canonical="/inquiry"
+            />
             <div className="max-w-3xl mx-auto">
                 <Link to="/" className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8 transition-colors">
                     <ArrowLeft size={20} />

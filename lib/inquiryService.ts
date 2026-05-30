@@ -34,6 +34,9 @@ export interface InquiryData {
     // Common
     timeline: string;
     additionalInfo: string;
+    // Optional fields surfaced in the admin UI (older/alternate submission shapes)
+    message?: string;
+    budget?: string;
     status: 'new' | 'contacted' | 'closed';
     createdAt?: any;
 }

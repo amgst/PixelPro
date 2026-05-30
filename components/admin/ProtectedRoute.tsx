@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute: React.FC = () => {
-    const { user, loading } = useAuth();
+    const { user, isAdmin, loading, logout } = useAuth();
+
+    // If a user is signed in but is not an authorized admin, sign them out so a
+    // stale/unauthorized session can't linger.
+    useEffect(() => {
+        if (!loading && user && !isAdmin) {
+            console.warn("[ProtectedRoute] Authenticated user is not an admin. Signing out.");
+            void logout();
+        }
+    }, [loading, user, isAdmin, logout]);
 
     if (loading) {
-        console.log("[ProtectedRoute] Still loading auth state...");
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <div className="text-center">
@@ -19,11 +27,19 @@ const ProtectedRoute: React.FC = () => {
     }
 
     if (!user) {
-        console.warn("[ProtectedRoute] No user found, redirecting to login.");
         return <Navigate to="/admin/login" replace />;
     }
 
-    console.log("[ProtectedRoute] Authorized access for:", user.email);
+    if (!isAdmin) {
+        return (
+            <Navigate
+                to="/admin/login"
+                replace
+                state={{ message: 'You are not authorized to access the admin area.' }}
+            />
+        );
+    }
+
     return <Outlet />;
 };
 

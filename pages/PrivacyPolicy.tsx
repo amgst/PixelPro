@@ -1,9 +1,15 @@
 import React from 'react';
 import { Shield, Lock, Eye } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const PrivacyPolicy: React.FC = () => {
   return (
     <div className="min-h-screen bg-white pt-24 pb-16">
+      <SEO
+        title="Privacy Policy"
+        description="Learn how wbify Creative Studio collects, uses, and protects your personal information when you use our website and digital services."
+        canonical="/privacy-policy"
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-slate-900 mb-4">Privacy Policy</h1>

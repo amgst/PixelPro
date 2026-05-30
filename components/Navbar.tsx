@@ -3,13 +3,19 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Rocket } from 'lucide-react';
 import { useSettings } from './SettingsProvider';
 
+interface NavLink {
+  name: string;
+  path: string;
+  dropdown?: { name: string; path: string }[];
+}
+
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { settings } = useSettings();
 
-  const navLinks = [
-    { name: 'Home', path: '/', dropdown: false },
+  const navLinks: NavLink[] = [
+    { name: 'Home', path: '/' },
     {
       name: 'Services',
       path: '/services',
@@ -21,12 +27,12 @@ const Navbar: React.FC = () => {
         { name: 'All Services', path: '/services' }
       ]
     },
-    { name: 'Blog', path: '/blog', dropdown: false },
-    { name: 'Portfolio', path: '/portfolio', dropdown: false },
-    { name: 'Tools', path: '/tools', dropdown: false },
-    { name: 'Fast Track', path: '/websites-for-sale', dropdown: false },
-    { name: 'About', path: '/about', dropdown: false },
-    { name: 'Contact', path: '/contact', dropdown: false },
+    { name: 'Blog', path: '/blog' },
+    { name: 'Portfolio', path: '/portfolio' },
+    { name: 'Tools', path: '/tools' },
+    { name: 'Fast Track', path: '/websites-for-sale' },
+    { name: 'About', path: '/about' },
+    { name: 'Contact', path: '/contact' },
   ];
 
   const isActive = (path: string) => location.pathname === path;

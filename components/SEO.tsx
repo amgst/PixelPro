@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 
 interface SEOProps {
     title: string;
@@ -19,7 +20,10 @@ const SEO: React.FC<SEOProps> = ({
     title,
     description,
     canonical,
-    image = 'https://www.wbify.com/og-image.jpg', // Default OG image
+    // NOTE: /og-image.jpg does not exist in /public yet. Falling back to the
+    // existing favicon so social cards aren't fully broken. A proper 1200x630
+    // og-image.jpg should be added by the site owner (see report).
+    image = 'https://www.wbify.com/favicon.png', // Default OG image (placeholder)
     type = 'website',
     publishedTime,
     modifiedTime,
@@ -28,9 +32,13 @@ const SEO: React.FC<SEOProps> = ({
     noindex = false,
     structuredData
 }) => {
-    const fullTitle = title.includes('wbify') ? title : `${title} | wbify Creative Studio`;
+    const location = useLocation();
+    const fullTitle = title.toLowerCase().includes('wbify') ? title : `${title} | wbify Creative Studio`;
     const siteUrl = 'https://www.wbify.com';
-    const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
+    // Canonical is effectively required: default to the current path so a page
+    // can never silently ship without one.
+    const canonicalPath = canonical ?? location.pathname;
+    const fullCanonical = `${siteUrl}${canonicalPath}`;
     const fullImage = image.startsWith('http') ? image : `${siteUrl}${image}`;
 
     // Default structured data for Organization
@@ -39,10 +47,15 @@ const SEO: React.FC<SEOProps> = ({
         '@type': 'Organization',
         name: 'wbify Creative Studio',
         url: siteUrl,
-        logo: `${siteUrl}/logo.png`,
+        // NOTE: /logo.png does not exist in /public. Using favicon.png as a
+        // placeholder. A square brand logo (logo.png) should be added (see report).
+        logo: `${siteUrl}/favicon.png`,
         description: 'Professional web development, design, and digital marketing services',
         sameAs: [
-            // Add social media links here when available
+            // TODO: Populate with real social profile URLs once available.
+            // Social links are currently admin-configured at runtime (Footer.tsx
+            // uses settings.socialUrls) and are not known at build time, so no
+            // URLs are hardcoded here to avoid inventing profiles.
         ],
         contactPoint: {
             '@type': 'ContactPoint',
@@ -58,7 +71,7 @@ const SEO: React.FC<SEOProps> = ({
             {/* Basic Meta Tags */}
             <title>{fullTitle}</title>
             <meta name="description" content={description} />
-            {canonical && <link rel="canonical" href={fullCanonical} />}
+            <link rel="canonical" href={fullCanonical} />
             {noindex && <meta name="robots" content="noindex, nofollow" />}
             {!noindex && <meta name="robots" content="index, follow" />}
 

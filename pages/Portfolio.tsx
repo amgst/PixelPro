@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, X, ChevronLeft, ChevronRight, Loader, ExternalLink, AlertCircle, ArrowLeft, Zap, Search, ShieldCheck, CheckCircle } from 'lucide-react';
 import { getPortfolios, PortfolioItem } from '../lib/portfolioService';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/SEO';
 import { getPreferredPortfolioImage } from '../lib/webPortfolioImages';
 
 interface ProjectItem {
@@ -122,11 +122,11 @@ const Portfolio: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white py-20">
-      <Helmet>
-        <title>Our Portfolio | Wbify</title>
-        <meta name="description" content="Explore our portfolio of graphic design, web development, and video projects. See how we help brands stand out." />
-        <link rel="canonical" href="https://vancegraphix.com.au/portfolio" />
-      </Helmet>
+      <SEO
+        title="Our Portfolio"
+        description="Explore our portfolio of graphic design, web development, and video projects. See how we help brands stand out."
+        canonical="/portfolio"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}

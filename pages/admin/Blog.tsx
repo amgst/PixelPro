@@ -47,11 +47,15 @@ Use a scenario, mini case study, or before/after comparison.
 Summarize the main recommendation and point the reader toward the next action.
 `;
 
+// While editing, the tags field is held as a comma-separated string and only
+// converted to string[] on save.
+type EditableBlogPost = Partial<Omit<BlogPost, 'tags'>> & { tags?: string | string[] };
+
 const AdminBlog: React.FC = () => {
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
-    const [currentPost, setCurrentPost] = useState<Partial<BlogPost>>({});
+    const [currentPost, setCurrentPost] = useState<EditableBlogPost>({});
     const [isImporting, setIsImporting] = useState(false);
 
     useEffect(() => {

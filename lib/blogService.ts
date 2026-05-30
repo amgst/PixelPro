@@ -9,7 +9,8 @@ import {
     orderBy,
     where,
     limit,
-    getDoc
+    getDoc,
+    type Query
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -31,7 +32,7 @@ export interface BlogPost {
 
 export const getBlogPosts = async (publishedOnly = true): Promise<BlogPost[]> => {
     const colRef = collection(db, BLOG_COLLECTION);
-    let q;
+    let q: Query;
     
     if (publishedOnly) {
         // Use where and orderBy - Firestore may require a composite index

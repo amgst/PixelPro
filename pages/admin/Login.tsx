@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Lock, Mail, Loader2 } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
 
 const AdminLogin: React.FC = () => {
+    const location = useLocation();
+    const redirectMessage = (location.state as { message?: string } | null)?.message || '';
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [error, setError] = useState(redirectMessage);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 

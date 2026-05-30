@@ -3,7 +3,7 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { Check, Clock, Shield, X, ChevronLeft, ChevronRight, Loader, ArrowRight, LayoutGrid } from 'lucide-react';
 import { PORTFOLIO_CONFIG } from '../data/portfolioConfig';
 import { getServiceCategories, ServiceCategory, ServiceItem } from '../lib/servicesService';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/SEO';
 
 const ServiceDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -115,13 +115,54 @@ const ServiceDetail: React.FC = () => {
     ? `/portfolio?folderId=${service.galleryFolderId}&title=${encodeURIComponent(service.title + ' Portfolio')}`
     : '/portfolio';
 
+  const serviceStructuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Service',
+        name: service.title,
+        description: service.description,
+        serviceType: category.title,
+        provider: {
+          '@type': 'Organization',
+          name: 'wbify Creative Studio',
+          url: 'https://www.wbify.com'
+        }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Services',
+            item: 'https://www.wbify.com/services'
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: category.title,
+            item: 'https://www.wbify.com/services'
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: service.title,
+            item: `https://www.wbify.com/service/${service.id}`
+          }
+        ]
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-white pb-20">
-      <Helmet>
-        <title>{service.title} | Wbify</title>
-        <meta name="description" content={service.description} />
-        <link rel="canonical" href={`https://vancegraphix.com.au/service/${service.id}`} />
-      </Helmet>
+      <SEO
+        title={service.title}
+        description={service.description}
+        canonical={`/service/${service.id}`}
+        structuredData={serviceStructuredData}
+      />
 
       {/* Breadcrumb */}
       <div className="bg-slate-50 border-b border-gray-200">

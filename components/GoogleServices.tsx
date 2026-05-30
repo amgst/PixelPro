@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useSettings } from './SettingsProvider';
@@ -10,6 +10,12 @@ declare global {
   }
 }
 
+// GA id hardcoded/bootstrapped in index.html. If the admin-configured GA id
+// matches this, gtag.js is already loaded and configured (with automatic
+// page_view) by index.html, so we must not load/config it again or we double
+// count the initial page view.
+const HARDCODED_GA_ID = 'G-EB1Z519BGJ';
+
 const GoogleServices: React.FC = () => {
   const { settings } = useSettings();
   const location = useLocation();
@@ -17,8 +23,15 @@ const GoogleServices: React.FC = () => {
   const verification = settings.googleSiteVerification?.trim();
   const gtmId = settings.googleTagManagerId?.trim();
 
+  // True when gtag.js for this id was already bootstrapped outside React
+  // (i.e. by the hardcoded snippet in index.html).
+  const bootstrappedInIndexHtml = !!gaId && gaId === HARDCODED_GA_ID;
+  const isInitialPageView = useRef(true);
+
   useEffect(() => {
     if (!gaId) return;
+    // Skip loading/configuring if index.html already bootstrapped this exact id.
+    if (bootstrappedInIndexHtml) return;
 
     const scriptId = 'ga4-loader';
     const inlineId = 'ga4-inline';
@@ -53,16 +66,26 @@ const GoogleServices: React.FC = () => {
 
     window.gtag('js', new Date());
     window.gtag('config', gaId, { send_page_view: false });
-  }, [gaId]);
+  }, [gaId, bootstrappedInIndexHtml]);
 
   useEffect(() => {
     if (!gaId || !window.gtag) return;
+
+    // index.html's hardcoded gtag config already fires an automatic page_view
+    // for the initial load, so skip our first manual one to avoid duplicates.
+    // We still track subsequent SPA route changes (which the static snippet misses).
+    if (bootstrappedInIndexHtml && isInitialPageView.current) {
+      isInitialPageView.current = false;
+      return;
+    }
+    isInitialPageView.current = false;
+
     const pagePath = `${location.pathname}${location.search}${location.hash}`;
     window.gtag('event', 'page_view', {
       page_title: document.title,
       page_path: pagePath
     });
-  }, [gaId, location.pathname, location.search, location.hash]);
+  }, [gaId, bootstrappedInIndexHtml, location.pathname, location.search, location.hash]);
 
   useEffect(() => {
     const noscriptId = 'gtm-noscript';

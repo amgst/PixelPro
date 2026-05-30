@@ -15,9 +15,20 @@ const transporter = nodemailer.createTransport({
     },
 });
 
+// Strip CR/LF (and trim) to prevent header injection via interpolated fields.
+function sanitizeHeaderValue(value) {
+    if (value === undefined || value === null) return '';
+    return String(value).replace(/[\r\n]+/g, ' ').trim();
+}
+
+function isValidEmail(email) {
+    if (typeof email !== 'string') return false;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
 async function sendEmail(to, subject, text, html) {
     const mailOptions = {
-        from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_USER}>`,
+        from: `"${sanitizeHeaderValue(process.env.EMAIL_FROM_NAME)}" <${process.env.EMAIL_USER}>`,
         to: to,
         subject: subject,
         text: text,
@@ -28,7 +39,10 @@ async function sendEmail(to, subject, text, html) {
         await transporter.sendMail(mailOptions);
         console.log('Email sent successfully to:', to);
     } catch (error) {
+        // Surface the failure so the caller (and Cloud Functions retries/alerting)
+        // knows the email did not send, instead of silently swallowing it.
         console.error('Error sending email:', error);
+        throw error;
     }
 }
 
@@ -40,12 +54,13 @@ exports.onInquiryCreated = functions.firestore
         // Send Email Notification
         const adminEmail = process.env.ADMIN_EMAIL;
         if (adminEmail) {
-            const subject = `New Project Inquiry: ${data.serviceType} from ${data.name}`;
+            const subject = `New Project Inquiry: ${sanitizeHeaderValue(data.serviceType)} from ${sanitizeHeaderValue(data.name)}`;
+            const email = isValidEmail(data.email) ? data.email.trim() : 'N/A';
             const text = `
 New Project Inquiry Received!
 
 Name: ${data.name}
-Email: ${data.email}
+Email: ${email}
 Phone: ${data.phone}
 Service: ${data.serviceType}
 Timeline: ${data.timeline}
@@ -67,12 +82,13 @@ exports.onContactCreated = functions.firestore
         // Send Email Notification
         const adminEmail = process.env.ADMIN_EMAIL;
         if (adminEmail) {
-            const subject = `New Contact Message from ${data.firstName} ${data.lastName}`;
+            const subject = `New Contact Message from ${sanitizeHeaderValue(data.firstName)} ${sanitizeHeaderValue(data.lastName)}`;
+            const email = isValidEmail(data.email) ? data.email.trim() : 'N/A';
             const text = `
 New Contact Message Received!
 
 Name: ${data.firstName} ${data.lastName}
-Email: ${data.email}
+Email: ${email}
 Service: ${data.service}
 
 Message:
