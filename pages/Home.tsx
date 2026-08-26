@@ -83,7 +83,7 @@ const Home: React.FC = () => {
             <div className="flex-1 w-full max-w-xl lg:max-w-none relative animate-fade-in-up delay-100">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
                 <img
-                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
+                  src="/images/hero-agency-dashboard.png"
                   alt="Digital Agency Dashboard"
                   className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
                 />
@@ -209,8 +209,8 @@ const Home: React.FC = () => {
 
             <div className="relative">
               <div className="grid grid-cols-2 gap-4">
-                <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=800&q=80" alt="Coding and Development" loading="lazy" decoding="async" width={800} height={256} className="rounded-2xl shadow-lg w-full h-64 object-cover transform translate-y-8" />
-                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Team Collaboration" loading="lazy" decoding="async" width={800} height={256} className="rounded-2xl shadow-lg w-full h-64 object-cover" />
+                <img src="/products/coding-development.jpg" alt="Coding and Development" loading="lazy" decoding="async" width={800} height={256} className="rounded-2xl shadow-lg w-full h-64 object-cover transform translate-y-8" />
+                <img src="/products/team-collaboration.jpg" alt="Team Collaboration" loading="lazy" decoding="async" width={800} height={256} className="rounded-2xl shadow-lg w-full h-64 object-cover" />
               </div>
             </div>
           </div>
