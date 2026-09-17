@@ -3,6 +3,7 @@
 interface ImportMetaEnv {
     readonly VITE_WEB3FORMS_ACCESS_KEY: string
     readonly VITE_IMGBB_API_KEY: string
+    readonly VITE_GOOGLE_CLIENT_ID: string
     // more env variables...
 }
 

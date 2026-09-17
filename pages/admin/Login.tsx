@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Lock, Mail, Loader2 } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
+import { useAuth } from '../../components/admin/AuthProvider';
+import GoogleOneTap from '../../components/admin/GoogleOneTap';
 
 const AdminLogin: React.FC = () => {
     const location = useLocation();
@@ -12,6 +14,20 @@ const AdminLogin: React.FC = () => {
     const [error, setError] = useState(redirectMessage);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
+    const { user, isAdmin, loading: authLoading, logout } = useAuth();
+
+    // Handles the Google One Tap / button flow: AuthProvider picks up the
+    // Firebase session as soon as GoogleOneTap signs it in, so react to it
+    // here instead of navigating from inside the credential callback.
+    useEffect(() => {
+        if (authLoading || !user) return;
+        if (isAdmin) {
+            navigate('/admin/dashboard');
+        } else {
+            setError('You are not authorized to access the admin area.');
+            void logout();
+        }
+    }, [authLoading, user, isAdmin, navigate, logout]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,6 +63,22 @@ const AdminLogin: React.FC = () => {
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-slate-900">Admin Login</h1>
                         <p className="text-gray-500 mt-2">Sign in to manage your website</p>
+                    </div>
+
+                    <div className="mb-6">
+                        <GoogleOneTap
+                            disabled={authLoading || !!user}
+                            onError={(message) => setError(message)}
+                        />
+                    </div>
+
+                    <div className="relative mb-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-200" />
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-3 bg-white text-gray-400">or sign in with email</span>
+                        </div>
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-6">
