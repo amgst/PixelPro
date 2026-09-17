@@ -21,6 +21,7 @@ export interface Testimonial {
     content: string;
     rating: number;
     order?: number;
+    published?: boolean;
 }
 
 export const getTestimonials = async (): Promise<Testimonial[]> => {
@@ -34,6 +35,11 @@ export const getTestimonials = async (): Promise<Testimonial[]> => {
     } as Testimonial));
 };
 
+export const getPublishedTestimonials = async (): Promise<Testimonial[]> => {
+    const all = await getTestimonials();
+    return all.filter(t => t.published !== false);
+};
+
 export const addTestimonial = async (
     testimonial: Omit<Testimonial, 'id'>
 ): Promise<Testimonial> => {
@@ -43,7 +49,8 @@ export const addTestimonial = async (
         role: testimonial.role ?? '',
         company: testimonial.company ?? '',
         rating: testimonial.rating ?? 5,
-        order: testimonial.order ?? 0
+        order: testimonial.order ?? 0,
+        published: testimonial.published ?? true
     };
     const docRef = await addDoc(testimonialsRef, payload);
 

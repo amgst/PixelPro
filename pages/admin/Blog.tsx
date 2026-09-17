@@ -6,8 +6,7 @@ import {
     deleteBlogPost,
     BlogPost
 } from '../../lib/blogService';
-import { BLOG_POSTS_SEED_DATA } from '../../data/blogPostsSeed';
-import { Plus, Edit2, Trash2, X, Eye, EyeOff, Download } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Eye, EyeOff } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 
 const LONG_FORM_BLOG_TEMPLATE = `## Introduction
@@ -56,7 +55,6 @@ const AdminBlog: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [currentPost, setCurrentPost] = useState<EditableBlogPost>({});
-    const [isImporting, setIsImporting] = useState(false);
 
     useEffect(() => {
         fetchPosts();
@@ -127,40 +125,6 @@ const AdminBlog: React.FC = () => {
     const contentWordCount = (currentPost.content || '').trim().split(/\s+/).filter(Boolean).length;
     const estimatedReadTime = Math.max(1, Math.ceil(contentWordCount / 220));
 
-    const handleImportPosts = async () => {
-        if (!window.confirm('This will import 3 service-related blog posts. Continue?')) {
-            return;
-        }
-
-        setIsImporting(true);
-        try {
-            const existingPosts = await getBlogPosts(false); // Get all posts including drafts
-            const existingSlugs = new Set(existingPosts.map(p => p.slug.toLowerCase()));
-
-            let imported = 0;
-            let skipped = 0;
-
-            for (const post of BLOG_POSTS_SEED_DATA) {
-                // Check if post already exists by slug
-                if (existingSlugs.has(post.slug.toLowerCase())) {
-                    skipped++;
-                    continue;
-                }
-
-                await addBlogPost(post);
-                imported++;
-            }
-
-            await fetchPosts(); // Refresh list
-            alert(`Import complete! ${imported} posts imported, ${skipped} skipped (already exist).`);
-        } catch (error) {
-            console.error("Error importing blog posts:", error);
-            alert("Failed to import blog posts. Check console for details.");
-        } finally {
-            setIsImporting(false);
-        }
-    };
-
     const handlePublishAll = async () => {
         const draftPosts = posts.filter(p => !p.published);
         if (draftPosts.length === 0) {
@@ -190,13 +154,6 @@ const AdminBlog: React.FC = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold">Manage Blog Posts</h1>
                     <div className="flex gap-3">
-                        <button
-                            onClick={handleImportPosts}
-                            disabled={isImporting}
-                            className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            <Download size={20} /> {isImporting ? 'Importing...' : 'Import Service Posts'}
-                        </button>
                         {posts.some(p => !p.published) && (
                             <button
                                 onClick={handlePublishAll}

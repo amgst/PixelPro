@@ -57,10 +57,13 @@ const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const AppContent: React.FC = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   return (
     <div className="flex flex-col min-h-screen">
       <GoogleServices />
-      <Navbar />
+      {!isAdminRoute && <Navbar />}
       <main className="flex-grow">
         <PageWrapper>
           <Routes>
@@ -119,7 +122,7 @@ const AppContent: React.FC = () => {
           </Routes>
         </PageWrapper>
       </main>
-      <Footer />
+      {!isAdminRoute && <Footer />}
     </div>
   );
 };

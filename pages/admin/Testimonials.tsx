@@ -1,7 +1,7 @@
 import React from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Testimonial, getTestimonials, addTestimonial, updateTestimonial, deleteTestimonial } from '../../lib/testimonialsService';
-import { Plus, Trash2, Edit2, Save, X, Loader2, Search, Star, MessageSquare, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Loader2, Search, Star, MessageSquare, RefreshCw, Eye, EyeOff } from 'lucide-react';
 
 const StarRatingPicker: React.FC<{ value: number; onChange: (v: number) => void }> = ({ value, onChange }) => (
     <div className="flex items-center gap-1">
@@ -35,6 +35,7 @@ const AdminTestimonials: React.FC = () => {
         content: '',
         rating: 5,
         order: 0,
+        published: true,
     });
 
     const [form, setForm] = React.useState<Partial<Testimonial>>(emptyForm());
@@ -121,6 +122,17 @@ const AdminTestimonials: React.FC = () => {
         }
     };
 
+    const handleTogglePublish = async (item: Testimonial) => {
+        const nextPublished = !(item.published !== false);
+        try {
+            await updateTestimonial(item.id, { published: nextPublished });
+            setItems(prev => prev.map(t => t.id === item.id ? { ...t, published: nextPublished } : t));
+        } catch (err) {
+            console.error(err);
+            alert('Failed to update publish status.');
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!form.name || !form.content) {
@@ -194,7 +206,7 @@ const AdminTestimonials: React.FC = () => {
                     {/* Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {currentItems.map(item => (
-                            <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col gap-4 hover:shadow-md transition-shadow relative group">
+                            <div key={item.id} className={`bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col gap-4 hover:shadow-md transition-shadow relative group ${item.published === false ? 'opacity-60' : ''}`}>
                                 {/* Stars */}
                                 <div className="flex items-center gap-0.5">
                                     {[...Array(5)].map((_, i) => (
@@ -202,8 +214,13 @@ const AdminTestimonials: React.FC = () => {
                                     ))}
                                 </div>
 
+                                {/* Publish status badge */}
+                                <span className={`absolute top-3 right-3 text-[10px] px-1.5 py-0.5 rounded font-medium ${item.published === false ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+                                    {item.published === false ? 'Draft' : 'Published'}
+                                </span>
+
                                 {/* Quote icon */}
-                                <MessageSquare size={20} className="absolute top-5 right-5 text-blue-100" />
+                                <MessageSquare size={20} className="absolute top-11 right-5 text-blue-100" />
 
                                 {/* Content */}
                                 <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 flex-1">
@@ -226,6 +243,13 @@ const AdminTestimonials: React.FC = () => {
 
                                     {/* Actions */}
                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            onClick={() => handleTogglePublish(item)}
+                                            className={`p-1.5 rounded-lg transition-colors ${item.published === false ? 'text-gray-400 hover:text-green-600 hover:bg-green-50' : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'}`}
+                                            title={item.published === false ? 'Publish' : 'Unpublish'}
+                                        >
+                                            {item.published === false ? <Eye size={15} /> : <EyeOff size={15} />}
+                                        </button>
                                         <button
                                             onClick={() => handleEdit(item)}
                                             className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -370,6 +394,20 @@ const AdminTestimonials: React.FC = () => {
                                     className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                 />
                                 <p className="text-xs text-gray-400 mt-1">Lower number = shown first</p>
+                            </div>
+
+                            {/* Published */}
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="testimonial-published"
+                                    checked={form.published !== false}
+                                    onChange={e => setForm({ ...form, published: e.target.checked })}
+                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <label htmlFor="testimonial-published" className="text-sm font-medium text-gray-700">
+                                    Published (visible on website)
+                                </label>
                             </div>
 
                             {/* Buttons */}

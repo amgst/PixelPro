@@ -1,13 +1,13 @@
 import React from 'react';
 import { Star, Quote } from 'lucide-react';
-import { getTestimonials, Testimonial } from '../lib/testimonialsService';
+import { getPublishedTestimonials, Testimonial } from '../lib/testimonialsService';
 
 const Testimonials: React.FC = () => {
     const [testimonials, setTestimonials] = React.useState<Testimonial[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
 
     React.useEffect(() => {
-        getTestimonials()
+        getPublishedTestimonials()
             .then(data => setTestimonials(data))
             .catch(err => console.error('Failed to load testimonials:', err))
             .finally(() => setIsLoading(false));

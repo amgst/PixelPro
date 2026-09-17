@@ -1,7 +1,9 @@
-
+import "dotenv/config";
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,28 +44,73 @@ const staticRoutes = [
     { url: '/terms-and-conditions', changefreq: 'monthly', priority: 0.5, lastmod: BUILD_DATE },
 ];
 
+// Live blog posts are managed by the admin dashboard and stored in Firestore
+// (the `data/blog-posts.json` file is unrelated legacy/seed data and does not
+// reflect what's actually published on the site).
+async function fetchPublishedBlogUrlsFromFirestore() {
+    const firebaseConfig = {
+        apiKey: process.env.VITE_FIREBASE_API_KEY,
+        authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.VITE_FIREBASE_APP_ID,
+    };
+
+    if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+        console.warn('Firebase config not found in env — skipping Firestore blog fetch.');
+        return null;
+    }
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const snapshot = await getDocs(query(collection(db, 'blog_posts'), where('published', '==', true)));
+
+    return snapshot.docs
+        .map(docSnapshot => docSnapshot.data())
+        .filter(post => post.slug)
+        .map(post => ({
+            url: `/blog/${post.slug}`,
+            changefreq: 'monthly',
+            priority: 0.7,
+            lastmod: post.date || BUILD_DATE,
+        }));
+}
+
+// Fallback used only if Firestore is unreachable at build time.
+function getBlogUrlsFromLocalSeed() {
+    if (!fs.existsSync(BLOG_DATA_FILE)) return [];
+    const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_FILE, 'utf-8'));
+    return blogData.map(post => ({
+        url: `/blog/${post.slug}`,
+        changefreq: 'monthly',
+        priority: 0.7,
+        lastmod: post.date,
+    }));
+}
+
 async function generateSitemap() {
     try {
         console.log('Starting sitemap generation...');
 
         let urls = [...staticRoutes];
 
-        // Read Blog Data
-        if (fs.existsSync(BLOG_DATA_FILE)) {
-            const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_FILE, 'utf-8'));
-            console.log(`Found ${blogData.length} blog posts.`);
-
-            const blogUrls = blogData.map(post => ({
-                url: `/blog/${post.slug}`,
-                changefreq: 'monthly',
-                priority: 0.7,
-                lastmod: post.date // Use the blog post date as lastmod
-            }));
-
-            urls = [...urls, ...blogUrls];
-        } else {
-            console.warn(`Warning: Blog data file not found at ${BLOG_DATA_FILE}`);
+        let blogUrls = null;
+        try {
+            blogUrls = await fetchPublishedBlogUrlsFromFirestore();
+        } catch (error) {
+            console.error('Failed to fetch blog posts from Firestore:', error.message);
         }
+
+        if (blogUrls) {
+            console.log(`Found ${blogUrls.length} published blog posts in Firestore.`);
+        } else {
+            console.warn('Falling back to local blog seed data for the sitemap.');
+            blogUrls = getBlogUrlsFromLocalSeed();
+            console.log(`Found ${blogUrls.length} blog posts in local seed file.`);
+        }
+
+        urls = [...urls, ...blogUrls];
 
         // Generate XML
         const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -77,7 +124,7 @@ ${urls.map(route => `  <url>
 
         // Write to file
         fs.writeFileSync(OUTPUT_FILE, sitemapXml);
-        console.log(`Sitemap generated successfully at ${OUTPUT_FILE}`);
+        console.log(`Sitemap generated successfully at ${OUTPUT_FILE} (${urls.length} URLs).`);
 
     } catch (error) {
         console.error('Error generating sitemap:', error);
