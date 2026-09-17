@@ -4,6 +4,8 @@ const nodemailer = require("nodemailer");
 
 admin.initializeApp();
 
+exports.generateDailyBlogDraft = require("./blogGenerator").generateDailyBlogDraft;
+
 // Configure the email transport using Gmail SMTP
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
