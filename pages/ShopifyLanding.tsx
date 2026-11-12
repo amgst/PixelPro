@@ -174,6 +174,44 @@ const ShopifyLanding: React.FC = () => {
 
 
 
+            {/* Featured Case Study */}
+            <section className="py-24 bg-slate-900 text-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div className="space-y-6">
+                            <span className="inline-block px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm font-medium">
+                                Case Study · Custom Shopify App
+                            </span>
+                            <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+                                We don't just build stores, we build <span className="text-green-400">Shopify apps</span> too.
+                            </h2>
+                            <p className="text-gray-300 text-lg leading-relaxed">
+                                Reviews &amp; Rewards replaced a costly SaaS stack with one custom app: product reviews, photo &amp; video UGC,
+                                AI review insights and a full loyalty program, migrated off Yotpo with zero data loss.
+                            </p>
+                            <Link to="/case-studies/reviews-rewards">
+                                <button className="px-8 py-4 bg-green-500 text-slate-900 rounded-full font-bold hover:bg-green-400 transition-all shadow-lg hover:shadow-green-500/25 flex items-center gap-2">
+                                    Read the Case Study <ArrowRight size={18} />
+                                </button>
+                            </Link>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            {[
+                                { value: '580+', label: 'Commits shipped' },
+                                { value: '60+', label: 'Routes, APIs & webhooks' },
+                                { value: '16', label: 'Storefront & checkout surfaces' },
+                                { value: '0', label: 'Points lost in migration' },
+                            ].map((s) => (
+                                <div key={s.label} className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                    <div className="text-3xl md:text-4xl font-bold text-green-400">{s.value}</div>
+                                    <div className="text-sm text-gray-400 mt-1">{s.label}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Pricing Section */}
             <section id="pricing" className="py-24 bg-slate-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

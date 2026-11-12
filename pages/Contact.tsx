@@ -116,7 +116,7 @@ const Contact: React.FC = () => {
     mainEntity: {
       '@type': 'Organization',
       name: 'wbify Creative Studio',
-      email: 'wbify.com@gmail.com'
+      email: 'admin@wbify.com'
     }
   };
 
@@ -147,7 +147,7 @@ const Contact: React.FC = () => {
                   <Mail className="text-blue-600 mt-1 mr-4" />
                   <div>
                     <p className="font-medium text-slate-900">Email Us</p>
-                    <p className="text-gray-500">wbify.com@gmail.com</p>
+                    <p className="text-gray-500">admin@wbify.com</p>
                   </div>
                 </div>
               </div>

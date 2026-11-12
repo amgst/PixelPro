@@ -32,6 +32,7 @@ const staticRoutes = [
     { url: '/video-animation', changefreq: 'weekly', priority: 0.8, lastmod: BUILD_DATE },
     { url: '/pricing', changefreq: 'monthly', priority: 0.8, lastmod: BUILD_DATE },
     { url: '/portfolio', changefreq: 'weekly', priority: 0.8, lastmod: BUILD_DATE },
+    { url: '/case-studies/reviews-rewards', changefreq: 'monthly', priority: 0.7, lastmod: BUILD_DATE },
     { url: '/store', changefreq: 'weekly', priority: 0.7, lastmod: BUILD_DATE },
     { url: '/blog', changefreq: 'weekly', priority: 0.8, lastmod: BUILD_DATE },
     { url: '/tools', changefreq: 'monthly', priority: 0.7, lastmod: BUILD_DATE },

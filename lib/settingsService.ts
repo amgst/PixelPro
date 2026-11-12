@@ -25,7 +25,7 @@ const LOCAL_SETTINGS_PATH = '/site-settings.json';
 
 const getDefaultSettings = (): SiteSettings => ({
     siteName: 'Wbify',
-    adminEmail: 'ahmed@vancegraphix.com.au',
+    adminEmail: 'admin@wbify.com',
     logoUrl: DEFAULT_LOGO_URL,
     googleAnalyticsId: DEFAULT_GA4_ID
 });

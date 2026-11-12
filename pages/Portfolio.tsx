@@ -168,6 +168,30 @@ const Portfolio: React.FC = () => {
           </div>
         )}
 
+        {/* Featured Case Study */}
+        {!specificFolderId && (activeTab === 'All' || activeTab === 'Shopify') && (
+          <Link
+            to="/case-studies/reviews-rewards"
+            className="group block mb-12 bg-slate-900 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden hover:shadow-2xl transition-all"
+          >
+            <div className="absolute -top-24 -right-24 w-72 h-72 bg-green-500/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="max-w-2xl">
+                <span className="inline-block px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold uppercase tracking-wider mb-4">
+                  Featured Case Study · Custom Shopify App
+                </span>
+                <h2 className="text-2xl md:text-3xl font-bold mb-3">Reviews &amp; Rewards — one app replacing a costly SaaS stack</h2>
+                <p className="text-gray-300">
+                  Reviews, photo &amp; video UGC, AI insights and a full loyalty program in one custom Shopify app, migrated off Yotpo with zero data loss.
+                </p>
+              </div>
+              <span className="inline-flex items-center gap-2 px-6 py-3 bg-green-500 text-slate-900 rounded-full font-bold group-hover:bg-green-400 transition-all shrink-0">
+                Read Case Study <ArrowUpRight size={18} />
+              </span>
+            </div>
+          </Link>
+        )}
+
         {/* Status Indicators */}
         <div className="flex justify-center mb-10 space-x-4">
           {error && (

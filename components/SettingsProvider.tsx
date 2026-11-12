@@ -8,7 +8,7 @@ interface SettingsContextType {
 
 const defaultSettings: SiteSettings = {
     siteName: 'Wbify',
-    adminEmail: 'ahmed@vancegraphix.com.au',
+    adminEmail: 'admin@wbify.com',
     logoUrl: 'https://nbyomoqura0jkgxd.public.blob.vercel-storage.com/vgp%20logo%20horizontal.png',
     googleAnalyticsId: 'G-EB1Z519BGJ'
 };

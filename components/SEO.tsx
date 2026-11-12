@@ -60,7 +60,7 @@ const SEO: React.FC<SEOProps> = ({
         contactPoint: {
             '@type': 'ContactPoint',
             contactType: 'Customer Service',
-            email: 'info@wbify.com'
+            email: 'admin@wbify.com'
         }
     };
 

@@ -52,8 +52,8 @@ const TermsAndConditions: React.FC = () => {
             <p className="text-slate-600">
               Please send any questions or comments regarding these Terms to:
               <br />
-              <a href="mailto:ahmed@vancegraphix.com.au" className="text-blue-600 hover:text-blue-700 font-medium">
-                ahmed@vancegraphix.com.au
+              <a href="mailto:admin@wbify.com" className="text-blue-600 hover:text-blue-700 font-medium">
+                admin@wbify.com
               </a>
             </p>
           </div>

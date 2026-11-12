@@ -63,7 +63,7 @@ const Footer: React.FC = () => {
               )}
             </div>
             <div className="mt-6">
-              <p className="text-sm text-gray-500">wbify.com@gmail.com</p>
+              <p className="text-sm text-gray-500">admin@wbify.com</p>
             </div>
           </div>
         </div>
