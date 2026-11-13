@@ -4,18 +4,31 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import { submitContactMessage } from '../lib/contactService';
 
 import SEO from '../components/SEO';
+import ConsultationOptions from '../components/ConsultationOptions';
+import { useSearchParams } from 'react-router-dom';
 
 const Contact: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const isConsultation = searchParams.get('consultation') === '1';
   const [formData, setFormData] = React.useState({
     firstName: '',
     lastName: '',
     email: '',
     service: 'Graphic Design',
-    message: ''
+    message: isConsultation ? "I'd like to arrange a discovery call. My preferred dates, times, and time zone are: ": ''
   });
   const [status, setStatus] = React.useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [recaptchaToken, setRecaptchaToken] = React.useState<string | null>(null);
   const recaptchaRef = React.useRef<ReCAPTCHA>(null);
+
+  React.useEffect(() => {
+    if (isConsultation) {
+      setFormData(current => current.message.trim() ? current : {
+        ...current,
+        message: "I'd like to arrange a discovery call. My preferred dates, times, and time zone are: "
+      });
+    }
+  }, [isConsultation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +152,7 @@ const Contact: React.FC = () => {
 
           {/* Contact Info */}
           <div className="space-y-8">
+            <ConsultationOptions />
             <div className="bg-slate-50 p-8 rounded-2xl border border-gray-100">
               <h3 className="text-xl font-bold text-slate-900 mb-6">Contact Information</h3>
 
@@ -155,7 +169,7 @@ const Contact: React.FC = () => {
           </div>
 
           {/* Form */}
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form id="contact-form" className="space-y-6 scroll-mt-28" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>

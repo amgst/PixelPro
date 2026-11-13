@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, ShoppingBag } from 'lucide-react';
 import { SERVICE_CATEGORIES } from '../data/servicesData';
 import Testimonials from '../components/Testimonials';
+import FeaturedProjects from '../components/FeaturedProjects';
+import ConsultationOptions from '../components/ConsultationOptions';
 import ServiceQuizModal from '../components/ServiceQuizModal';
 
 import SEO from '../components/SEO';
@@ -57,14 +59,14 @@ const Home: React.FC = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-                <Link to="/services">
+                <Link to="/contact">
                   <button className="w-full sm:w-auto px-8 py-4 bg-slate-900 text-white rounded-full font-medium hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-                    Browse All Services <ArrowRight size={18} />
+                    Discuss Your Project <ArrowRight size={18} />
                   </button>
                 </Link>
-                <Link to="/contact">
+                <Link to="/portfolio">
                   <button className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 border border-gray-200 rounded-full font-medium hover:border-slate-300 hover:bg-gray-50 transition-all">
-                    Get a Quote
+                    View Our Work
                   </button>
                 </Link>
               </div>
@@ -105,6 +107,8 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      <FeaturedProjects />
 
       {/* Featured Services Preview */}
       <section className="py-24 bg-white">
@@ -219,6 +223,8 @@ const Home: React.FC = () => {
 
       {/* Testimonials */}
       <Testimonials />
+
+      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12"><ConsultationOptions /></div>
 
       {/* CTA Section */}
       <section className="py-24 bg-white">

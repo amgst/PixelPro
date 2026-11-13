@@ -10,6 +10,8 @@ const AdminSettings: React.FC = () => {
     const [formData, setFormData] = useState({
         siteName: '',
         adminEmail: '',
+        bookingUrl: '',
+        whatsappNumber: '',
         logoUrl: '',
         faviconUrl: '',
         googleAnalyticsId: '',
@@ -31,6 +33,8 @@ const AdminSettings: React.FC = () => {
             setFormData({
                 siteName: settings.siteName || '',
                 adminEmail: settings.adminEmail || '',
+                bookingUrl: settings.bookingUrl || '',
+                whatsappNumber: settings.whatsappNumber || '',
                 logoUrl: settings.logoUrl || '',
                 faviconUrl: settings.faviconUrl || '',
                 googleAnalyticsId: settings.googleAnalyticsId || '',
@@ -47,6 +51,18 @@ const AdminSettings: React.FC = () => {
     }, [settings, loading]);
 
     const handleSave = async () => {
+        if (formData.bookingUrl.trim()) {
+            try {
+                if (new URL(formData.bookingUrl.trim()).protocol !== 'https:') throw new Error();
+            } catch {
+                alert('Enter a valid HTTPS booking calendar URL.');
+                return;
+            }
+        }
+        if (formData.whatsappNumber.trim() && !/^[1-9]\d{6,14}$/.test(formData.whatsappNumber.replace(/[\s()+.-]/g, ''))) {
+            alert('Enter a valid WhatsApp number including the country code.');
+            return;
+        }
         setIsSaving(true);
         try {
             await updateSiteSettings(formData);
@@ -233,6 +249,20 @@ const AdminSettings: React.FC = () => {
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                 />
                             </div>
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-100 space-y-4">
+                        <h3 className="text-md font-bold text-slate-900">Consultation &amp; WhatsApp</h3>
+                        <div>
+                            <label htmlFor="booking-url" className="block text-sm font-medium text-gray-700 mb-2">Booking calendar URL</label>
+                            <input id="booking-url" type="url" placeholder="https://calendly.com/your-business/discovery" value={formData.bookingUrl} onChange={e => setFormData({ ...formData, bookingUrl: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                            <p className="mt-2 text-xs text-gray-500">Use an HTTPS booking link. Leave blank to accept call requests through the contact form.</p>
+                        </div>
+                        <div>
+                            <label htmlFor="whatsapp-number" className="block text-sm font-medium text-gray-700 mb-2">WhatsApp business number</label>
+                            <input id="whatsapp-number" type="tel" placeholder="International number including country code" value={formData.whatsappNumber} onChange={e => setFormData({ ...formData, whatsappNumber: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                            <p className="mt-2 text-xs text-gray-500">Include the country code. Leave blank to hide WhatsApp contact.</p>
                         </div>
                     </div>
 
