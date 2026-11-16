@@ -4,6 +4,7 @@ import { db } from './firebase';
 export interface SiteSettings {
     siteName: string;
     adminEmail: string;
+    contactEmail?: string;
     bookingUrl?: string;
     whatsappNumber?: string;
     logoUrl?: string;

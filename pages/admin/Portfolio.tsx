@@ -4,7 +4,7 @@ import { PortfolioItem, getPortfolios, addPortfolio, updatePortfolio, deletePort
 import { Plus, Trash2, Edit2, Save, X, Loader2, LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight, CheckCircle, Search } from 'lucide-react';
 import { getWebPortfolioImageUrl, normalizeWebPortfolioImage, WEB_PORTFOLIO_IMAGE_FOLDER, WEB_PORTFOLIO_IMAGE_PLACEHOLDER } from '../../lib/webPortfolioImage';
 
-const AdminPortfolio: React.FC = () => {
+const AdminPortfolio: React.FC<{ printOnly?: boolean }> = ({ printOnly = false }) => {
     const [items, setItems] = React.useState<PortfolioItem[]>([]);
     const [viewMode, setViewMode] = React.useState<'card' | 'list'>('card');
     const [isEditing, setIsEditing] = React.useState(false);
@@ -18,7 +18,7 @@ const AdminPortfolio: React.FC = () => {
     const [itemsPerPage, setItemsPerPage] = React.useState(10);
 
     // Filter + Pagination Logic
-    const filteredItems = items.filter(item =>
+    const filteredItems = items.filter(item => !printOnly || item.category === 'Graphics').filter(item =>
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.link?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -117,7 +117,7 @@ const AdminPortfolio: React.FC = () => {
     const handleAddNew = () => {
         setCurrentItem({
             title: '',
-            category: 'Shopify',
+            category: printOnly ? 'Graphics' : 'Shopify',
             imageUrl: '',
             description: '',
             link: '',
@@ -184,7 +184,7 @@ const AdminPortfolio: React.FC = () => {
             <div className="flex flex-col gap-4 mb-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Manage Portfolio</h1>
+                        <h1 className="text-2xl font-bold text-slate-900">{printOnly ? 'Manage Print Portfolio' : 'Manage Portfolio'}</h1>
                         <p className="text-gray-500">Add or edit portfolio items.</p>
                     </div>
                     <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -323,6 +323,7 @@ const AdminPortfolio: React.FC = () => {
                                     <option value="Shopify">Shopify</option>
                                     <option value="React">React</option>
                                     <option value="WordPress">WordPress</option>
+                                    <option value="Graphics">Graphics / Print</option>
                                     <option value="Other">Other</option>
                                 </select>
                             </div>

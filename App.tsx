@@ -107,6 +107,7 @@ const AppContent: React.FC = () => {
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="tools" element={<AdminTools />} />
                 <Route path="portfolio" element={<AdminPortfolio />} />
+                <Route path="print-portfolio" element={<AdminPortfolio key="print" printOnly />} />
                 <Route path="web-registry" element={<AdminWebRegistry />} />
                 <Route path="services" element={<AdminServices />} />
                 <Route path="blog" element={<AdminBlog />} />

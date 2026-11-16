@@ -5,7 +5,7 @@ import { normalizeWebPortfolioImage } from './webPortfolioImage';
 export interface PortfolioItem {
     id: string;
     title: string;
-    category: 'Shopify' | 'React' | 'WordPress' | 'Other';
+    category: 'Shopify' | 'React' | 'WordPress' | 'Graphics' | 'Other';
     imageUrl: string;
     description?: string;
     link?: string;

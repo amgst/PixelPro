@@ -22,6 +22,7 @@ const LOCAL_WEB_PORTFOLIO_IMAGES: Record<PortfolioItem['category'], string[]> = 
     '/products/coding-development.jpg',
     '/images/blog/future-web-design.png'
   ],
+  Graphics: [],
   Other: [
     '/products/coding-development.jpg',
     '/products/team-collaboration.jpg',

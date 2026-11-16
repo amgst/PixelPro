@@ -82,7 +82,9 @@ exports.onContactCreated = functions.firestore
         const data = snap.data();
 
         // Send Email Notification
-        const adminEmail = process.env.ADMIN_EMAIL;
+        const settings = await admin.firestore().doc('settings/general').get();
+        const contactEmail = settings.data()?.contactEmail;
+        const adminEmail = isValidEmail(contactEmail) ? contactEmail.trim() : process.env.ADMIN_EMAIL;
         if (adminEmail) {
             const subject = `New Contact Message from ${sanitizeHeaderValue(data.firstName)} ${sanitizeHeaderValue(data.lastName)}`;
             const email = isValidEmail(data.email) ? data.email.trim() : 'N/A';

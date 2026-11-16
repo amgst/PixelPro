@@ -59,6 +59,25 @@ function isValidEmail(email: unknown): email is string {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
 }
 
+// Resolve the recipient from trusted saved settings, never from the form payload.
+async function getContactRecipient(): Promise<string | undefined> {
+    const fallback = process.env.ADMIN_EMAIL;
+    const projectId = process.env.FIREBASE_PROJECT_ID || process.env.VITE_FIREBASE_PROJECT_ID;
+    if (!projectId) return fallback;
+    try {
+        const response = await fetch(`https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/databases/(default)/documents/settings/general`, {
+            signal: AbortSignal.timeout(3000)
+        });
+        if (!response.ok) throw new Error('Settings unavailable');
+        const settings = await response.json();
+        const recipient = settings.fields?.contactEmail?.stringValue;
+        return isValidEmail(recipient) ? recipient.trim() : fallback;
+    } catch {
+        console.warn('Could not read contact email settings; using ADMIN_EMAIL.');
+        return fallback;
+    }
+}
+
 export default async function handler(req: any, res: any) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
@@ -71,7 +90,7 @@ export default async function handler(req: any, res: any) {
     }
 
     // Validate Environment Variables (without logging their values).
-    const requiredEnv = ['EMAIL_HOST', 'EMAIL_USER', 'EMAIL_PASS', 'ADMIN_EMAIL'];
+    const requiredEnv = ['EMAIL_HOST', 'EMAIL_USER', 'EMAIL_PASS'];
     const missingEnv = requiredEnv.filter(key => !process.env[key]);
     if (missingEnv.length > 0) {
         console.error('Server email configuration incomplete. Missing env keys count:', missingEnv.length);
@@ -200,6 +219,10 @@ View details: https://www.wbify.com/admin/dashboard
     }
 
     try {
+        const recipient = type === 'contact' ? await getContactRecipient() : process.env.ADMIN_EMAIL;
+        if (!isValidEmail(recipient)) {
+            return res.status(500).json({ message: 'Notification recipient is not configured' });
+        }
         const transporter = nodemailer.createTransport({
             host: process.env.EMAIL_HOST,
             port: parseInt(process.env.EMAIL_PORT || '587'),
@@ -215,7 +238,7 @@ View details: https://www.wbify.com/admin/dashboard
 
         const emailPromise = transporter.sendMail({
             from: `"${sanitizeHeaderValue(process.env.EMAIL_FROM_NAME)}" <${process.env.EMAIL_USER}>`,
-            to: process.env.ADMIN_EMAIL,
+            to: recipient,
             subject: subject,
             text: text,
             replyTo: replyToEmail,

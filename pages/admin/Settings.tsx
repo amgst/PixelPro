@@ -10,6 +10,7 @@ const AdminSettings: React.FC = () => {
     const [formData, setFormData] = useState({
         siteName: '',
         adminEmail: '',
+        contactEmail: '',
         bookingUrl: '',
         whatsappNumber: '',
         logoUrl: '',
@@ -33,6 +34,7 @@ const AdminSettings: React.FC = () => {
             setFormData({
                 siteName: settings.siteName || '',
                 adminEmail: settings.adminEmail || '',
+                contactEmail: settings.contactEmail || '',
                 bookingUrl: settings.bookingUrl || '',
                 whatsappNumber: settings.whatsappNumber || '',
                 logoUrl: settings.logoUrl || '',
@@ -51,6 +53,10 @@ const AdminSettings: React.FC = () => {
     }, [settings, loading]);
 
     const handleSave = async () => {
+        if (formData.contactEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contactEmail.trim())) {
+            alert('Enter a valid contact notification email address.');
+            return;
+        }
         if (formData.bookingUrl.trim()) {
             try {
                 if (new URL(formData.bookingUrl.trim()).protocol !== 'https:') throw new Error();
@@ -148,6 +154,12 @@ const AdminSettings: React.FC = () => {
                             onChange={(e) => setFormData({ ...formData, adminEmail: e.target.value })}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                         />
+                    </div>
+
+                    <div>
+                        <label htmlFor="contact-email" className="block text-sm font-medium text-gray-700 mb-2">Contact form notification email</label>
+                        <input id="contact-email" type="email" value={formData.contactEmail} onChange={e => setFormData({ ...formData, contactEmail: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                        <p className="mt-2 text-xs text-gray-500">Receive contact form notifications here. Leave blank to use the server ADMIN_EMAIL address. Messages are also saved under Admin ? Messages.</p>
                     </div>
 
                     {/* Logo Upload */}
