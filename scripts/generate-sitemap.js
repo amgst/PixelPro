@@ -2,7 +2,7 @@ import "dotenv/config";
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, deleteApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -66,17 +66,22 @@ async function fetchPublishedBlogUrlsFromFirestore() {
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const snapshot = await getDocs(query(collection(db, 'blog_posts'), where('published', '==', true)));
+    try {
+        const snapshot = await getDocs(query(collection(db, 'blog_posts'), where('published', '==', true)));
 
-    return snapshot.docs
-        .map(docSnapshot => docSnapshot.data())
-        .filter(post => post.slug)
-        .map(post => ({
-            url: `/blog/${post.slug}`,
-            changefreq: 'monthly',
-            priority: 0.7,
-            lastmod: post.date || BUILD_DATE,
-        }));
+        return snapshot.docs
+            .map(docSnapshot => docSnapshot.data())
+            .filter(post => post.slug)
+            .map(post => ({
+                url: `/blog/${post.slug}`,
+                changefreq: 'monthly',
+                priority: 0.7,
+                lastmod: post.date || BUILD_DATE,
+            }));
+    } finally {
+        // Release Firebase connections so the deployment build can exit.
+        await deleteApp(app);
+    }
 }
 
 // Fallback used only if Firestore is unreachable at build time.
