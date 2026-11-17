@@ -9,7 +9,7 @@ const isoDate = (value: any): string => {
     return date && !Number.isNaN(date.getTime()) ? date.toISOString() : '';
 };
 const defaults = (): Omit<CrmLead, 'id' | 'name' | 'email'> => ({
-    phone: '', service: '', brief: '', source: 'Manual', campaign: '', stage: 'new', value: 0,
+    phone: '', service: '', brief: '', budget: '', timeline: '', source: 'Manual', campaign: '', stage: 'new', value: 0,
     currency: 'USD', followUp: '', nextAction: '', proposalUrl: '', createdAt: '', activity: []
 });
 export const newLead = (): CrmLead => ({ ...defaults(), id: `manual_${crypto.randomUUID()}`, name: '', email: '', createdAt: new Date().toISOString() });
@@ -25,6 +25,7 @@ export async function getCrmLeads(): Promise<CrmLead[]> {
         const id = `inquiry_${item.id}`;
         leads.set(id, { ...defaults(), id, name: item.name, email: item.email,
             phone: item.phone || '', service: item.serviceType, brief: item.additionalInfo || item.message || '',
+            budget: item.budget || item.shopifyBudget || '', timeline: item.timeline || '',
             source: item.leadSource || 'Project inquiry', campaign: item.campaign || '',
             stage: item.status === 'closed' ? 'lost' : item.status === 'contacted' ? 'qualified' : 'new',
             createdAt: isoDate(item.createdAt) });

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { Link } from 'react-router-dom';
 import { Users, ShoppingBag, DollarSign, TrendingUp, Mail, Inbox, AlertCircle } from 'lucide-react';
 import { getInquiries, InquiryData } from '../../lib/inquiryService';
 import { getContactMessages, ContactMessageData } from '../../lib/contactService';
@@ -63,6 +64,7 @@ const AdminDashboard: React.FC = () => {
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
                 <p className="text-gray-500">Welcome back, here's what's happening today.</p>
+                <Link to="/admin/crm" className="inline-flex mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Open projects CRM ?</Link>
             </div>
 
             {loading ? (

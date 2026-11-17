@@ -7,7 +7,7 @@ export const STAGE_LABELS: Record<LeadStage, string> = {
 export interface LeadActivity { id: string; text: string; at: string }
 export interface CrmLead {
     id: string; name: string; email: string; phone: string; service: string;
-    brief: string; source: string; campaign: string; stage: LeadStage;
+    brief: string; budget: string; timeline: string; source: string; campaign: string; stage: LeadStage;
     value: number; currency: string; followUp: string; nextAction: string;
     proposalUrl: string; createdAt: string; activity: LeadActivity[];
 }

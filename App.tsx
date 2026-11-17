@@ -13,6 +13,8 @@ import WebDevLanding from './pages/WebDevLanding';
 import GraphicsLanding from './pages/GraphicsLanding';
 import WordPressLanding from './pages/WordPressLanding';
 import ProjectInquiry from './pages/ProjectInquiry';
+import StartProject from './pages/StartProject';
+import AdminCrm from './pages/admin/Crm';
 import Pricing from './pages/Pricing';
 import Portfolio from './pages/Portfolio';
 import CaseStudyReviewsRewards from './pages/CaseStudyReviewsRewards';
@@ -78,6 +80,7 @@ const AppContent: React.FC = () => {
             <Route path="/graphics" element={<GraphicsLanding />} />
             <Route path="/wordpress" element={<WordPressLanding />} />
             <Route path="/inquiry" element={<ProjectInquiry />} />
+            <Route path="/start-project" element={<StartProject />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/case-studies/reviews-rewards" element={<CaseStudyReviewsRewards />} />
@@ -116,6 +119,7 @@ const AppContent: React.FC = () => {
                 <Route path="store" element={<AdminStore />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="messages" element={<AdminMessages />} />
+                <Route path="crm" element={<AdminCrm />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
             </Route>

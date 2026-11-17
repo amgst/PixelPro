@@ -25,6 +25,7 @@ interface FormData {
     // Common
     timeline: string;
     additionalInfo: string;
+    budget?: string;
 }
 
 const ProjectInquiry: React.FC = () => {
@@ -62,7 +63,11 @@ const ProjectInquiry: React.FC = () => {
         try {
             // Save to Firestore
             console.log('Saving to Firestore...');
-            await submitInquiry(formData);
+            await submitInquiry({
+                ...formData,
+                leadSource: (searchParams.get('utm_source') || (searchParams.get('funnel') === 'project-start' ? 'Project funnel' : 'Project inquiry')).slice(0, 100),
+                campaign: (searchParams.get('utm_campaign') || '').slice(0, 100)
+            });
             console.log('Form submitted to Firestore');
 
             // Send email via Vercel API
@@ -405,6 +410,10 @@ const ProjectInquiry: React.FC = () => {
                             </div>
                         )}
 
+                        {formData.serviceType !== 'shopify' && <div>
+                            <label htmlFor="project-budget" className="block text-sm font-medium text-slate-700 mb-2">Estimated budget (include currency)</label>
+                            <input id="project-budget" name="budget" value={formData.budget || ''} onChange={handleChange} maxLength={100} placeholder="For example: AUD 2,000?4,000, or help me estimate" className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
+                        </div>}
                         {/* Common Fields */}
                         <div className="space-y-4">
                             <div>
@@ -426,9 +435,13 @@ const ProjectInquiry: React.FC = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Additional Information</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Project goals and requirements *</label>
                                 <textarea
+                                    placeholder="What does your business do, what needs to change, and what would a successful project achieve? (At least 20 characters)"
                                     name="additionalInfo"
+                                    required
+                                    minLength={20}
+                                    maxLength={5000}
                                     value={formData.additionalInfo}
                                     onChange={handleChange}
                                     rows={4}
