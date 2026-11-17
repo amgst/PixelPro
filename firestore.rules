@@ -48,6 +48,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Private sales pipeline. Public forms remain in their submission collections.
+    match /crm_leads/{docId} {
+      allow read, write: if isAdmin();
+    }
+
     // Site settings (e.g. settings/general)
     match /settings/{docId} {
       allow read: if true;

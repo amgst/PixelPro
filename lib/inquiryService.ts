@@ -15,6 +15,8 @@ export const INQUIRIES_COLLECTION = 'project_inquiries';
 
 export interface InquiryData {
     id?: string;
+    leadSource?: string;
+    campaign?: string;
     name: string;
     email: string;
     phone: string;
