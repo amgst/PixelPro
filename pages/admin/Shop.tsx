@@ -1,15 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { Product, SHOP_CATEGORIES, getShopCategoryId, getShopCategory } from '../../data/productsData';
+import { Product, SHOP_CATEGORIES, getShopCategoryId, getShopCategory, normalizeProductUrl } from '../../data/productsData';
 import { getProducts, addProduct, updateProduct, deleteProduct } from '../../lib/productsService';
 import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from '../../lib/productImage';
-import { Plus, Trash2, Edit2, Save, X } from 'lucide-react';
+import { generateUniqueFileName, uploadFileWithProgress } from '../../lib/storageService';
+import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, ExternalLink } from 'lucide-react';
 
 const AdminShop: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Partial<Product>>({});
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const isUploading = uploadProgress !== null;
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please choose an image file.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image must be smaller than 10MB.');
+      return;
+    }
+    setUploadProgress(0);
+    try {
+      const url = await uploadFileWithProgress(
+        file,
+        `products/${generateUniqueFileName(file.name)}`,
+        setUploadProgress
+      );
+      setCurrentProduct(prev => ({ ...prev, image: url }));
+    } catch (err) {
+      console.error('Error uploading product image', err);
+      alert('Image upload failed. Make sure you are signed in as an admin and try again.');
+    } finally {
+      setUploadProgress(null);
+    }
+  };
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -41,6 +75,7 @@ const AdminShop: React.FC = () => {
 
   const handleEdit = (product: Product) => {
     setCurrentProduct(product);
+    setFormError(null);
     setIsEditing(true);
   };
 
@@ -52,19 +87,31 @@ const AdminShop: React.FC = () => {
       price: 0,
       shortDescription: '',
       description: '',
+      productUrl: '',
       status: 'active',
     });
+    setFormError(null);
     setIsEditing(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentProduct.name || !currentProduct.description || !currentProduct.category) return;
+    if (isUploading) return;
+
+    const productUrl = normalizeProductUrl(currentProduct.productUrl);
+    if (currentProduct.productUrl?.trim() && !productUrl) {
+      setFormError('Product link must be a valid http(s) web address.');
+      return;
+    }
+    setFormError(null);
+
     try {
-      const price =
+      const rawPrice =
         typeof currentProduct.price === 'string'
           ? parseFloat(currentProduct.price)
-          : currentProduct.price || 0;
+          : currentProduct.price;
+      const price = Number.isFinite(rawPrice) ? (rawPrice as number) : 0;
 
       const data: Omit<Product, 'id'> = {
         name: currentProduct.name,
@@ -75,6 +122,7 @@ const AdminShop: React.FC = () => {
         description: currentProduct.description,
         sku: currentProduct.sku || '',
         tags: currentProduct.tags || [],
+        productUrl,
         status: currentProduct.status || 'active',
       };
 
@@ -167,7 +215,7 @@ const AdminShop: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={currentProduct.price ?? ''}
+                    value={Number.isFinite(currentProduct.price) ? currentProduct.price : ''}
                     onChange={e => setCurrentProduct({ ...currentProduct, price: parseFloat(e.target.value) })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     placeholder="Leave blank for quote only"
@@ -204,6 +252,35 @@ const AdminShop: React.FC = () => {
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Product Link</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    inputMode="url"
+                    value={currentProduct.productUrl || ''}
+                    onChange={e => setCurrentProduct({ ...currentProduct, productUrl: e.target.value })}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="https://themeforest.net/item/... or https://apps.shopify.com/..."
+                  />
+                  {normalizeProductUrl(currentProduct.productUrl) && (
+                    <a
+                      href={normalizeProductUrl(currentProduct.productUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-2 rounded-lg border border-gray-200 text-slate-700 hover:bg-gray-50 flex items-center"
+                      title="Open link"
+                    >
+                      <ExternalLink size={16} />
+                    </a>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Where customers get the product. When set, the product page shows a "Get it" button to this link
+                  instead of the order request form.
+                </p>
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Short Description</label>
                 <input
                   type="text"
@@ -233,7 +310,7 @@ const AdminShop: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Image (URL or Filename)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
                 {currentProduct.image && (
                   <div className="mb-3">
                     <img
@@ -247,14 +324,55 @@ const AdminShop: React.FC = () => {
                     />
                   </div>
                 )}
-                <input
-                  type="text"
-                  value={currentProduct.image || ''}
-                  onChange={e => setCurrentProduct({ ...currentProduct, image: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="https://... or /products/foo.jpg or foo.jpg"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={currentProduct.image || ''}
+                    onChange={e => setCurrentProduct({ ...currentProduct, image: e.target.value })}
+                    className="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="Upload an image, or paste a URL"
+                    disabled={isUploading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="px-4 py-2 rounded-lg bg-slate-900 text-white font-medium hover:bg-slate-800 flex items-center gap-2 whitespace-nowrap disabled:opacity-60"
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" /> {uploadProgress}%
+                      </>
+                    ) : (
+                      <>
+                        <Upload size={16} /> Upload
+                      </>
+                    )}
+                  </button>
+                  {currentProduct.image && !isUploading && (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentProduct({ ...currentProduct, image: '' })}
+                      className="px-3 py-2 rounded-lg border border-gray-200 text-red-600 hover:bg-red-50"
+                      title="Remove image"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Uploads are resized to 1000px wide and saved as JPEG.
+                </p>
               </div>
+
+              {formError && <p className="text-sm text-red-600">{formError}</p>}
 
               <div className="flex justify-end gap-3 pt-4">
                 <button
@@ -268,7 +386,8 @@ const AdminShop: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 flex items-center gap-2"
+                  disabled={isUploading}
+                  className="px-5 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 flex items-center gap-2 disabled:opacity-60"
                 >
                   <Save size={18} /> Save Product
                 </button>
@@ -315,7 +434,20 @@ const AdminShop: React.FC = () => {
                     />
                   )}
                   <div>
-                    <div className="text-sm font-medium text-slate-900">{product.name}</div>
+                    <div className="text-sm font-medium text-slate-900 flex items-center gap-1.5">
+                      {product.name}
+                      {product.productUrl && (
+                        <a
+                          href={product.productUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-700"
+                          title={product.productUrl}
+                        >
+                          <ExternalLink size={14} />
+                        </a>
+                      )}
+                    </div>
                     <div className="text-xs text-gray-500">
                       {product.shortDescription || product.description.slice(0, 80)}
                     </div>

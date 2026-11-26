@@ -8,6 +8,8 @@ export interface Product {
     shortDescription: string;
     description: string;
     tags?: string[];
+    /** External page where the product is bought or downloaded (marketplace, app store, etc.). */
+    productUrl?: string;
     status?: 'active' | 'archived';
     createdAt?: any;
 }
@@ -80,4 +82,21 @@ export const getShopCategoryId = (category?: string): ShopCategoryId => {
 export const getShopCategory = (category?: string): ShopCategory => {
     const id = getShopCategoryId(category);
     return SHOP_CATEGORIES.find(c => c.id === id)!;
+};
+
+/**
+ * Cleans up an external product link. Adds https:// when no scheme is given
+ * and rejects anything that is not http(s) (e.g. javascript: links).
+ * Returns '' for empty or unsafe values.
+ */
+export const normalizeProductUrl = (url?: string): string => {
+    const trimmed = (url || '').trim();
+    if (!trimmed) return '';
+    const withScheme = /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed.replace(/^\/+/, '')}`;
+    try {
+        const parsed = new URL(withScheme);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed.toString() : '';
+    } catch {
+        return '';
+    }
 };

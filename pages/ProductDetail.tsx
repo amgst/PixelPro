@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { ShoppingCart, Loader, Tag, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Loader, Tag, ArrowLeft, CheckCircle, ExternalLink, Package, Send } from 'lucide-react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { Helmet } from 'react-helmet-async';
-import { Product, getShopCategory } from '../data/productsData';
+import { Product, getShopCategory, getShopCategoryId, normalizeProductUrl } from '../data/productsData';
 import { getProductById } from '../lib/productsService';
 import { submitOrder } from '../lib/ordersService';
 import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from '../lib/productImage';
@@ -132,7 +132,7 @@ const ProductDetail: React.FC = () => {
       });
     } catch (err) {
       console.error('Error submitting order', err);
-      setFormError('Failed to submit order. Please try again or contact us.');
+      setFormError('Failed to send your request. Please try again or contact us.');
     } finally {
       setIsSubmitting(false);
     }
@@ -153,8 +153,18 @@ const ProductDetail: React.FC = () => {
   const pageTitle = `${product.name} | Wbify`;
   const description = product.shortDescription || product.description;
 
-  const lineTotal =
-    (product.price || 0) * (formData.quantity && formData.quantity > 0 ? formData.quantity : 1);
+  const externalUrl = normalizeProductUrl(product.productUrl);
+
+  const categoryId = getShopCategoryId(product.category);
+  const productKind =
+    categoryId === 'shopify-apps' ? 'app'
+      : categoryId === 'wordpress-plugins' ? 'plugin'
+      : categoryId === 'wordpress-themes' || categoryId === 'shopify-themes' ? 'theme'
+      : 'product';
+  const platform =
+    categoryId.startsWith('shopify') ? 'Shopify store'
+      : categoryId.startsWith('wordpress') ? 'WordPress site'
+      : 'website';
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -189,7 +199,7 @@ const ProductDetail: React.FC = () => {
                 }}
               />
             ) : (
-              <ShoppingCart size={48} className="text-slate-400" />
+              <Package size={48} className="text-slate-400" />
             )}
           </div>
 
@@ -210,124 +220,122 @@ const ProductDetail: React.FC = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="sticky top-24 bg-white border border-gray-200 rounded-2xl shadow-xl p-6 space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900 mb-1">Order this product</h2>
-              {product.price ? (
-                <p className="text-3xl font-bold text-slate-900">${product.price.toFixed(2)}</p>
-              ) : (
-                <p className="text-sm font-semibold text-slate-600">Price will be confirmed by Wbify.</p>
-              )}
-              <p className="text-xs text-gray-500 mt-1">
-                No payment is taken on this website. Your request will be sent to the Wbify team to confirm
-                details and pricing.
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Full name *</label>
-                <input
-                  type="text"
-                  name="customerName"
-                  required
-                  value={formData.customerName}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Email *</label>
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4 items-end">
+          <div className="sticky top-24 space-y-6">
+            {externalUrl && (
+              <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
+                  <h2 className="text-lg font-semibold text-slate-900 mb-1">Get {product.name}</h2>
+                  {product.price ? (
+                    <p className="text-3xl font-bold text-slate-900">${product.price.toFixed(2)}</p>
+                  ) : null}
+                </div>
+                <a
+                  href={externalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                >
+                  Get it now
+                  <ExternalLink size={16} />
+                </a>
+                <p className="text-xs text-gray-500">
+                  Opens {new URL(externalUrl).hostname.replace(/^www\./, '')} in a new tab.
+                </p>
+              </div>
+            )}
+
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-6 space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900 mb-1">
+                  Need {productKind === 'app' ? 'an' : 'a'} {productKind} like this?
+                </h2>
+                <p className="text-sm text-gray-600">
+                  We can set this up for you, customise it, or build a similar {productKind} for your {platform}.
+                  Tell us what you need and the Wbify team will get back to you.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Full name *</label>
                   <input
-                    type="number"
-                    name="quantity"
-                    min={1}
-                    value={formData.quantity}
+                    type="text"
+                    name="customerName"
+                    required
+                    value={formData.customerName}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
-                {product.price ? (
-                  <div className="text-right">
-                    <p className="text-xs text-gray-500">Estimated total</p>
-                    <p className="text-lg font-bold text-slate-900">${lineTotal.toFixed(2)}</p>
-                  </div>
-                ) : null}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Notes or specifications
-                </label>
-                <textarea
-                  name="notes"
-                  rows={4}
-                  value={formData.notes}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                  placeholder="Your website URL, platform version, licence needs or any other details."
-                />
-              </div>
-
-              <div className="flex justify-center my-4">
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-                  onChange={(token) => setRecaptchaToken(token)}
-                />
-              </div>
-
-              {formError && <p className="text-sm text-red-600">{formError}</p>}
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader className="animate-spin" size={16} />
-                    Sending order...
-                  </>
-                ) : (
-                  <>
-                    Submit order request
-                    <ShoppingCart size={16} />
-                  </>
-                )}
-              </button>
-
-              {submitted && (
-                <div className="flex items-start gap-2 text-xs text-green-700 bg-green-50 border border-green-100 rounded-lg p-3">
-                  <CheckCircle size={14} className="mt-0.5" />
-                  <p>
-                    Thank you. Your order request has been sent to the Wbify team. We will contact you to
-                    confirm pricing and next steps.
-                  </p>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Email *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
                 </div>
-              )}
-            </form>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Phone / WhatsApp</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">What do you need?</label>
+                  <textarea
+                    name="notes"
+                    rows={4}
+                    value={formData.notes}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                    placeholder={`Your ${platform} URL, the features you want and your timeline.`}
+                  />
+                </div>
+
+                <div className="flex justify-center my-4">
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                    onChange={(token) => setRecaptchaToken(token)}
+                  />
+                </div>
+
+                {formError && <p className="text-sm text-red-600">{formError}</p>}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader className="animate-spin" size={16} />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Send request
+                      <Send size={16} />
+                    </>
+                  )}
+                </button>
+
+                {submitted && (
+                  <div className="flex items-start gap-2 text-xs text-green-700 bg-green-50 border border-green-100 rounded-lg p-3">
+                    <CheckCircle size={14} className="mt-0.5" />
+                    <p>Thanks! Your request has been sent to the Wbify team. We will get back to you shortly.</p>
+                  </div>
+                )}
+              </form>
+            </div>
           </div>
         </div>
       </div>
