@@ -3,7 +3,7 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import { Product, SHOP_CATEGORIES, getShopCategoryId, getShopCategory, normalizeProductUrl } from '../../data/productsData';
 import { getProducts, addProduct, updateProduct, deleteProduct } from '../../lib/productsService';
 import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from '../../lib/productImage';
-import { generateUniqueFileName, uploadFileWithProgress } from '../../lib/storageService';
+import { uploadProductImage } from '../../lib/productImageUpload';
 import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, ExternalLink } from 'lucide-react';
 
 const AdminShop: React.FC = () => {
@@ -11,37 +11,35 @@ const AdminShop: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Partial<Product>>({});
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  // Local preview of a just-uploaded image: the committed file is only served
+  // after the Vercel redeploy finishes.
+  const [localPreview, setLocalPreview] = useState<{ path: string; url: string } | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const isUploading = uploadProgress !== null;
+  const clearLocalPreview = () => {
+    setLocalPreview(prev => {
+      if (prev) URL.revokeObjectURL(prev.url);
+      return null;
+    });
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      alert('Please choose an image file.');
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Image must be smaller than 10MB.');
-      return;
-    }
-    setUploadProgress(0);
+    setIsUploading(true);
     try {
-      const url = await uploadFileWithProgress(
-        file,
-        `products/${generateUniqueFileName(file.name)}`,
-        setUploadProgress
-      );
-      setCurrentProduct(prev => ({ ...prev, image: url }));
-    } catch (err) {
+      const path = await uploadProductImage(file, currentProduct.name || file.name);
+      clearLocalPreview();
+      setLocalPreview({ path, url: URL.createObjectURL(file) });
+      setCurrentProduct(prev => ({ ...prev, image: path }));
+    } catch (err: any) {
       console.error('Error uploading product image', err);
-      alert('Image upload failed. Make sure you are signed in as an admin and try again.');
+      alert(err?.message || 'Image upload failed.');
     } finally {
-      setUploadProgress(null);
+      setIsUploading(false);
     }
   };
 
@@ -75,6 +73,7 @@ const AdminShop: React.FC = () => {
 
   const handleEdit = (product: Product) => {
     setCurrentProduct(product);
+    clearLocalPreview();
     setFormError(null);
     setIsEditing(true);
   };
@@ -90,6 +89,7 @@ const AdminShop: React.FC = () => {
       productUrl: '',
       status: 'active',
     });
+    clearLocalPreview();
     setFormError(null);
     setIsEditing(true);
   };
@@ -314,7 +314,11 @@ const AdminShop: React.FC = () => {
                 {currentProduct.image && (
                   <div className="mb-3">
                     <img
-                      src={getProductImageUrl(currentProduct.image)}
+                      src={
+                        localPreview?.path === currentProduct.image
+                          ? localPreview.url
+                          : getProductImageUrl(currentProduct.image)
+                      }
                       alt="Preview"
                       className="w-full h-48 object-cover rounded-lg border border-gray-200"
                       onError={(e) => {
@@ -341,7 +345,7 @@ const AdminShop: React.FC = () => {
                   >
                     {isUploading ? (
                       <>
-                        <Loader2 size={16} className="animate-spin" /> {uploadProgress}%
+                        <Loader2 size={16} className="animate-spin" /> Uploading
                       </>
                     ) : (
                       <>
@@ -368,7 +372,8 @@ const AdminShop: React.FC = () => {
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Uploads are resized to 1000px wide and saved as JPEG.
+                  Uploads are resized to 1400px wide, saved as JPEG in the site's <code>public/products</code> folder
+                  on GitHub, and go live after the site redeploys (about 1–2 minutes).
                 </p>
               </div>
 
