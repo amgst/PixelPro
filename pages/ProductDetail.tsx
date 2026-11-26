@@ -3,7 +3,7 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { ShoppingCart, Loader, Tag, ArrowLeft, CheckCircle } from 'lucide-react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { Helmet } from 'react-helmet-async';
-import { Product } from '../data/productsData';
+import { Product, getShopCategory } from '../data/productsData';
 import { getProductById } from '../lib/productsService';
 import { submitOrder } from '../lib/ordersService';
 import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from '../lib/productImage';
@@ -147,7 +147,7 @@ const ProductDetail: React.FC = () => {
   }
 
   if (!product) {
-    return <Navigate to="/store" replace />;
+    return <Navigate to="/shop" replace />;
   }
 
   const pageTitle = `${product.name} | Wbify`;
@@ -161,15 +161,15 @@ const ProductDetail: React.FC = () => {
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href={`https://www.wbify.com/store/${product.id}`} />
+        <link rel="canonical" href={`https://www.wbify.com/shop/${product.id}`} />
       </Helmet>
 
       <div className="bg-slate-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/store" className="inline-flex items-center text-sm text-slate-600 hover:text-slate-900">
+            <Link to="/shop" className="inline-flex items-center text-sm text-slate-600 hover:text-slate-900">
               <ArrowLeft size={16} className="mr-1" />
-              Back to POD
+              Back to Shop
             </Link>
           </div>
         </div>
@@ -198,7 +198,7 @@ const ProductDetail: React.FC = () => {
             <div className="flex items-center gap-3 mb-4">
               <span className="inline-flex items-center text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-1 rounded-full">
                 <Tag size={12} className="mr-1" />
-                {product.category}
+                {getShopCategory(product.category).label}
               </span>
               {product.sku && (
                 <span className="text-xs text-gray-500">SKU: {product.sku}</span>
@@ -286,7 +286,7 @@ const ProductDetail: React.FC = () => {
                   value={formData.notes}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                  placeholder="Include size, material, quantity breakdown or any other details."
+                  placeholder="Your website URL, platform version, licence needs or any other details."
                 />
               </div>
 

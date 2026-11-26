@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { Product } from '../../data/productsData';
+import { Product, SHOP_CATEGORIES, getShopCategoryId, getShopCategory } from '../../data/productsData';
 import { getProducts, addProduct, updateProduct, deleteProduct } from '../../lib/productsService';
-import { PRODUCTS_SEED_DATA } from '../../data/productsSeed';
 import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from '../../lib/productImage';
-import { Plus, Trash2, Edit2, Save, X, Download } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X } from 'lucide-react';
 
-const AdminStore: React.FC = () => {
+const AdminShop: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Partial<Product>>({});
-  const [isImporting, setIsImporting] = useState(false);
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -49,7 +47,7 @@ const AdminStore: React.FC = () => {
   const handleAddNew = () => {
     setCurrentProduct({
       name: '',
-      category: '',
+      category: SHOP_CATEGORIES[0].id,
       image: '',
       price: 0,
       shortDescription: '',
@@ -57,39 +55,6 @@ const AdminStore: React.FC = () => {
       status: 'active',
     });
     setIsEditing(true);
-  };
-
-  const handleImportSeed = async () => {
-    if (!window.confirm(`This will import ${PRODUCTS_SEED_DATA.length} Print on Demand products. Continue?`)) {
-      return;
-    }
-
-    setIsImporting(true);
-    try {
-      const existingProducts = await getProducts();
-      const existingNames = new Set(existingProducts.map(p => p.name.toLowerCase()));
-
-      let imported = 0;
-      let skipped = 0;
-
-      for (const product of PRODUCTS_SEED_DATA) {
-        if (existingNames.has(product.name.toLowerCase())) {
-          skipped++;
-          continue;
-        }
-
-        await addProduct(product);
-        imported++;
-      }
-
-      alert(`Import complete! Imported: ${imported}, Skipped (already exist): ${skipped}`);
-      await fetchProducts();
-    } catch (e) {
-      console.error('Error importing seed data', e);
-      alert('Failed to import products.');
-    } finally {
-      setIsImporting(false);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,7 +68,7 @@ const AdminStore: React.FC = () => {
 
       const data: Omit<Product, 'id'> = {
         name: currentProduct.name,
-        category: currentProduct.category,
+        category: getShopCategoryId(currentProduct.category),
         image: currentProduct.image || '',
         price,
         shortDescription: currentProduct.shortDescription || '',
@@ -141,19 +106,12 @@ const AdminStore: React.FC = () => {
     <AdminLayout>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Store Products</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Shop Products</h1>
           <p className="text-gray-500">
-            Manage products that appear in the public Store and can be ordered without payment.
+            Manage the WordPress & Shopify themes, plugins and other products listed in the public Shop.
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleImportSeed}
-            disabled={isImporting}
-            className="border border-gray-200 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50"
-          >
-            <Download size={18} /> {isImporting ? 'Importing...' : 'Import POD Seed'}
-          </button>
           <button
             onClick={handleAddNew}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
@@ -193,14 +151,16 @@ const AdminStore: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                  <input
-                    type="text"
+                  <select
                     required
-                    value={currentProduct.category || ''}
+                    value={getShopCategoryId(currentProduct.category)}
                     onChange={e => setCurrentProduct({ ...currentProduct, category: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    placeholder="e.g., Banners, Business Cards"
-                  />
+                  >
+                    {SHOP_CATEGORIES.map(c => (
+                      <option key={c.id} value={c.id}>{c.label}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
@@ -361,7 +321,7 @@ const AdminStore: React.FC = () => {
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-500">{product.category}</td>
+                <td className="px-4 py-3 text-sm text-gray-500">{getShopCategory(product.category).label}</td>
                 <td className="px-4 py-3 text-sm text-gray-500">
                   {product.price ? `$${product.price.toFixed(2)}` : 'Quote'}
                 </td>
@@ -408,4 +368,4 @@ const AdminStore: React.FC = () => {
   );
 };
 
-export default AdminStore;
+export default AdminShop;

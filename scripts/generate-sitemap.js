@@ -33,7 +33,7 @@ const staticRoutes = [
     { url: '/pricing', changefreq: 'monthly', priority: 0.8, lastmod: BUILD_DATE },
     { url: '/portfolio', changefreq: 'weekly', priority: 0.8, lastmod: BUILD_DATE },
     { url: '/case-studies/reviews-rewards', changefreq: 'monthly', priority: 0.7, lastmod: BUILD_DATE },
-    { url: '/store', changefreq: 'weekly', priority: 0.7, lastmod: BUILD_DATE },
+    { url: '/shop', changefreq: 'weekly', priority: 0.7, lastmod: BUILD_DATE },
     { url: '/blog', changefreq: 'weekly', priority: 0.8, lastmod: BUILD_DATE },
     { url: '/tools', changefreq: 'monthly', priority: 0.7, lastmod: BUILD_DATE },
     { url: '/websites-for-sale', changefreq: 'weekly', priority: 0.8, lastmod: BUILD_DATE },

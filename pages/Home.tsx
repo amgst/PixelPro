@@ -6,6 +6,7 @@ import Testimonials from '../components/Testimonials';
 import FeaturedProjects from '../components/FeaturedProjects';
 import ConsultationOptions from '../components/ConsultationOptions';
 import ServiceQuizModal from '../components/ServiceQuizModal';
+import ShopPreview from '../components/ShopPreview';
 
 import SEO from '../components/SEO';
 
@@ -140,6 +141,9 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Shop: themes & plugins */}
+      <ShopPreview />
 
       {/* Shopify Highlight Section */}
       <section className="py-20 bg-slate-900 text-white overflow-hidden relative">

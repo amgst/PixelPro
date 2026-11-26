@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Outlet, Navigate, useParams } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -34,7 +34,7 @@ import AdminMessages from './pages/admin/Messages';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 import NotFound from './pages/NotFound';
-import Store from './pages/Store';
+import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
 import AiServices from './pages/AiServices';
 import VideoAnimation from './pages/VideoAnimation';
@@ -45,9 +45,15 @@ import { AuthProvider } from './components/admin/AuthProvider';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import AdminWebRegistry from './pages/admin/WebRegistry';
 import AdminTestimonials from './pages/admin/Testimonials';
-import AdminStore from './pages/admin/Store';
+import AdminShop from './pages/admin/Shop';
 import AdminOrders from './pages/admin/Orders';
 import AdminSettings from './pages/admin/Settings';
+
+// Old /store/:id product links (pre-rename) keep working.
+const LegacyStoreRedirect: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/shop/${id ?? ''}`} replace />;
+};
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -91,8 +97,10 @@ const AppContent: React.FC = () => {
             <Route path="/careers" element={<Careers />} />
             <Route path="/ai-services" element={<AiServices />} />
             <Route path="/video-animation" element={<VideoAnimation />} />
-            <Route path="/store" element={<Store />} />
-            <Route path="/store/:id" element={<ProductDetail />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/shop/:id" element={<ProductDetail />} />
+            <Route path="/store" element={<Navigate to="/shop" replace />} />
+            <Route path="/store/:id" element={<LegacyStoreRedirect />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
@@ -116,7 +124,8 @@ const AppContent: React.FC = () => {
                 <Route path="blog" element={<AdminBlog />} />
                 <Route path="testimonials" element={<AdminTestimonials />} />
                 <Route path="ready-sites" element={<AdminReadySites />} />
-                <Route path="store" element={<AdminStore />} />
+                <Route path="shop" element={<AdminShop />} />
+                <Route path="store" element={<Navigate to="/admin/shop" replace />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="messages" element={<AdminMessages />} />
                 <Route path="crm" element={<AdminCrm />} />
