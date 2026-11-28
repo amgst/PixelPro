@@ -4,7 +4,7 @@
 //
 // Required env vars (Vercel project settings):
 //   GITHUB_TOKEN   fine-grained token with "Contents: Read and write" on the repo
-//   GITHUB_REPO    "owner/repo", e.g. "amgst/PixelPro"
+//   GITHUB_REPO    "owner/repo", e.g. "amgst/wbifycom"
 //   GITHUB_BRANCH  optional, defaults to "main"
 //   VITE_FIREBASE_API_KEY (already set) used to verify the caller's Firebase ID token
 //   VITE_ADMIN_EMAILS / ADMIN_EMAILS optional email allowlist, same as the admin UI
@@ -60,8 +60,10 @@ export default async function handler(req: any, res: any) {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const token = process.env.GITHUB_TOKEN;
-    const repo = process.env.GITHUB_REPO;
+    // Trim whitespace/quotes that often sneak in when pasting into Vercel.
+    const clean = (v?: string) => v?.trim().replace(/^["']|["']$/g, '') || undefined;
+    const token = clean(process.env.GITHUB_TOKEN);
+    const repo = clean(process.env.GITHUB_REPO);
     const branch = process.env.GITHUB_BRANCH || 'main';
     if (!token || !repo) {
         return res.status(500).json({ message: 'Image uploads are not configured (GITHUB_TOKEN / GITHUB_REPO missing).' });

@@ -36,6 +36,7 @@ const staticRoutes = [
     { url: '/shop', changefreq: 'weekly', priority: 0.7, lastmod: BUILD_DATE },
     { url: '/blog', changefreq: 'weekly', priority: 0.8, lastmod: BUILD_DATE },
     { url: '/tools', changefreq: 'monthly', priority: 0.7, lastmod: BUILD_DATE },
+    { url: '/subwebs', changefreq: 'monthly', priority: 0.7, lastmod: BUILD_DATE },
     { url: '/websites-for-sale', changefreq: 'weekly', priority: 0.8, lastmod: BUILD_DATE },
     { url: '/about', changefreq: 'monthly', priority: 0.7, lastmod: BUILD_DATE },
     { url: '/contact', changefreq: 'monthly', priority: 0.7, lastmod: BUILD_DATE },
