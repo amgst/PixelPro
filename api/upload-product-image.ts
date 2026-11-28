@@ -118,10 +118,22 @@ export default async function handler(req: any, res: any) {
     if (!ghRes.ok) {
         const text = await ghRes.text();
         console.error('GitHub upload failed:', ghRes.status, text);
-        const message =
-            ghRes.status === 422
-                ? 'A file with this name already exists. Please try again.'
-                : 'Saving the image to GitHub failed.';
+        let ghMessage = '';
+        try {
+            ghMessage = JSON.parse(text)?.message || '';
+        } catch {
+            // non-JSON body
+        }
+        let message: string;
+        if (ghRes.status === 422) {
+            message = 'A file with this name already exists. Please try again.';
+        } else if (ghRes.status === 401) {
+            message = 'GitHub rejected GITHUB_TOKEN (invalid or expired). Generate a new token and update it in Vercel.';
+        } else if (ghRes.status === 403 || ghRes.status === 404) {
+            message = `GitHub denied access to ${repo} (${ghRes.status}${ghMessage ? `: ${ghMessage}` : ''}). Check that GITHUB_REPO is correct and the token has "Contents: Read and write" on that repo.`;
+        } else {
+            message = `Saving the image to GitHub failed (${ghRes.status}${ghMessage ? `: ${ghMessage}` : ''}).`;
+        }
         return res.status(502).json({ message });
     }
 
